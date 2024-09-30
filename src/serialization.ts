@@ -1,5 +1,6 @@
 import { SovereignSerializeError } from "./errors";
-import type { RollupSchema } from "./schema";
+
+export type RollupSchema = unknown;
 
 export type RollupSerializer = {
   serialize(data: unknown, type: string): Uint8Array;

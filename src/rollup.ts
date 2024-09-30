@@ -1,7 +1,10 @@
 import SovereignClient from "@sovereign-sdk/client";
 import { Base64 } from "js-base64";
-import type { RollupSchema } from "./schema";
-import { type RollupSerializer, createSerializer } from "./serialization";
+import {
+  type RollupSerializer,
+  createSerializer,
+  type RollupSchema,
+} from "./serialization";
 import type { Signer } from "./signer";
 
 export type RollupCallResult = {
