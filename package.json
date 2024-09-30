@@ -3,6 +3,7 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
+    "ci": "biome ci",
     "fix": "biome check --write",
     "lint": "biome lint"
   },
