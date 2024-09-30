@@ -1,3 +1,4 @@
+import { SovereignSerializeError } from "./errors";
 import type { RollupSchema } from "./schema";
 
 export type RollupSerializer = {
@@ -11,8 +12,12 @@ export function createSerializer(schema: RollupSchema): RollupSerializer {
   return {
     serialize(data, type) {
       console.log(data, type, schema);
-      // call wasm library
-      return new Uint8Array([]);
+      try {
+        // call wasm library
+        return new Uint8Array([]);
+      } catch (e) {
+        throw new SovereignSerializeError(type);
+      }
     },
     serializeCallMessage(data) {
       return this.serialize(data, "CallMessage");
