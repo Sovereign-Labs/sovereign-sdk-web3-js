@@ -3,7 +3,8 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "fix": "biome check --write ./src"
+    "fix": "biome check --write",
+    "lint": "biome lint"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.2",
