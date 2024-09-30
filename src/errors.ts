@@ -18,6 +18,8 @@ export class SovereignSerializeError extends SovereignError {
     readonly targetType: string,
     message?: string,
   ) {
-    super(message ?? `Failed to serialize target of type "${targetType}"`);
+    super(
+      message ?? `Failed to serialize rollup of schema type "${targetType}"`,
+    );
   }
 }
