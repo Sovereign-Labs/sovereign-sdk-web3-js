@@ -4,7 +4,7 @@ export class SovereignError extends Error {
     this.name = this.constructor.name;
 
     // `Error.captureStackTrace` is v8 specific API,
-    // add fallback for capatability in other envs
+    // add fallback for compatibility in other envs
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
     } else {
