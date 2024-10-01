@@ -1,15 +1,15 @@
 import SovereignClient from "@sovereign-sdk/client";
 import { Base64 } from "js-base64";
 import {
+  type RollupSchema,
   type RollupSerializer,
   createSerializer,
-  type RollupSchema,
 } from "./serialization";
 import type { Signer } from "./signer";
 
 export type RollupCallResult = {
   response: SovereignClient.Sequencer.TxCreateResponse;
-  transaction: unknown;
+  unsignedTx: unknown;
 };
 
 export type RollupArgs = {
@@ -38,7 +38,7 @@ export class StandardRollup {
 
     return {
       response,
-      transaction: unsignedTx,
+      unsignedTx,
     };
   }
 
