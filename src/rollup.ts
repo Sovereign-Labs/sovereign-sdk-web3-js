@@ -12,27 +12,56 @@ export type RollupCallResult = {
   unsignedTx: unknown;
 };
 
-export type RollupArgs = {
+export type RollupConfig = {
   url?: string;
   schema: RollupSchema;
+  defaultTxDetails: TxDetails;
+};
+
+type TxDetails = {
+  max_priority_fee_bips: number;
+  max_fee: bigint;
+  gas_limit?: bigint;
+  chain_id: bigint;
+};
+
+type UnsignedTransaction = {
+  runtime_msg: Uint8Array;
+  nonce: bigint;
+  details: TxDetails;
+};
+
+type SignedTransaction = UnsignedTransaction & {
+  signature: { msg_sig: Uint8Array };
+  pub_key: Uint8Array;
+};
+
+type CallParams = {
+  signer: Signer;
+  txDetails?: TxDetails;
 };
 
 export class StandardRollup {
+  private readonly _config: RollupConfig;
   private readonly _client: SovereignClient;
   private readonly _serializer: RollupSerializer;
 
-  constructor({ url, schema }: RollupArgs) {
-    this._client = new SovereignClient({ baseURL: url });
-    this._serializer = createSerializer(schema);
-    // todo: have default tx details
+  constructor(config: RollupConfig) {
+    this._client = new SovereignClient({ baseURL: config.url });
+    this._serializer = createSerializer(config.schema);
+    this._config = config;
   }
 
-  async call(message: unknown, signer: Signer): Promise<RollupCallResult> {
+  async call(
+    message: unknown,
+    { signer, txDetails }: CallParams,
+  ): Promise<RollupCallResult> {
     const serializedCall = this.serializer.serializeCallMessage(message);
-    const nonce = 0; // TODO: call "capability" endpoint
-    const unsignedTx = {
-      call_message: serializedCall,
+    const nonce = BigInt(0); // TODO: call "capability" endpoint
+    const unsignedTx: UnsignedTransaction = {
+      runtime_msg: serializedCall,
       nonce,
+      details: txDetails ?? this._config.defaultTxDetails,
     };
     const response = await this.signAndSubmitTransaction(unsignedTx, signer);
 
@@ -53,14 +82,18 @@ export class StandardRollup {
   }
 
   async signAndSubmitTransaction(
-    unsignedTx: Record<string, unknown>,
+    unsignedTx: UnsignedTransaction,
     signer: Signer,
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializedUnsignedTx =
       this.serializer.serializeUnsignedTx(unsignedTx);
     const signature = await signer.sign(serializedUnsignedTx);
-    const tx = {
-      signature,
+    const publicKey = await signer.publicKey();
+    const tx: SignedTransaction = {
+      pub_key: publicKey,
+      signature: {
+        msg_sig: signature,
+      },
       ...unsignedTx,
     };
 
