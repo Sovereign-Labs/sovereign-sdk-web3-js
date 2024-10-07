@@ -1,0 +1,21 @@
+{
+  "name": "@sovereign-sdk/web3",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "ci": "biome ci",
+    "fix": "biome check --write",
+    "lint": "biome lint"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.2",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@sovereign-sdk/client": "^0.1.0-alpha.7",
+    "js-base64": "^3.7.7"
+  }
+}
