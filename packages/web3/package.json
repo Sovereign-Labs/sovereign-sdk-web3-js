@@ -5,7 +5,8 @@
   "scripts": {
     "ci": "biome ci",
     "fix": "biome check --write",
-    "lint": "biome lint"
+    "lint": "biome lint",
+    "test": "bun test"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.2",
