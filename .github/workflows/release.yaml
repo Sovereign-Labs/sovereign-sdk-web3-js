@@ -20,6 +20,9 @@ jobs:
         with:
           node-version: 20.x
           cache: "pnpm"
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_SOV_SDK_WIP }}
       - name: Install dependencies
         run: pnpm install
       - name: Build
