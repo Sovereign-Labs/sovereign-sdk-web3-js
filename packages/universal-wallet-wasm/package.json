@@ -5,7 +5,7 @@
     "compile": "pnpm run compile:node && pnpm run compile:esm",
     "compile:esm": "wasm-pack build --target bundler --release --out-dir dist/esm",
     "compile:node": "wasm-pack build --target nodejs --release --out-dir dist/node",
-    "test": "vitest"
+    "test": "pnpm compile:node && vitest"
   },
   "exports": {
     ".": {
