@@ -1,19 +1,19 @@
-# @sovereign-sdk/universal-wallet
+# @sovereign-sdk/universal-wallet-wasm
 
 To install dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 Compile to wasm and build JavaScript packages:
 
 ```bash
-npm run compile
+pnpm run compile
 ```
 
 Run tests (must compile first):
 
 ```bash
-npm run test
+pnpm run test
 ```
