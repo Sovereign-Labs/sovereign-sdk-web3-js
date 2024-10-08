@@ -1,0 +1,1207 @@
+{
+  "types": [
+    {
+      "Enum": {
+        "type_name": "RuntimeCall",
+        "serde_type_name": "RuntimeCall",
+        "variants": [
+          {
+            "name": "Bank",
+            "serde_name": "bank",
+            "value": {
+              "ByIndex": 1
+            }
+          },
+          {
+            "name": "SequencerRegistry",
+            "serde_name": "sequencer_registry",
+            "value": {
+              "ByIndex": 12
+            }
+          },
+          {
+            "name": "ValueSetter",
+            "serde_name": "value_setter",
+            "value": {
+              "ByIndex": 17
+            }
+          },
+          {
+            "name": "AttesterIncentives",
+            "serde_name": "attester_incentives",
+            "value": {
+              "ByIndex": 21
+            }
+          },
+          {
+            "name": "ProverIncentives",
+            "serde_name": "prover_incentives",
+            "value": {
+              "ByIndex": 26
+            }
+          },
+          {
+            "name": "Accounts",
+            "serde_name": "accounts",
+            "value": {
+              "ByIndex": 30
+            }
+          },
+          {
+            "name": "Nonces",
+            "serde_name": "nonces",
+            "value": {
+              "ByIndex": 35
+            }
+          },
+          {
+            "name": "Nft",
+            "serde_name": "nft",
+            "value": {
+              "ByIndex": 37
+            }
+          },
+          {
+            "name": "Evm",
+            "serde_name": "evm",
+            "value": {
+              "ByIndex": 49
+            }
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 2
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Enum": {
+        "type_name": "CallMessage",
+        "serde_type_name": "CallMessage",
+        "variants": [
+          {
+            "name": "CreateToken",
+            "serde_name": "create_token",
+            "value": {
+              "ByIndex": 3
+            }
+          },
+          {
+            "name": "Transfer",
+            "serde_name": "transfer",
+            "value": {
+              "ByIndex": 6
+            }
+          },
+          {
+            "name": "Burn",
+            "serde_name": "burn",
+            "value": {
+              "ByIndex": 9
+            }
+          },
+          {
+            "name": "Mint",
+            "serde_name": "mint",
+            "value": {
+              "ByIndex": 10
+            }
+          },
+          {
+            "name": "Freeze",
+            "serde_name": "freeze",
+            "value": {
+              "ByIndex": 11
+            }
+          }
+        ]
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "__SovVirtualWallet_CallMessage_CreateToken",
+        "serde_type_name": "__SovVirtualWallet_CallMessage_CreateToken",
+        "fields": [
+          {
+            "display_name": "salt",
+            "serde_display_name": "salt",
+            "silent": false,
+            "value": {
+              "Immediate": {
+                "Integer": ["u64", "Decimal"]
+              }
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "token_name",
+            "serde_display_name": "token_name",
+            "silent": false,
+            "value": {
+              "Immediate": "String"
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "initial_balance",
+            "serde_display_name": "initial_balance",
+            "silent": false,
+            "value": {
+              "Immediate": {
+                "Integer": ["u64", "Decimal"]
+              }
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "mint_to_address",
+            "serde_display_name": "mint_to_address",
+            "silent": false,
+            "value": {
+              "ByIndex": 4
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "authorized_minters",
+            "serde_display_name": "authorized_minters",
+            "silent": false,
+            "value": {
+              "ByIndex": 5
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "ByteArray": {
+                  "len": 32,
+                  "display": {
+                    "Bech32m": {
+                      "prefix": "sov"
+                    }
+                  }
+                }
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Vec": {
+        "value": {
+          "ByIndex": 4
+        }
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "__SovVirtualWallet_CallMessage_Transfer",
+        "serde_type_name": "__SovVirtualWallet_CallMessage_Transfer",
+        "fields": [
+          {
+            "display_name": "to",
+            "serde_display_name": "to",
+            "silent": false,
+            "value": {
+              "ByIndex": 4
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "coins",
+            "serde_display_name": "coins",
+            "silent": false,
+            "value": {
+              "ByIndex": 7
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "Coins",
+        "serde_type_name": "Coins",
+        "fields": [
+          {
+            "display_name": "amount",
+            "serde_display_name": "amount",
+            "silent": false,
+            "value": {
+              "Immediate": {
+                "Integer": ["u64", "Decimal"]
+              }
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "token_id",
+            "serde_display_name": "token_id",
+            "silent": false,
+            "value": {
+              "ByIndex": 8
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "ByteArray": {
+                  "len": 32,
+                  "display": {
+                    "Bech32m": {
+                      "prefix": "token_"
+                    }
+                  }
+                }
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "__SovVirtualWallet_CallMessage_Burn",
+        "serde_type_name": "__SovVirtualWallet_CallMessage_Burn",
+        "fields": [
+          {
+            "display_name": "coins",
+            "serde_display_name": "coins",
+            "silent": false,
+            "value": {
+              "ByIndex": 7
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "__SovVirtualWallet_CallMessage_Mint",
+        "serde_type_name": "__SovVirtualWallet_CallMessage_Mint",
+        "fields": [
+          {
+            "display_name": "coins",
+            "serde_display_name": "coins",
+            "silent": false,
+            "value": {
+              "ByIndex": 7
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "mint_to_address",
+            "serde_display_name": "mint_to_address",
+            "silent": false,
+            "value": {
+              "ByIndex": 4
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "__SovVirtualWallet_CallMessage_Freeze",
+        "serde_type_name": "__SovVirtualWallet_CallMessage_Freeze",
+        "fields": [
+          {
+            "display_name": "token_id",
+            "serde_display_name": "token_id",
+            "silent": false,
+            "value": {
+              "ByIndex": 8
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 13
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Enum": {
+        "type_name": "CallMessage",
+        "serde_type_name": "CallMessage",
+        "variants": [
+          {
+            "name": "Register",
+            "serde_name": "register",
+            "value": {
+              "ByIndex": 14
+            }
+          },
+          {
+            "name": "Deposit",
+            "serde_name": "deposit",
+            "value": {
+              "ByIndex": 15
+            }
+          },
+          {
+            "name": "Exit",
+            "serde_name": "exit",
+            "value": {
+              "ByIndex": 16
+            }
+          }
+        ]
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "__SovVirtualWallet_CallMessage_Register",
+        "serde_type_name": "__SovVirtualWallet_CallMessage_Register",
+        "fields": [
+          {
+            "display_name": "da_address",
+            "serde_display_name": "da_address",
+            "silent": false,
+            "value": {
+              "Immediate": {
+                "ByteVec": {
+                  "display": "Hex"
+                }
+              }
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "amount",
+            "serde_display_name": "amount",
+            "silent": false,
+            "value": {
+              "Immediate": {
+                "Integer": ["u64", "Decimal"]
+              }
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "__SovVirtualWallet_CallMessage_Deposit",
+        "serde_type_name": "__SovVirtualWallet_CallMessage_Deposit",
+        "fields": [
+          {
+            "display_name": "da_address",
+            "serde_display_name": "da_address",
+            "silent": false,
+            "value": {
+              "Immediate": {
+                "ByteVec": {
+                  "display": "Hex"
+                }
+              }
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "amount",
+            "serde_display_name": "amount",
+            "silent": false,
+            "value": {
+              "Immediate": {
+                "Integer": ["u64", "Decimal"]
+              }
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "__SovVirtualWallet_CallMessage_Exit",
+        "serde_type_name": "__SovVirtualWallet_CallMessage_Exit",
+        "fields": [
+          {
+            "display_name": "da_address",
+            "serde_display_name": "da_address",
+            "silent": false,
+            "value": {
+              "Immediate": {
+                "ByteVec": {
+                  "display": "Hex"
+                }
+              }
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 18
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Enum": {
+        "type_name": "CallMessage",
+        "serde_type_name": "CallMessage",
+        "variants": [
+          {
+            "name": "SetValue",
+            "serde_name": "set_value",
+            "value": {
+              "ByIndex": 19
+            }
+          },
+          {
+            "name": "SetManyValues",
+            "serde_name": "set_many_values",
+            "value": {
+              "ByIndex": 20
+            }
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": ["u32", "Decimal"]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "ByteVec": {
+                  "display": "Hex"
+                }
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 22
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Enum": {
+        "type_name": "CallMessage",
+        "serde_type_name": "CallMessage",
+        "variants": [
+          {
+            "name": "RegisterAttester",
+            "serde_name": "register_attester",
+            "value": {
+              "ByIndex": 23
+            }
+          },
+          {
+            "name": "BeginExitAttester",
+            "serde_name": "begin_exit_attester",
+            "value": null
+          },
+          {
+            "name": "ExitAttester",
+            "serde_name": "exit_attester",
+            "value": null
+          },
+          {
+            "name": "RegisterChallenger",
+            "serde_name": "register_challenger",
+            "value": {
+              "ByIndex": 24
+            }
+          },
+          {
+            "name": "ExitChallenger",
+            "serde_name": "exit_challenger",
+            "value": null
+          },
+          {
+            "name": "DepositAttester",
+            "serde_name": "deposit_attester",
+            "value": {
+              "ByIndex": 25
+            }
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": ["u64", "Decimal"]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": ["u64", "Decimal"]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": ["u64", "Decimal"]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 27
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Enum": {
+        "type_name": "CallMessage",
+        "serde_type_name": "CallMessage",
+        "variants": [
+          {
+            "name": "Register",
+            "serde_name": "register",
+            "value": {
+              "ByIndex": 28
+            }
+          },
+          {
+            "name": "Deposit",
+            "serde_name": "deposit",
+            "value": {
+              "ByIndex": 29
+            }
+          },
+          {
+            "name": "Exit",
+            "serde_name": "exit",
+            "value": null
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": ["u64", "Decimal"]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": ["u64", "Decimal"]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 31
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Enum": {
+        "type_name": "CallMessage",
+        "serde_type_name": "CallMessage",
+        "variants": [
+          {
+            "name": "InsertCredentialId",
+            "serde_name": "insert_credential_id",
+            "value": {
+              "ByIndex": 32
+            }
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 33
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 34
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "ByteArray": {
+                  "len": 32,
+                  "display": "Hex"
+                }
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 36
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Enum": {
+        "type_name": "NotInstantiable",
+        "serde_type_name": "NotInstantiable",
+        "variants": []
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 38
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Enum": {
+        "type_name": "CallMessage",
+        "serde_type_name": "CallMessage",
+        "variants": [
+          {
+            "name": "CreateCollection",
+            "serde_name": "create_collection",
+            "value": {
+              "ByIndex": 39
+            }
+          },
+          {
+            "name": "UpdateCollection",
+            "serde_name": "update_collection",
+            "value": {
+              "ByIndex": 40
+            }
+          },
+          {
+            "name": "FreezeCollection",
+            "serde_name": "freeze_collection",
+            "value": {
+              "ByIndex": 41
+            }
+          },
+          {
+            "name": "MintNft",
+            "serde_name": "mint_nft",
+            "value": {
+              "ByIndex": 42
+            }
+          },
+          {
+            "name": "UpdateNft",
+            "serde_name": "update_nft",
+            "value": {
+              "ByIndex": 44
+            }
+          },
+          {
+            "name": "TransferNft",
+            "serde_name": "transfer_nft",
+            "value": {
+              "ByIndex": 47
+            }
+          }
+        ]
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "__SovVirtualWallet_CallMessage_CreateCollection",
+        "serde_type_name": "__SovVirtualWallet_CallMessage_CreateCollection",
+        "fields": [
+          {
+            "display_name": "name",
+            "serde_display_name": "name",
+            "silent": false,
+            "value": {
+              "Immediate": "String"
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "collection_uri",
+            "serde_display_name": "collection_uri",
+            "silent": false,
+            "value": {
+              "Immediate": "String"
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "__SovVirtualWallet_CallMessage_UpdateCollection",
+        "serde_type_name": "__SovVirtualWallet_CallMessage_UpdateCollection",
+        "fields": [
+          {
+            "display_name": "name",
+            "serde_display_name": "name",
+            "silent": false,
+            "value": {
+              "Immediate": "String"
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "collection_uri",
+            "serde_display_name": "collection_uri",
+            "silent": false,
+            "value": {
+              "Immediate": "String"
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "__SovVirtualWallet_CallMessage_FreezeCollection",
+        "serde_type_name": "__SovVirtualWallet_CallMessage_FreezeCollection",
+        "fields": [
+          {
+            "display_name": "collection_name",
+            "serde_display_name": "collection_name",
+            "silent": false,
+            "value": {
+              "Immediate": "String"
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "__SovVirtualWallet_CallMessage_MintNft",
+        "serde_type_name": "__SovVirtualWallet_CallMessage_MintNft",
+        "fields": [
+          {
+            "display_name": "collection_name",
+            "serde_display_name": "collection_name",
+            "silent": false,
+            "value": {
+              "Immediate": "String"
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "token_uri",
+            "serde_display_name": "token_uri",
+            "silent": false,
+            "value": {
+              "Immediate": "String"
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "token_id",
+            "serde_display_name": "token_id",
+            "silent": false,
+            "value": {
+              "Immediate": {
+                "Integer": ["u64", "Decimal"]
+              }
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "owner",
+            "serde_display_name": "owner",
+            "silent": false,
+            "value": {
+              "ByIndex": 43
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "frozen",
+            "serde_display_name": "frozen",
+            "silent": false,
+            "value": {
+              "Immediate": "Boolean"
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 4
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "__SovVirtualWallet_CallMessage_UpdateNft",
+        "serde_type_name": "__SovVirtualWallet_CallMessage_UpdateNft",
+        "fields": [
+          {
+            "display_name": "collection_name",
+            "serde_display_name": "collection_name",
+            "silent": false,
+            "value": {
+              "Immediate": "String"
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "token_id",
+            "serde_display_name": "token_id",
+            "silent": false,
+            "value": {
+              "Immediate": {
+                "Integer": ["u64", "Decimal"]
+              }
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "token_uri",
+            "serde_display_name": "token_uri",
+            "silent": false,
+            "value": {
+              "ByIndex": 45
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "frozen",
+            "serde_display_name": "frozen",
+            "silent": false,
+            "value": {
+              "ByIndex": 46
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Enum": {
+        "type_name": "Option",
+        "serde_type_name": "Option",
+        "variants": [
+          {
+            "name": "Some",
+            "serde_name": "Some",
+            "value": {
+              "Immediate": "String"
+            }
+          },
+          {
+            "name": "None",
+            "serde_name": "None",
+            "value": null
+          }
+        ]
+      }
+    },
+    {
+      "Enum": {
+        "type_name": "Option",
+        "serde_type_name": "Option",
+        "variants": [
+          {
+            "name": "Some",
+            "serde_name": "Some",
+            "value": {
+              "Immediate": "Boolean"
+            }
+          },
+          {
+            "name": "None",
+            "serde_name": "None",
+            "value": null
+          }
+        ]
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "__SovVirtualWallet_CallMessage_TransferNft",
+        "serde_type_name": "__SovVirtualWallet_CallMessage_TransferNft",
+        "fields": [
+          {
+            "display_name": "collection_id",
+            "serde_display_name": "collection_id",
+            "silent": false,
+            "value": {
+              "ByIndex": 48
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "token_id",
+            "serde_display_name": "token_id",
+            "silent": false,
+            "value": {
+              "Immediate": {
+                "Integer": ["u64", "Decimal"]
+              }
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "to",
+            "serde_display_name": "to",
+            "silent": false,
+            "value": {
+              "ByIndex": 43
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "ByteArray": {
+                  "len": 32,
+                  "display": {
+                    "Bech32m": {
+                      "prefix": "collection"
+                    }
+                  }
+                }
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 50
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "CallMessage",
+        "serde_type_name": "CallMessage",
+        "fields": [
+          {
+            "display_name": "rlp",
+            "serde_display_name": "rlp",
+            "silent": false,
+            "value": {
+              "ByIndex": 51
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "RlpEvmTransaction",
+        "serde_type_name": "RlpEvmTransaction",
+        "fields": [
+          {
+            "display_name": "rlp",
+            "serde_display_name": "rlp",
+            "silent": false,
+            "value": {
+              "Immediate": {
+                "ByteVec": {
+                  "display": "Hex"
+                }
+              }
+            },
+            "doc": ""
+          }
+        ]
+      }
+    }
+  ]
+}
