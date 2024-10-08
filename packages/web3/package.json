@@ -1,16 +1,17 @@
 {
   "name": "@sovereign-sdk/web3",
+  "version": "0.0.1",
   "module": "index.ts",
   "type": "module",
   "scripts": {
     "ci": "biome ci",
     "fix": "biome check --write",
     "lint": "biome lint",
-    "test": "bun test"
+    "test": "vitest"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.2",
-    "@types/bun": "latest"
+    "vitest": "^2.1.1"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"

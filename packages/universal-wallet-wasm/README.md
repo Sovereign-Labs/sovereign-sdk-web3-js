@@ -9,7 +9,7 @@ pnpm install
 Compile to wasm and build JavaScript packages:
 
 ```bash
-pnpm run compile
+pnpm run build
 ```
 
 Run tests (must compile first):

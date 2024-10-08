@@ -1,14 +1,15 @@
-name: CI
+name: Release
 
 on:
   push:
-    branches: ["master"]
-  pull_request:
-    types: [opened, synchronize]
+    branches:
+      - master
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  check:
-    name: Check
+  release:
+    name: Release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,9 +25,17 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_SOV_SDK_WIP }}
       - name: Install dependencies
         run: pnpm install
-      - name: Lint and Format
-        run: pnpm run ci
-      - name: Test
+      - name: Build
+        run: pnpm build
+      - name: Run Tests
         run: pnpm test
+      - name: Create Release Pull Request or Publish to npm
+        uses: changesets/action@v1
+        with:
+          publish: pnpm release
+          version: pnpm pkg-version
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
           CARGO_NET_GIT_FETCH_WITH_CLI: true
