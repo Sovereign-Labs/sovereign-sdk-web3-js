@@ -43,9 +43,9 @@ importers:
       '@biomejs/biome':
         specifier: ^1.9.2
         version: 1.9.3
-      '@types/bun':
-        specifier: latest
-        version: 1.1.10
+      vitest:
+        specifier: ^2.1.1
+        version: 2.1.2(@types/node@22.7.5)
 
 packages:
 
@@ -403,9 +403,6 @@ packages:
   '@sovereign-sdk/client@0.1.0-alpha.7':
     resolution: {integrity: sha512-n9sBNGyLEQnbnboZWxchnjtlsBLvoGC7mbPNKwjWNEMwZlEF+49PKmHLL9BRUfbvyqdHRpmk0IqHYVEBj6JFOg==}
 
-  '@types/bun@1.1.10':
-    resolution: {integrity: sha512-76KYVSwrHwr9zsnk6oLXOGs9KvyBg3U066GLO4rk6JZk1ypEPGCUDZ5yOiESyIHWs9cx9iC8r01utYN32XdmgA==}
-
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
 
@@ -418,14 +415,8 @@ packages:
   '@types/node@18.19.54':
     resolution: {integrity: sha512-+BRgt0G5gYjTvdLac9sIeE0iZcJxi4Jc4PV5EUzqi+88jmQLr+fRZdv2tCTV7IHKSGxM6SaLoOXQWWUiLUItMw==}
 
-  '@types/node@20.12.14':
-    resolution: {integrity: sha512-scnD59RpYD91xngrQQLGkE+6UrHUPzeKZWhhjBSa3HSkwjbQc38+q3RoIVEwxQGRw3M+j5hpNAM+lgV3cVormg==}
-
   '@types/node@22.7.5':
     resolution: {integrity: sha512-jML7s2NAzMWc//QSJ1a3prpk78cOPchGvXJsC3C6R6PSMoooztvRVQEz89gmBTBY1SPMaqo5teB4uNHPdetShQ==}
-
-  '@types/ws@8.5.12':
-    resolution: {integrity: sha512-3tPRkv1EtkDpzlgyKyI8pGsGZAGPEaXeu0DOj5DI25Ja91bdAYddYHbADRYVrZMRbfW+1l5YwXVDKohDJNQxkQ==}
 
   '@vitest/expect@2.1.2':
     resolution: {integrity: sha512-FEgtlN8mIUSEAAnlvn7mP8vzaWhEaAEvhSXCqrsijM7K6QqjB11qoRZYEd4AKSCDz8p0/+yH5LzhZ47qt+EyPg==}
@@ -507,9 +498,6 @@ packages:
   braces@3.0.3:
     resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
     engines: {node: '>=8'}
-
-  bun-types@1.1.29:
-    resolution: {integrity: sha512-En3/TzSPMPyl5UlUB1MHzHpcrZDakTm7mS203eLoX1fBoEa3PW+aSS8GAqVJ7Is/m34Z5ogL+ECniLY0uDaCPw==}
 
   cac@6.7.14:
     resolution: {integrity: sha512-b6Ilus+c3RrdDk+JhLKUAQfzzgLEPy6wcXqS7f/xe1EETvsDP6GORG7SFuOs6cID5YkqchW/LXZbX5bc8j7ZcQ==}
@@ -1470,10 +1458,6 @@ snapshots:
       - encoding
       - utf-8-validate
 
-  '@types/bun@1.1.10':
-    dependencies:
-      bun-types: 1.1.29
-
   '@types/estree@1.0.6': {}
 
   '@types/node-fetch@2.6.11':
@@ -1487,17 +1471,9 @@ snapshots:
     dependencies:
       undici-types: 5.26.5
 
-  '@types/node@20.12.14':
-    dependencies:
-      undici-types: 5.26.5
-
   '@types/node@22.7.5':
     dependencies:
       undici-types: 6.19.8
-
-  '@types/ws@8.5.12':
-    dependencies:
-      '@types/node': 22.7.5
 
   '@vitest/expect@2.1.2':
     dependencies:
@@ -1589,11 +1565,6 @@ snapshots:
   braces@3.0.3:
     dependencies:
       fill-range: 7.1.1
-
-  bun-types@1.1.29:
-    dependencies:
-      '@types/node': 20.12.14
-      '@types/ws': 8.5.12
 
   cac@6.7.14: {}
 
