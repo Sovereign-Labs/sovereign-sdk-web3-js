@@ -7,6 +7,14 @@
     "compile:node": "wasm-pack build --target nodejs --release --out-dir dist/node",
     "test": "pnpm compile:node && vitest"
   },
+  "files": [
+    "dist/**/*",
+    "!dist/**/.gitignore",
+    "!dist/**/package.json",
+    "!dist/**/README.md",
+    "package.json",
+    "README.md"
+  ],
   "exports": {
     ".": {
       "types": "./dist/node/wallet_wasm.d.ts",
