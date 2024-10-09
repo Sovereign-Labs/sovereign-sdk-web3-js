@@ -44,5 +44,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
+          # re-enable when this repository is public. Can't use provenance in private repos
+          #NPM_CONFIG_PROVENANCE: true
           CARGO_NET_GIT_FETCH_WITH_CLI: true
