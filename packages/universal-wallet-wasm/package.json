@@ -23,9 +23,6 @@
       "require": "./dist/node/wallet_wasm.js"
     }
   },
-  "main": "dist/node/wallet_wasm.js",
-  "module": "dist/esm/wallet_wasm.js",
-  "types": "dist/node/wallet_wasm.d.ts",
   "devDependencies": {
     "@types/node": "^22.7.4",
     "vitest": "^2.1.1",
