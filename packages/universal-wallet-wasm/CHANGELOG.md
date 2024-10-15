@@ -1,5 +1,11 @@
 # @sovereign-sdk/universal-wallet-wasm
 
+## 0.1.0
+
+### Minor Changes
+
+- 74ff722: updates universal wallet to support multiple schemas
+
 ## 0.0.3
 
 ### Patch Changes
