@@ -17,7 +17,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@sovereign-sdk/client": "^0.1.0-alpha.7",
+    "@sovereign-sdk/client": "0.1.0-alpha.11",
     "js-base64": "^3.7.7"
   },
   "publishConfig": {
