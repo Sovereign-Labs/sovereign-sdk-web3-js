@@ -31,8 +31,11 @@ importers:
   packages/web3:
     dependencies:
       '@sovereign-sdk/client':
-        specifier: ^0.1.0-alpha.7
-        version: 0.1.0-alpha.7
+        specifier: 0.1.0-alpha.11
+        version: 0.1.0-alpha.11
+      '@sovereign-sdk/universal-wallet-wasm':
+        specifier: ^0.1.0
+        version: 0.1.0(typescript@5.6.2)
       js-base64:
         specifier: ^3.7.7
         version: 3.7.7
@@ -400,8 +403,13 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@sovereign-sdk/client@0.1.0-alpha.7':
-    resolution: {integrity: sha512-n9sBNGyLEQnbnboZWxchnjtlsBLvoGC7mbPNKwjWNEMwZlEF+49PKmHLL9BRUfbvyqdHRpmk0IqHYVEBj6JFOg==}
+  '@sovereign-sdk/client@0.1.0-alpha.11':
+    resolution: {integrity: sha512-YlhuC7maLZEZPsQ6jZDQhvusTSvl4RSGlyQhr6UQHPDy0jY8lRO7YaBi9FLiKqA0kWMlEfztdsDlcUDPUFp3SQ==}
+
+  '@sovereign-sdk/universal-wallet-wasm@0.1.0':
+    resolution: {integrity: sha512-tuyfuXp9ygRfhzGqVPvNtRAzzcGtVlBjrVcXm6vAMwS2J/3l/Hkx3mgy8iFRSeAbs+Tjlj/QkCeguPuXaSRz3Q==}
+    peerDependencies:
+      typescript: ^5.0.0
 
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
@@ -1441,7 +1449,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.24.0':
     optional: true
 
-  '@sovereign-sdk/client@0.1.0-alpha.7':
+  '@sovereign-sdk/client@0.1.0-alpha.11':
     dependencies:
       '@types/node': 18.19.54
       '@types/node-fetch': 2.6.11
@@ -1457,6 +1465,10 @@ snapshots:
       - bufferutil
       - encoding
       - utf-8-validate
+
+  '@sovereign-sdk/universal-wallet-wasm@0.1.0(typescript@5.6.2)':
+    dependencies:
+      typescript: 5.6.2
 
   '@types/estree@1.0.6': {}
 

@@ -1,33 +1,55 @@
-import { SovereignSerializeError } from "./errors";
+import { KnownTypeId, Schema } from "@sovereign-sdk/universal-wallet-wasm";
+import { SovereignError } from "./errors";
 
-export type RollupSchema = unknown;
+export type RollupSchema = object;
 
 export type RollupSerializer = {
-  serialize(data: unknown, type: string): Uint8Array;
-  serializeCallMessage(data: unknown): Uint8Array;
-  serializeUnsignedTx(data: unknown): Uint8Array;
-  serializeTx(data: unknown): Uint8Array;
+  serialize(input: unknown, index: number): Uint8Array;
+  serializeRuntimeCall(input: unknown): Uint8Array;
+  serializeUnsignedTx(input: unknown): Uint8Array;
+  serializeTx(input: unknown): Uint8Array;
 };
 
-export function createSerializer(schema: RollupSchema): RollupSerializer {
+function loadSchema(schemaObject: RollupSchema): Schema {
+  try {
+    return Schema.fromJSON(JSON.stringify(schemaObject));
+  } catch (err) {
+    throw new SovereignError(
+      `Failed to create runtime schema due to: ${(err as Error).message}`,
+    );
+  }
+}
+
+export function createSerializer(schemaObject: RollupSchema): RollupSerializer {
+  const schema = loadSchema(schemaObject);
+
   return {
-    serialize(data, type) {
-      console.log(data, type, schema);
+    serialize(input: unknown, index: number): Uint8Array {
       try {
-        // call wasm library
-        return new Uint8Array([]);
-      } catch (e) {
-        throw new SovereignSerializeError(type);
+        return schema.jsonToBorsh(index, JSON.stringify(input));
+      } catch (err) {
+        throw new SovereignError(
+          `Failed to serialize input due to: ${(err as Error).message}`,
+        );
       }
     },
-    serializeCallMessage(data) {
-      return this.serialize(data, "CallMessage");
+    serializeRuntimeCall(input: unknown): Uint8Array {
+      return this.serialize(
+        input,
+        schema.knownTypeIndex(KnownTypeId.RuntimeCall),
+      );
     },
-    serializeUnsignedTx(data) {
-      return this.serialize(data, "UnsignedTransaction");
+    serializeUnsignedTx(input: unknown): Uint8Array {
+      return this.serialize(
+        input,
+        schema.knownTypeIndex(KnownTypeId.UnsignedTransaction),
+      );
     },
-    serializeTx(data) {
-      return this.serialize(data, "Transaction");
+    serializeTx(input: unknown): Uint8Array {
+      return this.serialize(
+        input,
+        schema.knownTypeIndex(KnownTypeId.Transaction),
+      );
     },
   };
 }
