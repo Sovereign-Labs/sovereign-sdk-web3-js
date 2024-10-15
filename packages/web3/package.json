@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@sovereign-sdk/client": "0.1.0-alpha.11",
+    "@sovereign-sdk/universal-wallet-wasm": "^0.1.0",
     "js-base64": "^3.7.7"
   },
   "publishConfig": {

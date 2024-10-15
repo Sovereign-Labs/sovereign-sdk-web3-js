@@ -12,14 +12,3 @@ export class SovereignError extends Error {
     }
   }
 }
-
-export class SovereignSerializeError extends SovereignError {
-  constructor(
-    readonly targetType: string,
-    message?: string,
-  ) {
-    super(
-      message ?? `Failed to serialize rollup of schema type "${targetType}"`,
-    );
-  }
-}

@@ -6,6 +6,7 @@ import {
   createSerializer,
 } from "./serialization";
 import type { Signer } from "./signer";
+import { bytesToHex } from "./utils";
 
 export type RollupCallResult = {
   response: SovereignClient.Sequencer.TxCreateResponse;
@@ -36,15 +37,13 @@ type SignedTransaction = UnsignedTransaction & {
   pub_key: Uint8Array;
 };
 
-type CallParams = {
+type SignerParams = {
   signer: Signer;
-  // The address to use to get the dedup information
-  // TODO: we could move this from client code to sdk code by outputting the hasher used by the rollup
-  // and use a default "builder" function to create the dedup address which will create the dedup address
-  // according to the needs of the sovereign nonces module which is a credential id (hash of the pub key)
-  deDupAddress: string;
-  txDetails?: TxDetails;
 };
+
+type CallParams = {
+  txDetails?: TxDetails;
+} & SignerParams;
 
 export class StandardRollup {
   private readonly _config: RollupConfig;
@@ -55,28 +54,6 @@ export class StandardRollup {
     this._client = new SovereignClient({ baseURL: config.url });
     this._serializer = createSerializer(config.schema);
     this._config = config;
-  }
-
-  async call(
-    message: unknown,
-    { signer, txDetails, deDupAddress }: CallParams
-  ): Promise<RollupCallResult> {
-    const serializedCall = this.serializer.serializeCallMessage(message);
-    const dedup = await this.client.rollup.addresses.dedup.retrieve(
-      deDupAddress
-    );
-    const nonce = BigInt((dedup.data as any).nonce as number);
-    const unsignedTx: UnsignedTransaction = {
-      runtime_msg: serializedCall,
-      nonce,
-      details: txDetails ?? this._config.defaultTxDetails,
-    };
-    const response = await this.signAndSubmitTransaction(unsignedTx, signer);
-
-    return {
-      response,
-      unsignedTx,
-    };
   }
 
   async submitTransaction(
@@ -91,7 +68,7 @@ export class StandardRollup {
 
   async signAndSubmitTransaction(
     unsignedTx: UnsignedTransaction,
-    signer: Signer
+    { signer }: SignerParams
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializedUnsignedTx =
       this.serializer.serializeUnsignedTx(unsignedTx);
@@ -106,6 +83,31 @@ export class StandardRollup {
     };
 
     return this.submitTransaction(tx);
+  }
+
+  async call(
+    runtimeMessage: unknown,
+    { signer, txDetails }: CallParams
+  ): Promise<RollupCallResult> {
+    const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
+    const publicKey = await signer.publicKey();
+    const dedup = await this.client.rollup.addresses.dedup.retrieve(
+      bytesToHex(publicKey)
+    );
+    const nonce = BigInt((dedup.data as any).nonce as number);
+    const unsignedTx: UnsignedTransaction = {
+      runtime_msg: runtimeCall,
+      nonce,
+      details: txDetails ?? this._config.defaultTxDetails,
+    };
+    const response = await this.signAndSubmitTransaction(unsignedTx, {
+      signer,
+    });
+
+    return {
+      response,
+      unsignedTx,
+    };
   }
 
   get client(): SovereignClient {
