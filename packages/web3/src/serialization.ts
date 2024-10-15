@@ -15,7 +15,7 @@ function loadSchema(schemaObject: RollupSchema): Schema {
     return Schema.fromJSON(JSON.stringify(schemaObject));
   } catch (err) {
     throw new SovereignError(
-      `Failed to create runtime schema due to: ${(err as Error).message}`
+      `Failed to create runtime schema due to: ${(err as Error).message}`,
     );
   }
 }
@@ -29,26 +29,26 @@ export function createSerializer(schemaObject: RollupSchema): RollupSerializer {
         return schema.jsonToBorsh(index, JSON.stringify(input));
       } catch (err) {
         throw new SovereignError(
-          `Failed to serialize input due to: ${(err as Error).message}`
+          `Failed to serialize input due to: ${(err as Error).message}`,
         );
       }
     },
     serializeRuntimeCall(input: unknown): Uint8Array {
       return this.serialize(
         input,
-        schema.knownTypeIndex(KnownTypeId.RuntimeCall)
+        schema.knownTypeIndex(KnownTypeId.RuntimeCall),
       );
     },
     serializeUnsignedTx(input: unknown): Uint8Array {
       return this.serialize(
         input,
-        schema.knownTypeIndex(KnownTypeId.UnsignedTransaction)
+        schema.knownTypeIndex(KnownTypeId.UnsignedTransaction),
       );
     },
     serializeTx(input: unknown): Uint8Array {
       return this.serialize(
         input,
-        schema.knownTypeIndex(KnownTypeId.Transaction)
+        schema.knownTypeIndex(KnownTypeId.Transaction),
       );
     },
   };
