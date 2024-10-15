@@ -187,7 +187,7 @@ dependencies = [
 [[package]]
 name = "sov-universal-wallet"
 version = "0.1.0"
-source = "git+ssh://git@github.com/Sovereign-Labs/sovereign-sdk-wip.git?rev=d729a3f7d19e7f9341941a5fd02b52e792692d0a#d729a3f7d19e7f9341941a5fd02b52e792692d0a"
+source = "git+ssh://git@github.com/Sovereign-Labs/sovereign-sdk-wip.git?rev=0214aea8cefb685f95c9d4f39d350ebafb07304f#0214aea8cefb685f95c9d4f39d350ebafb07304f"
 dependencies = [
  "bech32",
  "borsh",
