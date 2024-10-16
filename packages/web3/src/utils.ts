@@ -1,7 +1,15 @@
 export function hexToBytes(hex: string) {
-  return new Uint8Array(
-    hex.match(/[\da-f]{2}/gi)?.map((h) => Number.parseInt(h, 16)),
-  );
+  if (hex.length && hex.length % 2 !== 0) {
+    throw new Error(`Invalid hex string length: ${hex.length}`);
+  }
+
+  const matches = hex.match(/[\da-f]{2}/gi);
+
+  if (!matches) {
+    throw new Error("Invalid hex string: No valid hex digits found");
+  }
+
+  return new Uint8Array(matches.map((h) => Number.parseInt(h, 16)));
 }
 
 export function bytesToHex(arr: Uint8Array): string {

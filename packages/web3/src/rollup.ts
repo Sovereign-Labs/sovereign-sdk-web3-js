@@ -26,17 +26,6 @@ type TxDetails = {
   chain_id: bigint;
 };
 
-type UnsignedTransaction = {
-  runtime_msg: Uint8Array;
-  nonce: bigint;
-  details: TxDetails;
-};
-
-type SignedTransaction = UnsignedTransaction & {
-  signature: { msg_sig: Uint8Array };
-  pub_key: Uint8Array;
-};
-
 type SignerParams = {
   signer: Signer;
 };
@@ -45,7 +34,7 @@ type CallParams = {
   txDetails?: TxDetails;
 } & SignerParams;
 
-export class StandardRollup {
+export class StandardRollup<Tx = unknown, UnsignedTx = unknown> {
   private readonly _config: RollupConfig;
   private readonly _client: SovereignClient;
   private readonly _serializer: RollupSerializer;
@@ -57,7 +46,7 @@ export class StandardRollup {
   }
 
   async submitTransaction(
-    transaction: unknown,
+    transaction: Tx
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializedTx = this.serializer.serializeTx(transaction);
 
@@ -67,14 +56,14 @@ export class StandardRollup {
   }
 
   async signAndSubmitTransaction(
-    unsignedTx: UnsignedTransaction,
-    { signer }: SignerParams,
+    unsignedTx: UnsignedTx,
+    { signer }: SignerParams
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializedUnsignedTx =
       this.serializer.serializeUnsignedTx(unsignedTx);
     const signature = await signer.sign(serializedUnsignedTx);
     const publicKey = await signer.publicKey();
-    const tx: SignedTransaction = {
+    const tx = {
       pub_key: publicKey,
       signature: {
         msg_sig: signature,
@@ -82,28 +71,31 @@ export class StandardRollup {
       ...unsignedTx,
     };
 
-    return this.submitTransaction(tx);
+    return this.submitTransaction(tx as Tx);
   }
 
   async call(
     runtimeMessage: unknown,
-    { signer, txDetails }: CallParams,
+    { signer, txDetails }: CallParams
   ): Promise<RollupCallResult> {
     const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
     const publicKey = await signer.publicKey();
     const dedup = await this.client.rollup.addresses.dedup.retrieve(
-      bytesToHex(publicKey),
+      bytesToHex(publicKey)
     );
     // biome-ignore lint/suspicious/noExplicitAny: fix later
     const nonce = BigInt((dedup.data as any).nonce as number);
-    const unsignedTx: UnsignedTransaction = {
+    const unsignedTx = {
       runtime_msg: runtimeCall,
       nonce,
       details: txDetails ?? this._config.defaultTxDetails,
     };
-    const response = await this.signAndSubmitTransaction(unsignedTx, {
-      signer,
-    });
+    const response = await this.signAndSubmitTransaction(
+      unsignedTx as UnsignedTx,
+      {
+        signer,
+      }
+    );
 
     return {
       response,
