@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.0.3
+
+### Patch Changes
+
+- 5f31220: use workspace universal wallet dependency
+
 ## 0.0.2
 
 ### Patch Changes
