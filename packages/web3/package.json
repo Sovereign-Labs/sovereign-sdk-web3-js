@@ -1,6 +1,6 @@
 {
   "name": "@sovereign-sdk/web3",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "ci": "biome ci",
@@ -8,7 +8,10 @@
     "lint": "biome lint",
     "test": "vitest"
   },
-  "files": ["dist", "package.json"],
+  "files": [
+    "dist",
+    "package.json"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
