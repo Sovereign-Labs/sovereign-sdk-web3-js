@@ -46,7 +46,7 @@ export class StandardRollup<Tx = unknown, UnsignedTx = unknown> {
   }
 
   async submitTransaction(
-    transaction: Tx
+    transaction: Tx,
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializedTx = this.serializer.serializeTx(transaction);
 
@@ -57,7 +57,7 @@ export class StandardRollup<Tx = unknown, UnsignedTx = unknown> {
 
   async signAndSubmitTransaction(
     unsignedTx: UnsignedTx,
-    { signer }: SignerParams
+    { signer }: SignerParams,
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializedUnsignedTx =
       this.serializer.serializeUnsignedTx(unsignedTx);
@@ -76,12 +76,12 @@ export class StandardRollup<Tx = unknown, UnsignedTx = unknown> {
 
   async call(
     runtimeMessage: unknown,
-    { signer, txDetails }: CallParams
+    { signer, txDetails }: CallParams,
   ): Promise<RollupCallResult> {
     const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
     const publicKey = await signer.publicKey();
     const dedup = await this.client.rollup.addresses.dedup.retrieve(
-      bytesToHex(publicKey)
+      bytesToHex(publicKey),
     );
     // biome-ignore lint/suspicious/noExplicitAny: fix later
     const nonce = BigInt((dedup.data as any).nonce as number);
@@ -94,7 +94,7 @@ export class StandardRollup<Tx = unknown, UnsignedTx = unknown> {
       unsignedTx as UnsignedTx,
       {
         signer,
-      }
+      },
     );
 
     return {
