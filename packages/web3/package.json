@@ -1,14 +1,22 @@
 {
   "name": "@sovereign-sdk/web3",
   "version": "0.0.1",
-  "module": "index.ts",
-  "type": "module",
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "ci": "biome ci",
     "fix": "biome check --write",
     "lint": "biome lint",
     "test": "vitest"
   },
+  "files": ["dist", "package.json"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "devDependencies": {
     "@biomejs/biome": "^1.9.2",
     "vitest": "^2.1.1"
