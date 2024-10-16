@@ -34,8 +34,8 @@ importers:
         specifier: 0.1.0-alpha.11
         version: 0.1.0-alpha.11
       '@sovereign-sdk/universal-wallet-wasm':
-        specifier: ^0.1.0
-        version: 0.1.0(typescript@5.6.2)
+        specifier: workspace:^
+        version: link:../universal-wallet-wasm
       js-base64:
         specifier: ^3.7.7
         version: 3.7.7
@@ -405,11 +405,6 @@ packages:
 
   '@sovereign-sdk/client@0.1.0-alpha.11':
     resolution: {integrity: sha512-YlhuC7maLZEZPsQ6jZDQhvusTSvl4RSGlyQhr6UQHPDy0jY8lRO7YaBi9FLiKqA0kWMlEfztdsDlcUDPUFp3SQ==}
-
-  '@sovereign-sdk/universal-wallet-wasm@0.1.0':
-    resolution: {integrity: sha512-tuyfuXp9ygRfhzGqVPvNtRAzzcGtVlBjrVcXm6vAMwS2J/3l/Hkx3mgy8iFRSeAbs+Tjlj/QkCeguPuXaSRz3Q==}
-    peerDependencies:
-      typescript: ^5.0.0
 
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
@@ -1465,10 +1460,6 @@ snapshots:
       - bufferutil
       - encoding
       - utf-8-validate
-
-  '@sovereign-sdk/universal-wallet-wasm@0.1.0(typescript@5.6.2)':
-    dependencies:
-      typescript: 5.6.2
 
   '@types/estree@1.0.6': {}
 

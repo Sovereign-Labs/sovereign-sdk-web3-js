@@ -8,10 +8,7 @@
     "lint": "biome lint",
     "test": "vitest"
   },
-  "files": [
-    "dist",
-    "package.json"
-  ],
+  "files": ["dist", "package.json"],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -29,7 +26,7 @@
   },
   "dependencies": {
     "@sovereign-sdk/client": "0.1.0-alpha.11",
-    "@sovereign-sdk/universal-wallet-wasm": "^0.1.1",
+    "@sovereign-sdk/universal-wallet-wasm": "workspace:^",
     "js-base64": "^3.7.7"
   },
   "publishConfig": {
