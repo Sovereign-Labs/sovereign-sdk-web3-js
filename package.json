@@ -9,7 +9,7 @@
     "lint": "pnpm -r lint",
     "test": "pnpm -r test",
     "build": "pnpm -r build",
-    "pkg-version": "changeset version && pnpm install --lockfile-only",
+    "pkg-version": "changeset version && pnpm install --lockfile-only && pnpm run fix",
     "release": "pnpm run build && changeset publish"
   },
   "keywords": [],
