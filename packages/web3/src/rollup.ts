@@ -64,7 +64,9 @@ export class StandardRollup<Tx = unknown, UnsignedTx = unknown> {
     const signature = await signer.sign(serializedUnsignedTx);
     const publicKey = await signer.publicKey();
     const tx = {
-      pub_key: publicKey,
+      pub_key: {
+        pub_key: publicKey,
+      },
       signature: {
         msg_sig: signature,
       },
@@ -84,7 +86,7 @@ export class StandardRollup<Tx = unknown, UnsignedTx = unknown> {
       bytesToHex(publicKey),
     );
     // biome-ignore lint/suspicious/noExplicitAny: fix later
-    const nonce = BigInt((dedup.data as any).nonce as number);
+    const nonce = (dedup.data as any).nonce as number;
     const unsignedTx = {
       runtime_msg: runtimeCall,
       nonce,

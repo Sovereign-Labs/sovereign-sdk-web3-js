@@ -14,9 +14,7 @@ function loadSchema(schemaObject: RollupSchema): Schema {
   try {
     return Schema.fromJSON(JSON.stringify(schemaObject));
   } catch (err) {
-    throw new SovereignError(
-      `Failed to create runtime schema due to: ${(err as Error).message}`,
-    );
+    throw new SovereignError(`Failed to create runtime schema due to: ${err}`);
   }
 }
 
@@ -26,11 +24,17 @@ export function createSerializer(schemaObject: RollupSchema): RollupSerializer {
   return {
     serialize(input: unknown, index: number): Uint8Array {
       try {
-        return schema.jsonToBorsh(index, JSON.stringify(input));
-      } catch (err) {
-        throw new SovereignError(
-          `Failed to serialize input due to: ${(err as Error).message}`,
+        return schema.jsonToBorsh(
+          index,
+          JSON.stringify(input, (_, value) => {
+            if (value instanceof Uint8Array) {
+              return Array.from(value);
+            }
+            return value;
+          }),
         );
+      } catch (err) {
+        throw new SovereignError(`Failed to serialize input due to: ${err}`);
       }
     },
     serializeRuntimeCall(input: unknown): Uint8Array {
