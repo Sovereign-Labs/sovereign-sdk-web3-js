@@ -8,17 +8,23 @@
     "lint": "biome lint",
     "test": "vitest"
   },
-  "files": ["dist", "package.json"],
+  "files": [
+    "dist",
+    "package.json"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
     }
   },
-  "module": "./dist/index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "devDependencies": {
     "@biomejs/biome": "^1.9.2",
+    "tsup": "^8.3.0",
     "vitest": "^2.1.1"
   },
   "peerDependencies": {
