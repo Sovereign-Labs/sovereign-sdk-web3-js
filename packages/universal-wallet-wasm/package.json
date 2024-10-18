@@ -15,6 +15,10 @@
     "package.json",
     "README.md"
   ],
+  "sideEffects": [
+    "./dist/node/wallet_wasm.js",
+    "./dist/esm/wallet_wasm.js"
+  ],
   "exports": {
     ".": {
       "types": "./dist/node/wallet_wasm.d.ts",
