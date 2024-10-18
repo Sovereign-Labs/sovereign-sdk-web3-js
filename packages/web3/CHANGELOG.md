@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.0.4
+
+### Patch Changes
+
+- dad7add: various small fixes to types & serialization
+
 ## 0.0.3
 
 ### Patch Changes
