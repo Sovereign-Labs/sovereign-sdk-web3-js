@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Schema, KnownTypeId } from "../";
-import demoRollupSchema from "./fixtures/demo-rollup-schema.json";
+import demoRollupSchema from "../../__fixtures__/demo-rollup-schema.json";
 import { bytesToHex } from "./utils";
 
 const schema = Schema.fromJSON(JSON.stringify(demoRollupSchema));
