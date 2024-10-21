@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import demoRollupSchema from "./demo-rollup-schema.json";
+import demoRollupSchema from "../../__fixtures__/demo-rollup-schema.json";
 import { createSerializer } from "./serialization";
 
 describe("serialization", () => {
