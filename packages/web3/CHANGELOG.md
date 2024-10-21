@@ -1,5 +1,13 @@
 # @sovereign-sdk/web3
 
+## 0.0.5
+
+### Patch Changes
+
+- d7cfa52: bump universal-wallet rust version to fix serialization bug with `Option<T>`
+- Updated dependencies [d7cfa52]
+  - @sovereign-sdk/universal-wallet-wasm@0.1.2
+
 ## 0.0.4
 
 ### Patch Changes
