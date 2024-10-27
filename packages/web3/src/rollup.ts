@@ -21,9 +21,9 @@ export type RollupConfig = {
 
 type TxDetails = {
   max_priority_fee_bips: number;
-  max_fee: bigint;
-  gas_limit?: bigint;
-  chain_id: bigint;
+  max_fee: number;
+  gas_limit?: number[];
+  chain_id: number;
 };
 
 type SignerParams = {
@@ -32,6 +32,10 @@ type SignerParams = {
 
 type CallParams = {
   txDetails?: TxDetails;
+} & SignerParams;
+
+type SimulateParams = {
+  txDetails: TxDetails;
 } & SignerParams;
 
 export class StandardRollup<Tx = unknown, UnsignedTx = unknown> {
@@ -103,6 +107,30 @@ export class StandardRollup<Tx = unknown, UnsignedTx = unknown> {
       response,
       unsignedTx,
     };
+  }
+
+  async simulate(
+    runtimeMessage: unknown,
+    { signer, txDetails }: SimulateParams,
+  ): Promise<SovereignClient.Rollup.SimulateExecutionResponse> {
+    const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
+    const publicKey = await signer.publicKey();
+    const dedup = await this.client.rollup.addresses.dedup(
+      bytesToHex(publicKey),
+    );
+    // biome-ignore lint/suspicious/noExplicitAny: fix later
+    const nonce = (dedup.data as any).nonce as number;
+    const response = await this.client.rollup.simulate({
+      body: {
+        details: txDetails,
+        encoded_call_message: bytesToHex(runtimeCall),
+        nonce,
+        sender_pub_key: bytesToHex(publicKey),
+      },
+    });
+
+    // biome-ignore lint/style/noNonNullAssertion: fix later
+    return response.data!;
   }
 
   get client(): SovereignClient {
