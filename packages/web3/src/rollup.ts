@@ -82,7 +82,7 @@ export class StandardRollup<Tx = unknown, UnsignedTx = unknown> {
   ): Promise<RollupCallResult> {
     const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
     const publicKey = await signer.publicKey();
-    const dedup = await this.client.rollup.addresses.dedup.retrieve(
+    const dedup = await this.client.rollup.addresses.dedup(
       bytesToHex(publicKey),
     );
     // biome-ignore lint/suspicious/noExplicitAny: fix later
