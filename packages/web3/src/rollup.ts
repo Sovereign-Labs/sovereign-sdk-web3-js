@@ -8,9 +8,9 @@ import {
 import type { Signer } from "./signer";
 import { bytesToHex } from "./utils";
 
-export type RollupCallResult = {
+export type TransactionResult<Tx> = {
   response: SovereignClient.Sequencer.TxCreateResponse;
-  unsignedTx: unknown;
+  transaction: Tx;
 };
 
 export type RollupConfig = {
@@ -38,7 +38,8 @@ type SimulateParams = {
   txDetails: TxDetails;
 } & SignerParams;
 
-export class StandardRollup<Tx = unknown, UnsignedTx = unknown> {
+// biome-ignore lint/suspicious/noExplicitAny: fix later
+export class StandardRollup<Tx = any, UnsignedTx = any> {
   private readonly _config: RollupConfig;
   private readonly _client: SovereignClient;
   private readonly _serializer: RollupSerializer;
@@ -62,7 +63,7 @@ export class StandardRollup<Tx = unknown, UnsignedTx = unknown> {
   async signAndSubmitTransaction(
     unsignedTx: UnsignedTx,
     { signer }: SignerParams,
-  ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
+  ): Promise<TransactionResult<Tx>> {
     const serializedUnsignedTx =
       this.serializer.serializeUnsignedTx(unsignedTx);
     const signature = await signer.sign(serializedUnsignedTx);
@@ -75,15 +76,16 @@ export class StandardRollup<Tx = unknown, UnsignedTx = unknown> {
         msg_sig: signature,
       },
       ...unsignedTx,
-    };
+    } as Tx;
+    const result = await this.submitTransaction(tx);
 
-    return this.submitTransaction(tx as Tx);
+    return { transaction: tx, response: result };
   }
 
   async call(
     runtimeMessage: unknown,
     { signer, txDetails }: CallParams,
-  ): Promise<RollupCallResult> {
+  ): Promise<TransactionResult<Tx>> {
     const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
     const publicKey = await signer.publicKey();
     const dedup = await this.client.rollup.addresses.dedup(
@@ -96,17 +98,10 @@ export class StandardRollup<Tx = unknown, UnsignedTx = unknown> {
       nonce,
       details: txDetails ?? this._config.defaultTxDetails,
     };
-    const response = await this.signAndSubmitTransaction(
-      unsignedTx as UnsignedTx,
-      {
-        signer,
-      },
-    );
 
-    return {
-      response,
-      unsignedTx,
-    };
+    return this.signAndSubmitTransaction(unsignedTx as UnsignedTx, {
+      signer,
+    });
   }
 
   async simulate(
