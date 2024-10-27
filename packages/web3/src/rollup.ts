@@ -38,6 +38,7 @@ type SimulateParams = {
   txDetails: TxDetails;
 } & SignerParams;
 
+// biome-ignore lint/suspicious/noExplicitAny: fix later
 export class StandardRollup<Tx = any, UnsignedTx = any> {
   private readonly _config: RollupConfig;
   private readonly _client: SovereignClient;
@@ -50,7 +51,7 @@ export class StandardRollup<Tx = any, UnsignedTx = any> {
   }
 
   async submitTransaction(
-    transaction: Tx
+    transaction: Tx,
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializedTx = this.serializer.serializeTx(transaction);
 
@@ -61,7 +62,7 @@ export class StandardRollup<Tx = any, UnsignedTx = any> {
 
   async signAndSubmitTransaction(
     unsignedTx: UnsignedTx,
-    { signer }: SignerParams
+    { signer }: SignerParams,
   ): Promise<TransactionResult<Tx>> {
     const serializedUnsignedTx =
       this.serializer.serializeUnsignedTx(unsignedTx);
@@ -83,12 +84,12 @@ export class StandardRollup<Tx = any, UnsignedTx = any> {
 
   async call(
     runtimeMessage: unknown,
-    { signer, txDetails }: CallParams
+    { signer, txDetails }: CallParams,
   ): Promise<TransactionResult<Tx>> {
     const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
     const publicKey = await signer.publicKey();
     const dedup = await this.client.rollup.addresses.dedup(
-      bytesToHex(publicKey)
+      bytesToHex(publicKey),
     );
     // biome-ignore lint/suspicious/noExplicitAny: fix later
     const nonce = (dedup.data as any).nonce as number;
@@ -105,12 +106,12 @@ export class StandardRollup<Tx = any, UnsignedTx = any> {
 
   async simulate(
     runtimeMessage: unknown,
-    { signer, txDetails }: SimulateParams
+    { signer, txDetails }: SimulateParams,
   ): Promise<SovereignClient.Rollup.SimulateExecutionResponse> {
     const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
     const publicKey = await signer.publicKey();
     const dedup = await this.client.rollup.addresses.dedup(
-      bytesToHex(publicKey)
+      bytesToHex(publicKey),
     );
     // biome-ignore lint/suspicious/noExplicitAny: fix later
     const nonce = (dedup.data as any).nonce as number;
