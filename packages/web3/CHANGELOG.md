@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.0.7
+
+### Patch Changes
+
+- 5bdfddf: Add `simulate` method to rollup class to allow for simulating transaction execution
+
 ## 0.0.6
 
 ### Patch Changes
