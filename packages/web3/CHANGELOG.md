@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.0.8
+
+### Patch Changes
+
+- 24af326: Return transaction that was submitted when executing a `call`
+
 ## 0.0.7
 
 ### Patch Changes
