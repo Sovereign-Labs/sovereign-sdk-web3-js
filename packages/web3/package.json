@@ -28,7 +28,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@sovereign-sdk/client": "0.1.0-alpha.12",
+    "@sovereign-sdk/client": "0.1.0-alpha.13",
     "@sovereign-sdk/universal-wallet-wasm": "workspace:^",
     "js-base64": "^3.7.7"
   },
