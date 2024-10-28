@@ -1,11 +1,11 @@
 import SovereignClient from "@sovereign-sdk/client";
+import type { Signer } from "@sovereign-sdk/signers";
 import { Base64 } from "js-base64";
 import {
   type RollupSchema,
   type RollupSerializer,
   createSerializer,
 } from "./serialization";
-import type { Signer } from "@sovereign-sdk/signers";
 import { bytesToHex } from "./utils";
 
 export type TransactionResult<Tx> = {
@@ -51,7 +51,7 @@ export class StandardRollup<Tx = any, UnsignedTx = any> {
   }
 
   async submitTransaction(
-    transaction: Tx
+    transaction: Tx,
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializedTx = this.serializer.serializeTx(transaction);
 
@@ -62,7 +62,7 @@ export class StandardRollup<Tx = any, UnsignedTx = any> {
 
   async signAndSubmitTransaction(
     unsignedTx: UnsignedTx,
-    { signer }: SignerParams
+    { signer }: SignerParams,
   ): Promise<TransactionResult<Tx>> {
     const serializedUnsignedTx =
       this.serializer.serializeUnsignedTx(unsignedTx);
@@ -84,12 +84,12 @@ export class StandardRollup<Tx = any, UnsignedTx = any> {
 
   async call(
     runtimeMessage: unknown,
-    { signer, txDetails }: CallParams
+    { signer, txDetails }: CallParams,
   ): Promise<TransactionResult<Tx>> {
     const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
     const publicKey = await signer.publicKey();
     const dedup = await this.client.rollup.addresses.dedup(
-      bytesToHex(publicKey)
+      bytesToHex(publicKey),
     );
     // biome-ignore lint/suspicious/noExplicitAny: fix later
     const nonce = (dedup.data as any).nonce as number;
@@ -106,12 +106,12 @@ export class StandardRollup<Tx = any, UnsignedTx = any> {
 
   async simulate(
     runtimeMessage: unknown,
-    { signer, txDetails }: SimulateParams
+    { signer, txDetails }: SimulateParams,
   ): Promise<SovereignClient.Rollup.SimulateExecutionResponse> {
     const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
     const publicKey = await signer.publicKey();
     const dedup = await this.client.rollup.addresses.dedup(
-      bytesToHex(publicKey)
+      bytesToHex(publicKey),
     );
     // biome-ignore lint/suspicious/noExplicitAny: fix later
     const nonce = (dedup.data as any).nonce as number;

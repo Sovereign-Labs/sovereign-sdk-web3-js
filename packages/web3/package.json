@@ -8,10 +8,7 @@
     "lint": "biome lint",
     "test": "vitest"
   },
-  "files": [
-    "dist",
-    "package.json"
-  ],
+  "files": ["dist", "package.json"],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
