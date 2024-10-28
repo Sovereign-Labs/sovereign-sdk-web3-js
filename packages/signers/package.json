@@ -1,14 +1,17 @@
 {
-  "name": "@sovereign-sdk/web3",
-  "version": "0.0.8",
+  "name": "@sovereign-sdk/signers",
+  "version": "0.0.1",
+  "description": "Signer interface and default implementations for use with Sovereign SDK applications",
   "scripts": {
     "build": "tsup",
     "ci": "biome ci",
     "fix": "biome check --write",
-    "lint": "biome lint",
-    "test": "vitest"
+    "lint": "biome lint"
   },
-  "files": ["dist", "package.json"],
+  "files": [
+    "dist",
+    "package.json"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -20,18 +23,15 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "devDependencies": {
-    "@biomejs/biome": "^1.9.2",
+    "@metamask/providers": "^18.1.0",
+    "biome": "^0.3.3",
     "tsup": "^8.3.0",
-    "vitest": "^2.1.1"
+    "typescript": "^5.6.3"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@sovereign-sdk/client": "0.1.0-alpha.13",
-    "@sovereign-sdk/signers": "workspace:^",
-    "@sovereign-sdk/universal-wallet-wasm": "workspace:^",
-    "js-base64": "^3.7.7"
+    "biome": "^0.3.3",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3"
   },
   "publishConfig": {
     "access": "public"
