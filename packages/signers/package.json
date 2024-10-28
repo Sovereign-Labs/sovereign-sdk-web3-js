@@ -6,8 +6,7 @@
     "build": "tsup",
     "ci": "biome ci",
     "fix": "biome check --write",
-    "lint": "biome lint",
-    "test": "vitest"
+    "lint": "biome lint"
   },
   "files": [
     "dist",
