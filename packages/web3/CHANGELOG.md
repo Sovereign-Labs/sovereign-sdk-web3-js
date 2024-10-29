@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.0.11
+
+### Patch Changes
+
+- 812aec0: Add TypeSpec concept to allow for strong types to be propogated throughout the rollup class
+
 ## 0.0.10
 
 ### Patch Changes
