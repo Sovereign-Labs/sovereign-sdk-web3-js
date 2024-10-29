@@ -139,6 +139,10 @@ export class StandardRollup<T extends BaseTypeSpec = BaseTypeSpec> {
     return this._client.rollup;
   }
 
+  get http(): SovereignClient {
+    return this._client;
+  }
+
   get serializer(): RollupSerializer {
     return this._serializer;
   }
