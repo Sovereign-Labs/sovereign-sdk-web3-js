@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.0.12
+
+### Patch Changes
+
+- 0b1396a: Re-add base http client as an escape hatch so arbitrary http requests can be made
+
 ## 0.0.11
 
 ### Patch Changes
