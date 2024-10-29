@@ -7,10 +7,10 @@ trait MapErrorToJs<T> {
 
 impl<T, E> MapErrorToJs<T> for Result<T, E>
 where
-    E: std::fmt::Debug,
+    E: ToString,
 {
     fn map_err_to_js(self) -> Result<T, JsValue> {
-        self.map_err(|e| JsValue::from_str(format!("{:?}", e).as_str()))
+        self.map_err(|e| JsValue::from_str(&e.to_string()))
     }
 }
 
