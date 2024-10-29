@@ -1,5 +1,11 @@
 # @sovereign-sdk/universal-wallet-wasm
 
+## 0.1.3
+
+### Patch Changes
+
+- 6a7080b: Improve error message output of universal wallet
+
 ## 0.1.2
 
 ### Patch Changes
