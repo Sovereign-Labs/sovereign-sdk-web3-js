@@ -24,5 +24,16 @@ describe("Schema", () => {
 
       expect(actual).toEqual(expected);
     });
+    it("should return concise and useful error messages", () => {
+      const call = { value_setter: { set_value: "not a number" } };
+      const doConversion = () =>
+        schema.jsonToBorsh(
+          schema.knownTypeIndex(KnownTypeId.RuntimeCall),
+          JSON.stringify(call)
+        );
+      expect(doConversion).toThrow(
+        'Expected u32, encountered invalid JSON value "not a number"'
+      );
+    });
   });
 });
