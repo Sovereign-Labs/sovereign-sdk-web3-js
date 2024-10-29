@@ -6,6 +6,7 @@ import {
   type RollupSerializer,
   createSerializer,
 } from "./serialization";
+import type { BaseTypeSpec } from "./type-spec";
 import { bytesToHex } from "./utils";
 
 export type TransactionResult<Tx> = {
@@ -38,8 +39,7 @@ type SimulateParams = {
   txDetails: TxDetails;
 } & SignerParams;
 
-// biome-ignore lint/suspicious/noExplicitAny: fix later
-export class StandardRollup<Tx = any, UnsignedTx = any> {
+export class StandardRollup<T extends BaseTypeSpec = BaseTypeSpec> {
   private readonly _config: RollupConfig;
   private readonly _client: SovereignClient;
   private readonly _serializer: RollupSerializer;
@@ -51,19 +51,19 @@ export class StandardRollup<Tx = any, UnsignedTx = any> {
   }
 
   async submitTransaction(
-    transaction: Tx,
+    transaction: T["Transaction"],
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializedTx = this.serializer.serializeTx(transaction);
 
-    return this.client.sequencer.txs.create({
+    return this.sequencer.txs.create({
       body: Base64.fromUint8Array(serializedTx),
     });
   }
 
   async signAndSubmitTransaction(
-    unsignedTx: UnsignedTx,
+    unsignedTx: T["UnsignedTransaction"],
     { signer }: SignerParams,
-  ): Promise<TransactionResult<Tx>> {
+  ): Promise<TransactionResult<T["Transaction"]>> {
     const serializedUnsignedTx =
       this.serializer.serializeUnsignedTx(unsignedTx);
     const signature = await signer.sign(serializedUnsignedTx);
@@ -76,21 +76,19 @@ export class StandardRollup<Tx = any, UnsignedTx = any> {
         msg_sig: signature,
       },
       ...unsignedTx,
-    } as Tx;
+    } as T["Transaction"];
     const result = await this.submitTransaction(tx);
 
     return { transaction: tx, response: result };
   }
 
   async call(
-    runtimeMessage: unknown,
+    runtimeMessage: T["RuntimeCall"],
     { signer, txDetails }: CallParams,
-  ): Promise<TransactionResult<Tx>> {
+  ): Promise<TransactionResult<T["Transaction"]>> {
     const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
     const publicKey = await signer.publicKey();
-    const dedup = await this.client.rollup.addresses.dedup(
-      bytesToHex(publicKey),
-    );
+    const dedup = await this.rollup.addresses.dedup(bytesToHex(publicKey));
     // biome-ignore lint/suspicious/noExplicitAny: fix later
     const nonce = (dedup.data as any).nonce as number;
     const unsignedTx = {
@@ -99,23 +97,24 @@ export class StandardRollup<Tx = any, UnsignedTx = any> {
       details: txDetails ?? this._config.defaultTxDetails,
     };
 
-    return this.signAndSubmitTransaction(unsignedTx as UnsignedTx, {
-      signer,
-    });
+    return this.signAndSubmitTransaction(
+      unsignedTx as T["UnsignedTransaction"],
+      {
+        signer,
+      },
+    );
   }
 
   async simulate(
-    runtimeMessage: unknown,
+    runtimeMessage: T["RuntimeCall"],
     { signer, txDetails }: SimulateParams,
   ): Promise<SovereignClient.Rollup.SimulateExecutionResponse> {
     const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
     const publicKey = await signer.publicKey();
-    const dedup = await this.client.rollup.addresses.dedup(
-      bytesToHex(publicKey),
-    );
+    const dedup = await this.rollup.addresses.dedup(bytesToHex(publicKey));
     // biome-ignore lint/suspicious/noExplicitAny: fix later
     const nonce = (dedup.data as any).nonce as number;
-    const response = await this.client.rollup.simulate({
+    const response = await this.rollup.simulate({
       body: {
         details: txDetails,
         encoded_call_message: bytesToHex(runtimeCall),
@@ -128,8 +127,16 @@ export class StandardRollup<Tx = any, UnsignedTx = any> {
     return response.data!;
   }
 
-  get client(): SovereignClient {
-    return this._client;
+  get ledger(): SovereignClient.Ledger {
+    return this._client.ledger;
+  }
+
+  get sequencer(): SovereignClient.Sequencer {
+    return this._client.sequencer;
+  }
+
+  get rollup(): SovereignClient.Rollup {
+    return this._client.rollup;
   }
 
   get serializer(): RollupSerializer {
