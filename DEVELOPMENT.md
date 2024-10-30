@@ -107,6 +107,8 @@ We use changesets to manage versions, releases & changelogs across all packages.
 
 If a change you are making should result in a new version of a package, you should create a changeset and include it in the PR.
 
+The `changeset` bot will comment on your PR if it is missing a changeset, if your change doesn't impact a package (for example if you are just fixing a linting error) you can safely ignore the bot.
+
 ### Creating a changeset
 
 The following commands are available at the root of the monorepo.
