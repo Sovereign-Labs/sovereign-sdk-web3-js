@@ -1,5 +1,11 @@
 # @sovereign-sdk/universal-wallet-wasm
 
+## 0.1.4
+
+### Patch Changes
+
+- 2463958: Expose the schema descriptor json & re-export Schema class from web3 sdk
+
 ## 0.1.3
 
 ### Patch Changes

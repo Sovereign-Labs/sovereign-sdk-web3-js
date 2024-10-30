@@ -1,5 +1,13 @@
 # @sovereign-sdk/web3
 
+## 0.0.13
+
+### Patch Changes
+
+- 2463958: Expose the schema descriptor json & re-export Schema class from web3 sdk
+- Updated dependencies [2463958]
+  - @sovereign-sdk/universal-wallet-wasm@0.1.4
+
 ## 0.0.12
 
 ### Patch Changes
