@@ -46,6 +46,10 @@ const rollup = new StandardRollup({
     chain_id: 1,
   },
 });
+const signer = newMetaMaskSnapSigner({
+  curve: 'ed25519',
+  schema: yourSchema,
+});
 
 // Submit a transaction
 const result = await rollup.call(
