@@ -1,0 +1,130 @@
+# Development Setup & Workflow
+
+This document outlines our internal development practices, tools, and processes for our monorepo.
+
+## Prerequisites
+
+- Node.js LTS
+- pnpm
+
+## Monorepo Structure
+
+Our monorepo contains multiple packages that are developed and versioned together. The repository is structured as follows:
+
+```
+root/
+├── packages/
+│   ├── signers/                    # Signers interface & default implementations
+│   ├── universal-wallet-wasm/      # Universal wallet schema WASM bindings
+│   └── web3/                       # Primary web3 package
+├── docs/                           # Documentation
+└── package.json                    # Root package.json
+```
+
+### Package Dependencies
+
+Our packages follow this dependency hierarchy:
+
+```
+web3 -> signers, universal-wallet-wasm
+```
+
+- No circular dependencies are allowed
+- web3 will generally depend on other packages, but not the other way around
+- web3 will generally be the main package consumed by the outside world
+
+### Working with Packages
+
+The following commands are available at the root of the monorepo or you can run them in a specific package directory.
+
+Navigate between packages:
+
+```bash
+# Direct navigation
+cd packages/web3
+cd packages/signers
+cd packages/universal-wallet-wasm
+```
+
+Install all dependencies:
+
+```bash
+pnpm install
+```
+
+Build all packages:
+
+```bash
+pnpm build
+```
+
+Build specific packages:
+
+```bash
+pnpm run build --filter @sovereign-sdk/web3
+pnpm run build --filter @sovereign-sdk/signers
+pnpm run build --filter @sovereign-sdk/universal-wallet-wasm
+```
+
+Run tests:
+
+```bash
+# Test all packages
+pnpm test
+
+# Test specific packages
+pnpm test --filter @sovereign-sdk/web3
+pnpm test --filter @sovereign-sdk/universal-wallet-wasm
+```
+
+Formatting and linting:
+
+```bash
+# Format all packages
+pnpm run format
+
+# Lint all packages
+pnpm run lint
+```
+
+Adding dependencies:
+
+```bash
+# Add to a specific package
+pnpm add <package> --filter @sovereign-sdk/web3
+
+# Add as dev dependency
+pnpm add -D <package> --filter @sovereign-sdk/web3
+
+# Add workspace dependency
+# Add signers package in this monorepo as a dependency to web3 package
+pnpm add @sovereign-sdk/signers --filter @sovereign-sdk/web3 --workspace
+```
+
+## Changesets in Monorepo
+
+We use changesets to manage versions, releases & changelogs across all packages.
+
+If a change you are making should result in a new version of a package, you should create a changeset and include it in the PR.
+
+### Creating a changeset
+
+The following commands are available at the root of the monorepo.
+
+1. Create a changeset:
+
+   ```bash
+   pnpm run changeset
+   ```
+
+2. Select affected packages:
+   - Choose all impacted packages
+
+3. Enter a changeset message:
+   - For example:
+     - `Update button component`
+     - `Add new feature X`
+
+After running the command, you will see a changeset file created in the `.changesets` directory. After merging the PR a release PR will be created shortly after by our release bot. This PR will automatically update the version of the package and add a changelog entry. On merging of the release PR a new version of the package will be published to NPM.
+
+Visit [Changesets](https://github.com/changesets/changesets) for more information.
