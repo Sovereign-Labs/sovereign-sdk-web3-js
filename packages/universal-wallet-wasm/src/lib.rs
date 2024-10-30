@@ -14,10 +14,14 @@ where
     }
 }
 
+/// Well-known ids of types utilized in the rollup.
 #[wasm_bindgen]
 pub enum KnownTypeId {
+    /// The type id of the transaction.
     Transaction = 0,
+    /// The type id of the unsigned transaction.
     UnsignedTransaction = 1,
+    /// The type id of the runtime call.
     RuntimeCall = 2,
 }
 
@@ -31,6 +35,9 @@ impl From<KnownTypeId> for RollupRoots {
     }
 }
 
+/// A rollup schema is a description of the types that are utilized in the rollup.
+/// It is used to serialize and deserialize the types.
+/// As well as display them in a human-readable way that is verified by the rollup.
 #[wasm_bindgen]
 pub struct Schema(NativeSchema);
 
