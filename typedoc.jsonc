@@ -1,0 +1,10 @@
+{
+  "entryPoints": ["packages/*"],
+  "name": "Sovereign SDK Web3",
+  "entryPointStrategy": "packages",
+  "includeVersion": false,
+  "packageOptions": {
+    "includeVersion": true,
+    "entryPoints": ["src/index.ts", "dist/esm/wallet_wasm.d.ts"]
+  }
+}
