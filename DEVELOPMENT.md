@@ -80,8 +80,8 @@ pnpm test --filter @sovereign-sdk/universal-wallet-wasm
 Formatting and linting:
 
 ```bash
-# Format all packages
-pnpm run format
+# Fix linting and formatting errors
+pnpm run fix
 
 # Lint all packages
 pnpm run lint
