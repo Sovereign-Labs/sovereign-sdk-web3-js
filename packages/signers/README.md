@@ -1,6 +1,6 @@
 # @sovereign-sdk/signers
 
-A flexible signing interface and implementations for Sovereign SDK applications, providing seamless integration with various signing methods including MetaMask Snaps.
+A signer interface and implementations for use with Sovereign SDK applications.
 
 ## Installation
 
