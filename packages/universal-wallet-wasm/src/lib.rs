@@ -39,31 +39,43 @@ impl From<KnownTypeId> for RollupRoots {
 /// It is used to serialize and deserialize the types.
 /// As well as display them in a human-readable way that is verified by the rollup.
 #[wasm_bindgen]
-pub struct Schema(NativeSchema);
+pub struct Schema {
+    json: String,
+    inner: NativeSchema,
+}
 
 #[wasm_bindgen]
 impl Schema {
     /// Creates a `Schema` instance from the provided JSON descriptor.
     #[wasm_bindgen(js_name = fromJSON)]
     pub fn from_json(json: &str) -> Result<Schema, JsValue> {
-        Ok(Self(NativeSchema::from_json(json).map_err_to_js()?))
+        Ok(Schema {
+            json: json.to_string(),
+            inner: NativeSchema::from_json(json).map_err_to_js()?,
+        })
+    }
+
+    /// Returns the JSON descriptor that was used to create this schema instance.
+    #[wasm_bindgen(getter)]
+    pub fn descriptor(&self) -> String {
+        self.json.clone()
     }
 
     /// Converts the provided JSON to borsh according to the provided schema.
     #[wasm_bindgen(js_name = jsonToBorsh)]
     pub fn json_to_borsh(&self, type_index: usize, input: &str) -> Result<Vec<u8>, JsValue> {
-        self.0.json_to_borsh(type_index, input).map_err_to_js()
+        self.inner.json_to_borsh(type_index, input).map_err_to_js()
     }
 
     /// Displays the provided borsh bytes as a string according to the provided schema.
     pub fn display(&self, type_index: usize, input: &[u8]) -> Result<String, JsValue> {
-        self.0.display(type_index, input).map_err_to_js()
+        self.inner.display(type_index, input).map_err_to_js()
     }
 
     /// Get the index of the provided known type within the schema.
     #[wasm_bindgen(js_name = knownTypeIndex)]
     pub fn known_type_index(&self, known_type_id: KnownTypeId) -> Result<usize, JsValue> {
-        self.0
+        self.inner
             .rollup_expected_index(known_type_id.into())
             .map_err_to_js()
     }
