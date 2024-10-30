@@ -5,9 +5,10 @@ on:
     branches:
       - master
   workflow_dispatch:
-
+permissions:
+  contents: write
 jobs:
-  build-docs:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -28,9 +29,18 @@ jobs:
         run: pnpm build
       - name: Build docs
         run: pnpm run docs
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4.4.1
+      - name: Upload static files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
         with:
-          branch: gh-pages
-          folder: docs
-          single-commit: true
+          path: docs/
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

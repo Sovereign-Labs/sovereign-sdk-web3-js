@@ -11,6 +11,13 @@ describe("Schema", () => {
       expect(() => Schema.fromJSON("{}")).toThrow("missing field `types`");
     });
   });
+  describe("descriptor", () => {
+    it("should return the descriptor used to create the schema", () => {
+      const expected = JSON.stringify(demoRollupSchema);
+
+      expect(schema.descriptor).toEqual(expected);
+    });
+  });
   describe("jsonToBorsh", () => {
     it("should serialize a simple json object to borsh", () => {
       const call = { value_setter: { set_many_values: [4, 6] } };
