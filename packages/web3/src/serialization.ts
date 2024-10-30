@@ -10,13 +10,13 @@ export type RollupSchema = object;
 
 /**
  * A serializer is used to serialize rollup types to Borsh bytes.
- * 
+ *
  * @example
  * ```typescript
  * const serializer = createSerializer(yourSchema);
  * const runtimeCall = {
  *   value_setter: {
- *     set_value: 100, 
+ *     set_value: 100,
  *   },
  * };
  * const borshBytes = serializer.serializeRuntimeCall(runtimeCall);
