@@ -1,5 +1,9 @@
 # @sovereign-sdk/signers
 
+[![npm version](https://img.shields.io/npm/v/@sovereign-sdk/signers.svg)](https://www.npmjs.com/package/@sovereign-sdk/signers)
+[![License](https://img.shields.io/npm/l/@sovereign-sdk/signers.svg)](https://github.com/Sovereign-Labs/sovereign-sdk-js/blob/main/LICENSE)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/Sovereign-Labs/sovereign-sdk-js/ci.yml?branch=main)](https://github.com/Sovereign-Labs/sovereign-sdk-js/actions)
+
 A signer interface and implementations for use with Sovereign SDK applications.
 
 ## Installation
