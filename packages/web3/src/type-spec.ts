@@ -22,6 +22,12 @@ export type BaseTypeSpec = {
    */
   // biome-ignore lint/suspicious/noExplicitAny: base spec, allow any as default to be overriden
   RuntimeCall: any;
+
+  /**
+   * The type of the dedup data used to deduplicate transactions.
+   */
+  // biome-ignore lint/suspicious/noExplicitAny: base spec, allow any as default to be overriden
+  Dedup: any;
 };
 
 type OverrideType<Base, Override> = {

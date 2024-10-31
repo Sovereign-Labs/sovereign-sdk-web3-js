@@ -5,9 +5,38 @@ import {
   type RollupSchema,
   type RollupSerializer,
   createSerializer,
-} from "./serialization";
-import type { BaseTypeSpec } from "./type-spec";
-import { bytesToHex } from "./utils";
+} from "../serialization";
+import type { BaseTypeSpec } from "../type-spec";
+import { bytesToHex } from "../utils";
+
+export type UnsignedTransactionContext<
+  S extends BaseTypeSpec,
+  C extends RollupContext
+> = {
+  runtimeCall: S["RuntimeCall"];
+  sender: Uint8Array;
+  // able to override nonce
+  overrides: Partial<S["UnsignedTransaction"]>;
+  rollup: Rollup<S, C>;
+};
+
+export type TransactionContext<
+  S extends BaseTypeSpec,
+  C extends RollupContext
+> = {
+  unsignedTx: S["UnsignedTransaction"];
+  sender: Uint8Array;
+  signature: Uint8Array;
+  rollup: Rollup<S, C>;
+};
+
+export type TypeBuilder<S extends BaseTypeSpec, C extends RollupContext> = {
+  unsignedTransaction: (
+    context: UnsignedTransactionContext<S, C>
+  ) => Promise<S["UnsignedTransaction"]>;
+
+  transaction: (context: TransactionContext<S, C>) => Promise<S["Transaction"]>;
+};
 
 /**
  * The result of signing and submitting a transaction.
@@ -25,10 +54,12 @@ export type TransactionResult<Tx> = {
   transaction: Tx;
 };
 
+export type RollupContext = Record<string, unknown>;
+
 /**
  * The configuration for a rollup client.
  */
-export type RollupConfig = {
+export type RollupConfig<C extends RollupContext> = {
   /**
    * The base URL of the rollup full node API.
    */
@@ -37,20 +68,11 @@ export type RollupConfig = {
    * The schema of the rollup.
    */
   schema: RollupSchema;
-  /**
-   * The default transaction details.
-   * This will be deprecated soon to remove Sovereign SDK specific types.
-   * @deprecated
-   * @private
-   */
-  defaultTxDetails: TxDetails;
-};
 
-type TxDetails = {
-  max_priority_fee_bips: number;
-  max_fee: number;
-  gas_limit?: number[];
-  chain_id: number;
+  /**
+   * Arbitrary context that is associated with the rollup.
+   */
+  context: C;
 };
 
 /**
@@ -66,47 +88,60 @@ export type SignerParams = {
 /**
  * The parameters for calling executing a runtime call transaction.
  */
-export type CallParams = {
-  /**
-   * The transaction details to use for the call.
-   * @deprecated This will be removed soon to remove Sovereign SDK specific types.
-   *             In favor of a looser type specification.
-   */
-  txDetails?: TxDetails;
+export type CallParams<S extends BaseTypeSpec> = {
+  overrides: Partial<S["UnsignedTransaction"]>;
 } & SignerParams;
 
 /**
  * The parameters for simulating a runtime call transaction.
  */
-export type SimulateParams = {
+type SimulateParams = {
   /**
    * The transaction details to use for the simulation.
    * @deprecated This will be removed soon to remove Sovereign SDK specific types.
    *             In favor of a looser type specification.
    */
-  txDetails: TxDetails;
+  txDetails: any;
 } & SignerParams;
 
 /**
  * The rollup client.
  *
- * @template T - The type specification for the rollup.
+ * @template S - The type specification for the rollup.
  *               If not provided, the base type specification will be used which uses `any` for all types.
  */
-export class StandardRollup<T extends BaseTypeSpec = BaseTypeSpec> {
-  private readonly _config: RollupConfig;
+export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
+  private readonly _config: RollupConfig<C>;
   private readonly _client: SovereignClient;
   private readonly _serializer: RollupSerializer;
+  private readonly _builder: TypeBuilder<S, C>;
 
   /**
    * Creates a new rollup client.
    *
    * @param config - The configuration for the rollup client.
    */
-  constructor(config: RollupConfig) {
+  constructor(config: RollupConfig<C>, builder: TypeBuilder<S, C>) {
     this._client = new SovereignClient({ baseURL: config.url });
     this._serializer = createSerializer(config.schema);
     this._config = config;
+    this._builder = builder;
+  }
+
+  /**
+   * Submits a batch to the rollup.
+   *
+   * @param batch - The batch of transactions to submit.
+   */
+  async submitBatch(
+    batch: S["Transaction"][]
+  ): Promise<SovereignClient.Sequencer.BatchCreateResponse> {
+    const transactions = batch.map((tx) => {
+      const txBytes = this._serializer.serializeTx(tx);
+      return Base64.fromUint8Array(txBytes);
+    });
+
+    return this.sequencer.batches.create({ transactions });
   }
 
   /**
@@ -115,7 +150,7 @@ export class StandardRollup<T extends BaseTypeSpec = BaseTypeSpec> {
    * @param transaction - The transaction to submit.
    */
   async submitTransaction(
-    transaction: T["Transaction"],
+    transaction: S["Transaction"]
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializedTx = this.serializer.serializeTx(transaction);
 
@@ -131,22 +166,20 @@ export class StandardRollup<T extends BaseTypeSpec = BaseTypeSpec> {
    * @param unsignedTx - The unsigned transaction to sign and submit.
    */
   async signAndSubmitTransaction(
-    unsignedTx: T["UnsignedTransaction"],
-    { signer }: SignerParams,
-  ): Promise<TransactionResult<T["Transaction"]>> {
+    unsignedTx: S["UnsignedTransaction"],
+    { signer }: SignerParams
+  ): Promise<TransactionResult<S["Transaction"]>> {
     const serializedUnsignedTx =
       this.serializer.serializeUnsignedTx(unsignedTx);
     const signature = await signer.sign(serializedUnsignedTx);
     const publicKey = await signer.publicKey();
-    const tx = {
-      pub_key: {
-        pub_key: publicKey,
-      },
-      signature: {
-        msg_sig: signature,
-      },
-      ...unsignedTx,
-    } as T["Transaction"];
+    const context = {
+      unsignedTx,
+      sender: publicKey,
+      signature,
+      rollup: this,
+    };
+    const tx = await this._builder.transaction(context);
     const result = await this.submitTransaction(tx);
 
     return { transaction: tx, response: result };
@@ -156,29 +189,24 @@ export class StandardRollup<T extends BaseTypeSpec = BaseTypeSpec> {
    * Performs a runtime call transaction.
    * Utilizes the provided signer to sign the transaction.
    *
-   * @param runtimeMessage - The runtime message to call.
+   * @param runtimeCall - The runtime message to call.
    */
   async call(
-    runtimeMessage: T["RuntimeCall"],
-    { signer, txDetails }: CallParams,
-  ): Promise<TransactionResult<T["Transaction"]>> {
-    const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
+    runtimeCall: S["RuntimeCall"],
+    { signer, overrides }: CallParams<S>
+  ): Promise<TransactionResult<S["Transaction"]>> {
     const publicKey = await signer.publicKey();
-    const dedup = await this.rollup.addresses.dedup(bytesToHex(publicKey));
-    // biome-ignore lint/suspicious/noExplicitAny: fix later
-    const nonce = (dedup.data as any).nonce as number;
-    const unsignedTx = {
-      runtime_msg: runtimeCall,
-      nonce,
-      details: txDetails ?? this._config.defaultTxDetails,
+    const context = {
+      runtimeCall,
+      sender: publicKey,
+      rollup: this,
+      overrides,
     };
+    const unsignedTx = await this._builder.unsignedTransaction(context);
 
-    return this.signAndSubmitTransaction(
-      unsignedTx as T["UnsignedTransaction"],
-      {
-        signer,
-      },
-    );
+    return this.signAndSubmitTransaction(unsignedTx, {
+      signer,
+    });
   }
 
   /**
@@ -186,11 +214,14 @@ export class StandardRollup<T extends BaseTypeSpec = BaseTypeSpec> {
    *
    * This method can be useful to estimate the gas cost of a runtime call transaction.
    *
+   * @remarks DEVELOPER NOTE: This endpoint is currently tightly coupled to sovereign specific
+   * data types, it should be made more generic or moved to StandardRollup in the meantime.
+   *
    * @param runtimeMessage - The runtime message to call.
    */
-  async simulate(
-    runtimeMessage: T["RuntimeCall"],
-    { signer, txDetails }: SimulateParams,
+  private async _simulate(
+    runtimeMessage: S["RuntimeCall"],
+    { signer, txDetails }: SimulateParams
   ): Promise<SovereignClient.Rollup.SimulateExecutionResponse> {
     const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
     const publicKey = await signer.publicKey();
@@ -247,5 +278,9 @@ export class StandardRollup<T extends BaseTypeSpec = BaseTypeSpec> {
    */
   get serializer(): RollupSerializer {
     return this._serializer;
+  }
+
+  get context(): C {
+    return this._config.context;
   }
 }

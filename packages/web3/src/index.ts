@@ -1,4 +1,4 @@
-export * from "./rollup";
+export * from "./rollup/rollup";
 export * from "./serialization";
 export * from "./errors";
 export * from "./type-spec";
