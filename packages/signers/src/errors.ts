@@ -11,7 +11,7 @@ export class SignerError extends Error {
    * @param signerId - The ID of the signer that threw the error
    */
   constructor(message: string, signerId: string) {
-    super(message);
+    super(`[${signerId}] ${message}`);
 
     this.signerId = signerId;
     this.name = this.constructor.name;

@@ -266,6 +266,9 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
     return this._serializer;
   }
 
+  /**
+   * The context for the rollup.
+   */
   get context(): C {
     return this._config.context;
   }
