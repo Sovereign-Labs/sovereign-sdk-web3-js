@@ -1,13 +1,14 @@
 import SovereignClient from "@sovereign-sdk/client";
 import type { Signer } from "@sovereign-sdk/signers";
 import { Base64 } from "js-base64";
+import { InvalidRollupConfigError } from "../errors";
 import {
   type RollupSchema,
   type RollupSerializer,
   createSerializer,
 } from "../serialization";
 import type { BaseTypeSpec } from "../type-spec";
-import { InvalidRollupConfigError } from "../errors";
+import type { DeepPartial } from "../utils";
 
 export type UnsignedTransactionContext<
   S extends BaseTypeSpec,
@@ -16,7 +17,7 @@ export type UnsignedTransactionContext<
   runtimeCall: S["RuntimeCall"];
   sender: Uint8Array;
   // able to override nonce
-  overrides: Partial<S["UnsignedTransaction"]>;
+  overrides: DeepPartial<S["UnsignedTransaction"]>;
   rollup: Rollup<S, C>;
 };
 
@@ -101,7 +102,7 @@ export type SignerParams = {
  * The parameters for calling executing a runtime call transaction.
  */
 export type CallParams<S extends BaseTypeSpec> = {
-  overrides: Partial<S["UnsignedTransaction"]>;
+  overrides: DeepPartial<S["UnsignedTransaction"]>;
 } & SignerParams;
 
 /**
@@ -130,12 +131,15 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
       this._serializer = config.serializer;
     } else {
       if (!config.schema) {
-        throw new InvalidRollupConfigError("At least 1 of config.schema or config.serializer must be provided");
+        throw new InvalidRollupConfigError(
+          "At least 1 of config.schema or config.serializer must be provided",
+        );
       }
       this._serializer = createSerializer(config.schema);
     }
 
-    this._client = config.client ?? new SovereignClient({ baseURL: config.url });
+    this._client =
+      config.client ?? new SovereignClient({ baseURL: config.url });
     this._config = config;
     this._typeBuilder = typeBuilder;
   }
@@ -227,21 +231,21 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    * A ledger client that can be used to query the ledger.
    */
   get ledger(): SovereignClient.Ledger {
-    return this._client.ledger;
+    return this.http.ledger;
   }
 
   /**
    * A sequencer client that can be used to submit transactions & batches to the rollup.
    */
   get sequencer(): SovereignClient.Sequencer {
-    return this._client.sequencer;
+    return this.http.sequencer;
   }
 
   /**
    * A rollup client that can be used to perform operations on the rollup.
    */
   get rollup(): SovereignClient.Rollup {
-    return this._client.rollup;
+    return this.http.rollup;
   }
 
   /**

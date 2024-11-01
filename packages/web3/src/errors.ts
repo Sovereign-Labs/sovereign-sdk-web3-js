@@ -10,8 +10,4 @@ export class SovereignError extends Error {
   }
 }
 
-export class InvalidRollupConfigError extends SovereignError {
-  constructor(message: string) {
-    super(message);
-  }
-}
+export class InvalidRollupConfigError extends SovereignError {}

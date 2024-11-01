@@ -1,0 +1,185 @@
+import SovereignClient from "@sovereign-sdk/client";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { RollupSerializer } from "../serialization";
+import {
+  StandardRollup,
+  createStandardRollup,
+  standardTypeBuilder,
+} from "./standard-rollup";
+
+describe("standardTypeBuilder", () => {
+  const mockRollup = {
+    serializer: {
+      serializeRuntimeCall: vi.fn().mockReturnValue(new Uint8Array([1, 2, 3])),
+    },
+    context: {
+      defaultTxDetails: {
+        max_priority_fee_bips: 100,
+        max_fee: 1000,
+        chain_id: 1,
+      },
+    },
+    rollup: {
+      addresses: {
+        dedup: vi.fn().mockResolvedValue({ data: { nonce: 5 } }),
+      },
+    },
+  };
+
+  const builder = standardTypeBuilder();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe("unsignedTransaction", () => {
+    it("should use provided nonce from overrides", async () => {
+      const result = await builder.unsignedTransaction({
+        runtimeCall: { foo: "bar" },
+        sender: new Uint8Array([4, 5, 6]),
+        overrides: { nonce: 10 },
+        rollup: mockRollup as any,
+      });
+
+      expect(result).toEqual({
+        runtime_msg: new Uint8Array([1, 2, 3]),
+        nonce: 10,
+        details: {
+          max_priority_fee_bips: 100,
+          max_fee: 1000,
+          chain_id: 1,
+        },
+      });
+      expect(mockRollup.rollup.addresses.dedup).not.toHaveBeenCalled();
+    });
+
+    it("should fetch nonce if not provided in overrides", async () => {
+      const result = await builder.unsignedTransaction({
+        runtimeCall: { foo: "bar" },
+        sender: new Uint8Array([4, 5, 6]),
+        overrides: {},
+        rollup: mockRollup as any,
+      });
+
+      expect(result).toEqual({
+        runtime_msg: new Uint8Array([1, 2, 3]),
+        nonce: 5,
+        details: {
+          max_priority_fee_bips: 100,
+          max_fee: 1000,
+          chain_id: 1,
+        },
+      });
+      expect(mockRollup.rollup.addresses.dedup).toHaveBeenCalledWith("040506");
+    });
+
+    it("should merge overridden details with defaults", async () => {
+      const result = await builder.unsignedTransaction({
+        runtimeCall: { foo: "bar" },
+        sender: new Uint8Array([4, 5, 6]),
+        overrides: {
+          details: {
+            max_fee: 2000,
+            gas_limit: [1000000, 1000000],
+          },
+        },
+        rollup: mockRollup as any,
+      });
+
+      expect(result).toEqual({
+        runtime_msg: new Uint8Array([1, 2, 3]),
+        nonce: 5,
+        details: {
+          max_priority_fee_bips: 100,
+          max_fee: 2000,
+          gas_limit: [1000000, 1000000],
+          chain_id: 1,
+        },
+      });
+    });
+  });
+
+  describe("transaction", () => {
+    it("should correctly format the transaction", async () => {
+      const result = await builder.transaction({
+        unsignedTx: {
+          runtime_msg: new Uint8Array([1, 2, 3]),
+          nonce: 5,
+          details: {
+            max_priority_fee_bips: 100,
+            max_fee: 1000,
+            chain_id: 1,
+          },
+        },
+        sender: new Uint8Array([4, 5, 6]),
+        signature: new Uint8Array([7, 8, 9]),
+        rollup: mockRollup as any,
+      });
+
+      expect(result).toEqual({
+        pub_key: {
+          pub_key: new Uint8Array([4, 5, 6]),
+        },
+        signature: {
+          msg_sig: new Uint8Array([7, 8, 9]),
+        },
+        runtime_msg: new Uint8Array([1, 2, 3]),
+        nonce: 5,
+        details: {
+          max_priority_fee_bips: 100,
+          max_fee: 1000,
+          chain_id: 1,
+        },
+      });
+    });
+  });
+});
+
+const mockSerializer: RollupSerializer = {
+  serialize: vi.fn().mockReturnValue(new Uint8Array([1, 2, 3])),
+  serializeRuntimeCall: vi.fn().mockReturnValue(new Uint8Array([4, 5, 6])),
+  serializeUnsignedTx: vi.fn().mockReturnValue(new Uint8Array([7, 8, 9])),
+  serializeTx: vi.fn().mockReturnValue(new Uint8Array([10, 11, 12])),
+};
+
+describe("createStandardRollup", () => {
+  const mockConfig = {
+    client: new SovereignClient({ fetch: vi.fn() }),
+    serializer: mockSerializer,
+    context: {
+      defaultTxDetails: {
+        max_priority_fee_bips: 100,
+        max_fee: 1000,
+        chain_id: 1,
+      },
+    },
+  };
+
+  it("should create a StandardRollup instance", () => {
+    const rollup = createStandardRollup(mockConfig);
+    expect(rollup).toBeInstanceOf(StandardRollup);
+  });
+
+  it("should use the provided type builder overrides", () => {
+    const customUnsignedTransaction = vi.fn();
+    const rollup = createStandardRollup(mockConfig, {
+      unsignedTransaction: customUnsignedTransaction,
+    });
+
+    // Access the private _typeBuilder
+    const typeBuilder = (rollup as any)._typeBuilder;
+    expect(typeBuilder.unsignedTransaction).toBe(customUnsignedTransaction);
+  });
+
+  it("should maintain default type builder methods when providing partial overrides", () => {
+    const customUnsignedTransaction = vi.fn();
+    const rollup = createStandardRollup(mockConfig, {
+      unsignedTransaction: customUnsignedTransaction,
+    });
+
+    const typeBuilder = (rollup as any)._typeBuilder;
+    expect(typeBuilder.unsignedTransaction).toBe(customUnsignedTransaction);
+    expect(typeBuilder.transaction).toBeDefined();
+    expect(typeof typeBuilder.transaction).toBe("function");
+  });
+});

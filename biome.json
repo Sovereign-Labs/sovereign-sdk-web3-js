@@ -5,5 +5,17 @@
   },
   "formatter": {
     "indentStyle": "space"
-  }
+  },
+  "overrides": [
+    {
+      "include": ["packages/**/*.test.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    }
+  ]
 }

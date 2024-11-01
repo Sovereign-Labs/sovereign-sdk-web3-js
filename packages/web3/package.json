@@ -6,6 +6,7 @@
     "ci": "biome ci",
     "fix": "biome check --write",
     "lint": "biome lint",
+    "typecheck": "tsc --noEmit",
     "test": "vitest"
   },
   "files": ["dist", "package.json"],
