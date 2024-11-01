@@ -1,4 +1,7 @@
 // just a file to run and test stuff
-import * as signer from "./tests/signer.js";
+// run with `pnpm run playground`
+import { getSigner, addressFromPublicKey } from "./tests/signer.js";
 
-console.log(signer.addressFromPublicKey(signer.publicKey));
+const signer = getSigner();
+const publicKey = await signer.publicKey();
+console.log(addressFromPublicKey(publicKey));

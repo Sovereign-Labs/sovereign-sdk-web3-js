@@ -6,7 +6,7 @@
   "description": "Package containing integration tests for web3 sdk functionality",
   "scripts": {
     "playground": "node --loader ts-node/esm src/playground.ts",
-    "test:integration": "vitest **/*.integration-test.ts"
+    "test:integration": "vitest"
   },
   "keywords": [],
   "author": "",
