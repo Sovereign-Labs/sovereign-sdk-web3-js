@@ -26,6 +26,9 @@ jobs:
         run: pnpm install
       - name: Lint and Format
         run: pnpm run ci
+        # Need to build wasm package first
+      - name: Build
+        run: pnpm build
       - name: Test
         run: pnpm test
         env:
