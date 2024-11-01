@@ -9,3 +9,5 @@ export class SovereignError extends Error {
     this.stack = new Error().stack;
   }
 }
+
+export class InvalidRollupConfigError extends SovereignError {}
