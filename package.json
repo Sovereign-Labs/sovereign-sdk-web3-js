@@ -20,6 +20,7 @@
     "@changesets/cli": "^2.27.9"
   },
   "devDependencies": {
+    "@vitest/coverage-istanbul": "2.1.2",
     "typedoc": "^0.26.10",
     "vitest": "^2.1.1"
   }
