@@ -7,11 +7,11 @@ import {
   createSerializer,
 } from "../serialization";
 import type { BaseTypeSpec } from "../type-spec";
-import { bytesToHex } from "../utils";
+import { InvalidRollupConfigError } from "../errors";
 
 export type UnsignedTransactionContext<
   S extends BaseTypeSpec,
-  C extends RollupContext
+  C extends RollupContext,
 > = {
   runtimeCall: S["RuntimeCall"];
   sender: Uint8Array;
@@ -22,7 +22,7 @@ export type UnsignedTransactionContext<
 
 export type TransactionContext<
   S extends BaseTypeSpec,
-  C extends RollupContext
+  C extends RollupContext,
 > = {
   unsignedTx: S["UnsignedTransaction"];
   sender: Uint8Array;
@@ -32,10 +32,43 @@ export type TransactionContext<
 
 export type TypeBuilder<S extends BaseTypeSpec, C extends RollupContext> = {
   unsignedTransaction: (
-    context: UnsignedTransactionContext<S, C>
+    context: UnsignedTransactionContext<S, C>,
   ) => Promise<S["UnsignedTransaction"]>;
 
   transaction: (context: TransactionContext<S, C>) => Promise<S["Transaction"]>;
+};
+
+/**
+ * Arbitrary context that is associated with the rollup.
+ */
+export type RollupContext = Record<string, unknown>;
+
+/**
+ * The configuration for a rollup client.
+ */
+export type RollupConfig<C extends RollupContext> = {
+  /**
+   * The base URL of the rollup full node API.
+   */
+  url?: string;
+  /**
+   * The Sovereign SDK client to use for the rollup.
+   * If not provided, the default client will be used using {@link RollupConfig.url}.
+   */
+  client?: SovereignClient;
+  /**
+   * The schema of the rollup.
+   */
+  schema?: RollupSchema;
+  /**
+   * The serializer to use for the rollup.
+   * If not provided, a serializer will be created using the provided {@link RollupConfig.schema}.
+   */
+  serializer?: RollupSerializer;
+  /**
+   * Arbitrary context that is associated with the rollup.
+   */
+  context: C;
 };
 
 /**
@@ -52,27 +85,6 @@ export type TransactionResult<Tx> = {
    * The transaction that was submitted.
    */
   transaction: Tx;
-};
-
-export type RollupContext = Record<string, unknown>;
-
-/**
- * The configuration for a rollup client.
- */
-export type RollupConfig<C extends RollupContext> = {
-  /**
-   * The base URL of the rollup full node API.
-   */
-  url?: string;
-  /**
-   * The schema of the rollup.
-   */
-  schema: RollupSchema;
-
-  /**
-   * Arbitrary context that is associated with the rollup.
-   */
-  context: C;
 };
 
 /**
@@ -93,39 +105,39 @@ export type CallParams<S extends BaseTypeSpec> = {
 } & SignerParams;
 
 /**
- * The parameters for simulating a runtime call transaction.
- */
-type SimulateParams = {
-  /**
-   * The transaction details to use for the simulation.
-   * @deprecated This will be removed soon to remove Sovereign SDK specific types.
-   *             In favor of a looser type specification.
-   */
-  txDetails: any;
-} & SignerParams;
-
-/**
- * The rollup client.
+ * A generic rollup client.
  *
  * @template S - The type specification for the rollup.
  *               If not provided, the base type specification will be used which uses `any` for all types.
+ * @template C - The context for the rollup.
  */
 export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   private readonly _config: RollupConfig<C>;
   private readonly _client: SovereignClient;
   private readonly _serializer: RollupSerializer;
-  private readonly _builder: TypeBuilder<S, C>;
+  private readonly _typeBuilder: TypeBuilder<S, C>;
 
   /**
    * Creates a new rollup client.
    *
+   * @throws {@link InvalidRollupConfigError} - If no schema or serializer is provided.
+   *
    * @param config - The configuration for the rollup client.
+   * @param typeBuilder - The type builder for the rollup.
    */
-  constructor(config: RollupConfig<C>, builder: TypeBuilder<S, C>) {
-    this._client = new SovereignClient({ baseURL: config.url });
-    this._serializer = createSerializer(config.schema);
+  constructor(config: RollupConfig<C>, typeBuilder: TypeBuilder<S, C>) {
+    if (config.serializer) {
+      this._serializer = config.serializer;
+    } else {
+      if (!config.schema) {
+        throw new InvalidRollupConfigError("At least 1 of config.schema or config.serializer must be provided");
+      }
+      this._serializer = createSerializer(config.schema);
+    }
+
+    this._client = config.client ?? new SovereignClient({ baseURL: config.url });
     this._config = config;
-    this._builder = builder;
+    this._typeBuilder = typeBuilder;
   }
 
   /**
@@ -134,7 +146,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    * @param batch - The batch of transactions to submit.
    */
   async submitBatch(
-    batch: S["Transaction"][]
+    batch: S["Transaction"][],
   ): Promise<SovereignClient.Sequencer.BatchCreateResponse> {
     const transactions = batch.map((tx) => {
       const txBytes = this._serializer.serializeTx(tx);
@@ -150,7 +162,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    * @param transaction - The transaction to submit.
    */
   async submitTransaction(
-    transaction: S["Transaction"]
+    transaction: S["Transaction"],
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializedTx = this.serializer.serializeTx(transaction);
 
@@ -164,10 +176,11 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    * Utilizes the provided signer to sign the transaction.
    *
    * @param unsignedTx - The unsigned transaction to sign and submit.
+   * @param {SignerParams} params - The params for signing and submitting the transaction.
    */
   async signAndSubmitTransaction(
     unsignedTx: S["UnsignedTransaction"],
-    { signer }: SignerParams
+    { signer }: SignerParams,
   ): Promise<TransactionResult<S["Transaction"]>> {
     const serializedUnsignedTx =
       this.serializer.serializeUnsignedTx(unsignedTx);
@@ -179,7 +192,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
       signature,
       rollup: this,
     };
-    const tx = await this._builder.transaction(context);
+    const tx = await this._typeBuilder.transaction(context);
     const result = await this.submitTransaction(tx);
 
     return { transaction: tx, response: result };
@@ -190,10 +203,11 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    * Utilizes the provided signer to sign the transaction.
    *
    * @param runtimeCall - The runtime message to call.
+   * @param {CallParams<S>} params - The params for submitting a runtime call transaction.
    */
   async call(
     runtimeCall: S["RuntimeCall"],
-    { signer, overrides }: CallParams<S>
+    { signer, overrides }: CallParams<S>,
   ): Promise<TransactionResult<S["Transaction"]>> {
     const publicKey = await signer.publicKey();
     const context = {
@@ -202,43 +216,11 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
       rollup: this,
       overrides,
     };
-    const unsignedTx = await this._builder.unsignedTransaction(context);
+    const unsignedTx = await this._typeBuilder.unsignedTransaction(context);
 
     return this.signAndSubmitTransaction(unsignedTx, {
       signer,
     });
-  }
-
-  /**
-   * Simulates a runtime call transaction.
-   *
-   * This method can be useful to estimate the gas cost of a runtime call transaction.
-   *
-   * @remarks DEVELOPER NOTE: This endpoint is currently tightly coupled to sovereign specific
-   * data types, it should be made more generic or moved to StandardRollup in the meantime.
-   *
-   * @param runtimeMessage - The runtime message to call.
-   */
-  private async _simulate(
-    runtimeMessage: S["RuntimeCall"],
-    { signer, txDetails }: SimulateParams
-  ): Promise<SovereignClient.Rollup.SimulateExecutionResponse> {
-    const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
-    const publicKey = await signer.publicKey();
-    const dedup = await this.rollup.addresses.dedup(bytesToHex(publicKey));
-    // biome-ignore lint/suspicious/noExplicitAny: fix later
-    const nonce = (dedup.data as any).nonce as number;
-    const response = await this.rollup.simulate({
-      body: {
-        details: txDetails,
-        encoded_call_message: bytesToHex(runtimeCall),
-        nonce,
-        sender_pub_key: bytesToHex(publicKey),
-      },
-    });
-
-    // biome-ignore lint/style/noNonNullAssertion: fix later
-    return response.data!;
   }
 
   /**

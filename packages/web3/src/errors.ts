@@ -9,3 +9,9 @@ export class SovereignError extends Error {
     this.stack = new Error().stack;
   }
 }
+
+export class InvalidRollupConfigError extends SovereignError {
+  constructor(message: string) {
+    super(message);
+  }
+}

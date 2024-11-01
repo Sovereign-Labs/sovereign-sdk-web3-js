@@ -1,10 +1,12 @@
+import type SovereignClient from "@sovereign-sdk/client";
 import { bytesToHex } from "../utils";
 import {
   Rollup,
-  RollupConfig,
-  TransactionContext,
-  TypeBuilder,
-  UnsignedTransactionContext,
+  type RollupConfig,
+  type SignerParams,
+  type TransactionContext,
+  type TypeBuilder,
+  type UnsignedTransactionContext,
 } from "./rollup";
 
 export type TxDetails = {
@@ -30,7 +32,7 @@ export type Dedup = {
 };
 
 export type StandardRollupContext = {
-  defaultTxDetails?: Partial<TxDetails>;
+  defaultTxDetails: TxDetails;
 };
 
 export type StandardRollupSpec<RuntimeCall> = {
@@ -40,39 +42,49 @@ export type StandardRollupSpec<RuntimeCall> = {
   Dedup: Dedup;
 };
 
-export function createStandardRollup<
-  Call,
-  S extends StandardRollupSpec<Call> = StandardRollupSpec<Call>,
-  C extends StandardRollupContext = StandardRollupContext
->(config: RollupConfig<C>) {
-  const builder = {
+const useOrFetchNonce = async <S extends StandardRollupSpec<unknown>>({
+  sender,
+  rollup,
+  overrides,
+}: Omit<
+  UnsignedTransactionContext<S, StandardRollupContext>,
+  "runtimeCall"
+>) => {
+  if (overrides?.nonce !== undefined && overrides.nonce >= 0) {
+    return overrides.nonce;
+  }
+  const { data } = await rollup.rollup.addresses.dedup(bytesToHex(sender));
+
+  return (data as S["Dedup"]).nonce;
+};
+
+export function standardTypeBuilder<
+  S extends StandardRollupSpec<unknown>,
+>(): TypeBuilder<S, StandardRollupContext> {
+  return {
     async unsignedTransaction(
-      context: UnsignedTransactionContext<S, C>
-    ): Promise<S["UnsignedTransaction"]> {
-      const runtime_msg = context.rollup.serializer.serializeRuntimeCall(
-        context.runtimeCall
-      );
-      // get override or call
-      // const nonce =
-      //   context.overrides.nonce ??
-      //   (await context.rollup.rollup.addresses.dedup(
-      //     bytesToHex(context.sender)
-      //   ));
+      context: UnsignedTransactionContext<S, StandardRollupContext>,
+    ) {
+      const { rollup, runtimeCall } = context;
+      const runtime_msg = rollup.serializer.serializeRuntimeCall(runtimeCall);
+      const { nonce: _, ...overrides } = context.overrides;
+      const nonce = await useOrFetchNonce(context);
+      const details: TxDetails = {
+        ...rollup.context.defaultTxDetails,
+        ...overrides.details,
+      };
+
       return {
         runtime_msg,
-        nonce: 0,
-        details: {
-          max_priority_fee_bips: 1,
-          max_fee: 1,
-          chain_id: 1,
-        },
+        nonce,
+        details,
       };
     },
     async transaction({
       sender,
       signature,
       unsignedTx,
-    }: TransactionContext<S, C>) {
+    }: TransactionContext<S, StandardRollupContext>) {
       return {
         pub_key: {
           pub_key: sender,
@@ -84,6 +96,67 @@ export function createStandardRollup<
       };
     },
   };
+}
 
-  return new Rollup<S, C>(config, builder);
+/**
+ * The parameters for simulating a runtime call transaction.
+ */
+export type SimulateParams = {
+  /**
+   * The transaction details to use for the simulation.
+   */
+  txDetails: TxDetails;
+
+  nonce?: number;
+} & SignerParams;
+
+export class StandardRollup<RuntimeCall> extends Rollup<
+  StandardRollupSpec<RuntimeCall>,
+  StandardRollupContext
+> {
+  /**
+   * Simulates a runtime call transaction.
+   *
+   * This method can be useful to estimate the gas cost of a runtime call transaction.
+   *
+   * @param runtimeMessage - The runtime message to call.
+   */
+  async simulate(
+    runtimeMessage: StandardRollupSpec<RuntimeCall>["RuntimeCall"],
+    { signer, txDetails, nonce: overrideNonce }: SimulateParams,
+  ): Promise<SovereignClient.Rollup.SimulateExecutionResponse> {
+    const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
+    const publicKey = await signer.publicKey();
+    const nonce = await useOrFetchNonce({
+      sender: publicKey,
+      rollup: this,
+      overrides: { nonce: overrideNonce },
+    });
+    const response = await this.rollup.simulate({
+      body: {
+        details: txDetails,
+        encoded_call_message: bytesToHex(runtimeCall),
+        nonce,
+        sender_pub_key: bytesToHex(publicKey),
+      },
+    });
+
+    // biome-ignore lint/style/noNonNullAssertion: fix later
+    return response.data!;
+  }
+}
+
+export function createStandardRollup<
+  RuntimeCall,
+  C extends StandardRollupContext = StandardRollupContext,
+>(
+  config: RollupConfig<C>,
+  typeBuilderOverrides?: Partial<
+    TypeBuilder<StandardRollupSpec<RuntimeCall>, C>
+  >,
+) {
+  return new StandardRollup<RuntimeCall>(config, {
+    ...standardTypeBuilder(),
+    ...typeBuilderOverrides,
+  });
 }
