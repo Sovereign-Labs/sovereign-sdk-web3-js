@@ -8,7 +8,7 @@ import {
   createSerializer,
 } from "../serialization";
 import type { BaseTypeSpec } from "../type-spec";
-import type { DeepPartial } from "../utils";
+import { type DeepPartial, bytesToHex } from "../utils";
 
 export type UnsignedTransactionContext<
   S extends BaseTypeSpec,
@@ -102,7 +102,7 @@ export type SignerParams = {
  * The parameters for calling executing a runtime call transaction.
  */
 export type CallParams<S extends BaseTypeSpec> = {
-  overrides: DeepPartial<S["UnsignedTransaction"]>;
+  overrides?: DeepPartial<S["UnsignedTransaction"]>;
 } & SignerParams;
 
 /**
@@ -142,6 +142,16 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
       config.client ?? new SovereignClient({ baseURL: config.url });
     this._config = config;
     this._typeBuilder = typeBuilder;
+  }
+
+  /**
+   * Retrieve dedup information about the provided address.
+   *
+   * @param address - The public key to dedup.
+   */
+  async dedup(address: Uint8Array): Promise<S["Dedup"]> {
+    const response = await this.rollup.addresses.dedup(bytesToHex(address));
+    return response.data as S["Dedup"];
   }
 
   /**
@@ -218,7 +228,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
       runtimeCall,
       sender: publicKey,
       rollup: this,
-      overrides,
+      overrides: overrides ?? ({} as DeepPartial<S["UnsignedTransaction"]>),
     };
     const unsignedTx = await this._typeBuilder.unsignedTransaction(context);
 
