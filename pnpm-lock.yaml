@@ -30,6 +30,9 @@ importers:
       typescript:
         specifier: ^5.6.3
         version: 5.6.3
+      vitest:
+        specifier: ^2.1.1
+        version: 2.1.2(@types/node@22.7.5)
 
   packages/universal-wallet-wasm:
     dependencies:
