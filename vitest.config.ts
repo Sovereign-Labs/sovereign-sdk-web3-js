@@ -8,7 +8,7 @@ export default defineConfig({
   test: {
     coverage: {
       enabled: true,
-      provider: "istanbul",
+      provider: "v8",
       include: includePackages("web3", "signers", "utils"),
     },
   },
