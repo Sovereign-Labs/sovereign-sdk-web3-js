@@ -50,21 +50,32 @@ describe("serialization", () => {
   describe("serializeTx", () => {
     it("should serialize a transaction", () => {
       const serializer = createSerializer(demoRollupSchema);
+      const publicKey = new Uint8Array([
+        30, 167, 123, 184, 248, 25, 21, 129, 108, 78, 152, 92, 104, 15, 169,
+        144, 55, 125, 201, 72, 241, 29, 131, 75, 110, 177, 135, 251, 42, 83,
+        204, 230,
+      ]);
+      const signature = new Uint8Array([
+        197, 161, 16, 121, 196, 253, 39, 80, 96, 211, 6, 131, 61, 32, 48, 100,
+        246, 215, 233, 132, 0, 34, 250, 182, 110, 83, 213, 18, 215, 40, 1, 105,
+        181, 112, 122, 171, 36, 14, 3, 10, 230, 227, 82, 244, 56, 125, 136, 119,
+        117, 39, 34, 216, 127, 24, 21, 220, 112, 100, 195, 138, 80, 59, 62, 2,
+      ]);
       const tx = {
-        pub_key: { pub_key: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]) },
-        signature: { msg_sig: new Uint8Array([9, 10, 11, 12, 13, 14, 15, 16]) },
+        pub_key: { pub_key: publicKey },
+        signature: { msg_sig: signature },
         runtime_msg: new Uint8Array([2, 0, 5, 0, 0, 0]),
-        nonce: 1,
+        nonce: 0,
         details: {
           max_priority_fee_bips: 0,
-          max_fee: 1000,
+          max_fee: 10000000000,
           gas_limit: "None",
-          chain_id: 1337,
+          chain_id: 4321,
         },
       };
       const actual = bytesToHex(serializer.serializeTx(tx));
       const expected =
-        "0600000002000500000001000000000000000000000000000000e803000000000000003905000000000000";
+        "c5a11079c4fd275060d306833d203064f6d7e9840022fab66e53d512d7280169b5707aab240e030ae6e352f4387d8877752722d87f1815dc7064c38a503b3e021ea77bb8f81915816c4e985c680fa990377dc948f11d834b6eb187fb2a53cce6060000000200050000000000000000000000000000000000000000e40b540200000000e110000000000000";
 
       expect(actual).toEqual(expected);
     });
