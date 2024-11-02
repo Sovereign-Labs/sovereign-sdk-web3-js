@@ -86,6 +86,21 @@ importers:
         specifier: ^0.13.0
         version: 0.13.0
 
+  packages/utils:
+    devDependencies:
+      biome:
+        specifier: ^0.3.3
+        version: 0.3.3
+      tsup:
+        specifier: ^8.3.0
+        version: 8.3.0(@swc/core@1.7.42)(postcss@8.4.47)(typescript@5.6.3)(yaml@2.6.0)
+      typescript:
+        specifier: ^5.6.3
+        version: 5.6.3
+      vitest:
+        specifier: ^2.1.1
+        version: 2.1.2(@types/node@22.7.5)
+
   packages/web3:
     dependencies:
       '@sovereign-sdk/client':

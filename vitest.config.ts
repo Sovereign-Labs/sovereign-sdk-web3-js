@@ -1,11 +1,15 @@
 import { defineConfig } from "vitest/config";
 
+function includePackages(...packages: string[]) {
+  return packages.map((p) => `packages/${p}/**/*.ts`);
+}
+
 export default defineConfig({
   test: {
     coverage: {
       enabled: true,
       provider: "istanbul",
-      include: ["packages/web3/**", "packages/signers/**"],
+      include: includePackages("web3", "signers", "utils"),
     },
   },
 });
