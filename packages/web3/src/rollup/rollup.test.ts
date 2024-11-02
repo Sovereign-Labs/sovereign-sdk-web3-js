@@ -62,6 +62,31 @@ describe("Rollup", () => {
       expect(rollup.http).toBeInstanceOf(SovereignClient);
     });
   });
+  it("should call the rollup addresses dedup endpoint with hex-encoded address", async () => {
+    const client = new SovereignClient({ fetch: vi.fn() });
+    client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
+      data: { nonce: 1 },
+    });
+    const rollup = testRollup({ client });
+
+    const address = new Uint8Array([1, 2, 3]);
+    await rollup.dedup(address);
+
+    expect(client.rollup.addresses.dedup).toHaveBeenCalledWith("010203");
+  });
+
+  it("should return the dedup data from the response", async () => {
+    const expectedDedup = { nonce: 42 };
+    const client = new SovereignClient({ fetch: vi.fn() });
+    client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
+      data: expectedDedup,
+    });
+    const rollup = testRollup({ client });
+
+    const result = await rollup.dedup(new Uint8Array([1, 2, 3]));
+
+    expect(result).toEqual(expectedDedup);
+  });
   describe("submitBatch", () => {
     it("should correctly serialize and submit the batch", async () => {
       const client = new SovereignClient({ fetch: vi.fn() });
@@ -225,6 +250,21 @@ describe("Rollup", () => {
         transaction: mockTransaction,
         response: { txHash: "mock-hash" },
       });
+    });
+  });
+  describe("getters", () => {
+    it("should return the ledger client", () => {
+      const client = new SovereignClient({ fetch: vi.fn() });
+      const rollup = testRollup({ client });
+
+      expect(rollup.ledger).toBe(client.ledger);
+    });
+
+    it("should return the configured context", () => {
+      const context = { foo: "bar", baz: 123 };
+      const rollup = testRollup({ context });
+
+      expect(rollup.context).toBe(context);
     });
   });
 });

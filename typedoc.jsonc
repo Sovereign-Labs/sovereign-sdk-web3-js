@@ -1,5 +1,9 @@
 {
-  "entryPoints": ["packages/*"],
+  "entryPoints": [
+    "packages/signers",
+    "packages/web3",
+    "packages/universal-wallet-wasm"
+  ],
   "name": "Sovereign SDK Web3",
   "entryPointStrategy": "packages",
   "includeVersion": false,

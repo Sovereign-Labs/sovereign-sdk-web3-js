@@ -4,6 +4,15 @@ import demoRollupSchema from "../../__fixtures__/demo-rollup-schema.json";
 import { createSerializer } from "./serialization";
 
 describe("serialization", () => {
+  it("should throw SovereignError when schema is invalid", () => {
+    const invalidSchema = {
+      invalid_field: "this will cause Schema.fromJSON to fail",
+    };
+
+    expect(() => createSerializer(invalidSchema)).toThrow(
+      /Failed to create runtime schema due to:/,
+    );
+  });
   it("should handle Uint8Array fields in json objects", () => {
     const serializer = createSerializer(demoRollupSchema);
     const unsignedTx = {
@@ -18,6 +27,19 @@ describe("serialization", () => {
     };
 
     expect(() => serializer.serializeUnsignedTx(unsignedTx)).not.toThrow();
+  });
+  describe("serialize", () => {
+    it("should throw SovereignError when serialization fails", () => {
+      const serializer = createSerializer(demoRollupSchema);
+      const invalidInput = {
+        invalid_field: "this will cause serialization to fail",
+      };
+
+      // Try to serialize with an invalid type index
+      expect(() => serializer.serialize(invalidInput, 999999)).toThrow(
+        /Failed to serialize input due to:/,
+      );
+    });
   });
   describe("serializeRuntimeCall", () => {
     it("should serialize a runtime call", () => {
