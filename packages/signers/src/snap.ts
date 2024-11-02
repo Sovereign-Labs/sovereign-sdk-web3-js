@@ -1,8 +1,8 @@
 /// <reference path="./snap-env.d.ts" />
 
 import type { MetaMaskInpageProvider } from "@metamask/providers";
+import { bytesToHex, hexToBytes } from "@sovereign-sdk/utils";
 import { Signer, type SignerOpt } from "./signer";
-import { bytesToHex, hexToBytes } from "./utils";
 import { SignerError } from "./errors";
 
 /**
@@ -11,13 +11,13 @@ import { SignerError } from "./errors";
 export type MetaMaskSnapSignerOpt = {
   /**
    * The {@link MetaMaskInpageProvider} to use for the signer.
-   * 
+   *
    * If not provided, the signer will attempt to use the global `window.ethereum` provider.
    */
   provider?: MetaMaskInpageProvider;
   /**
    * The snap ID to use for the signer.
-   * 
+   *
    * Defaults to `npm:@sovereign-sdk/metamask-snap`.
    * Can be changed to `local:localhost:8080` for local development.
    */
@@ -26,7 +26,7 @@ export type MetaMaskSnapSignerOpt = {
 
 /**
  * Create a new MetaMask Snap signer.
- * 
+ *
  * @param options - The {@link MetaMaskSnapSignerOpt} options.
  * @returns A {@link Signer} implementation utilizing Sovereign's MetaMask Snap.
  */

@@ -1,5 +1,5 @@
 import type SovereignClient from "@sovereign-sdk/client";
-import { bytesToHex } from "../utils";
+import { bytesToHex } from "@sovereign-sdk/utils";
 import {
   Rollup,
   type RollupConfig,

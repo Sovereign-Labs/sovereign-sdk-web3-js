@@ -1,10 +1,18 @@
 export function hexToBytes(hex: string) {
-  if (hex.length && hex.length % 2 !== 0) {
+  if (!hex) {
+    return new Uint8Array([]);
+  }
+
+  if (hex.length % 2 !== 0) {
     throw new Error(`Invalid hex string length: ${hex.length}`);
   }
 
-  const matches = hex.match(/[\da-f]{2}/gi);
+  // Add validation for hex characters
+  if (!/^[\da-f]*$/i.test(hex)) {
+    throw new Error("Invalid hex string: No valid hex digits found");
+  }
 
+  const matches = hex.match(/[\da-f]{2}/gi);
   if (!matches) {
     throw new Error("Invalid hex string: No valid hex digits found");
   }
