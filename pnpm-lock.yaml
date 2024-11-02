@@ -116,6 +116,9 @@ importers:
       '@sovereign-sdk/universal-wallet-wasm':
         specifier: workspace:^
         version: link:../universal-wallet-wasm
+      '@sovereign-sdk/utils':
+        specifier: workspace:^
+        version: link:../utils
       js-base64:
         specifier: ^3.7.7
         version: 3.7.7

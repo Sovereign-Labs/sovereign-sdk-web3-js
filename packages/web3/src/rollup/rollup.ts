@@ -1,5 +1,6 @@
 import SovereignClient from "@sovereign-sdk/client";
 import type { Signer } from "@sovereign-sdk/signers";
+import { bytesToHex } from "@sovereign-sdk/utils";
 import { Base64 } from "js-base64";
 import { InvalidRollupConfigError } from "../errors";
 import {
@@ -8,7 +9,7 @@ import {
   createSerializer,
 } from "../serialization";
 import type { BaseTypeSpec } from "../type-spec";
-import { type DeepPartial, bytesToHex } from "../utils";
+import type { DeepPartial } from "../utils";
 
 export type UnsignedTransactionContext<
   S extends BaseTypeSpec,
