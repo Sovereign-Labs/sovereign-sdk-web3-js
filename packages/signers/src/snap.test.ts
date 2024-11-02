@@ -29,7 +29,7 @@ describe("MetaMask Snap Signer", () => {
     });
     it("should use window.ethereum if no provider is specified", async () => {
       vi.stubGlobal("window", { ethereum: mockProvider });
-      const mockPublicKey = "0x0123456789abcdef";
+      const mockPublicKey = "0123456789abcdef";
 
       mockProvider.request.mockResolvedValueOnce({}); // wallet_getSnaps
       mockProvider.request.mockResolvedValueOnce({ publicKey: mockPublicKey });
@@ -84,7 +84,7 @@ describe("MetaMask Snap Signer", () => {
   describe("publicKey", () => {
     it("should return public key successfully", async () => {
       const signer = newMetaMaskSnapSigner(defaultOpts);
-      const mockPublicKey = "0x0123456789abcdef";
+      const mockPublicKey = "0123456789abcdef";
 
       mockProvider.request.mockResolvedValueOnce({}); // wallet_getSnaps
       mockProvider.request.mockResolvedValueOnce({ publicKey: mockPublicKey });
@@ -112,7 +112,7 @@ describe("MetaMask Snap Signer", () => {
   describe("sign", () => {
     it("should sign message successfully", async () => {
       const signer = newMetaMaskSnapSigner(defaultOpts);
-      const mockSignature = "0xabcdef0123456789";
+      const mockSignature = "abcdef0123456789";
       const message = new Uint8Array([1, 2, 3, 4]);
 
       mockProvider.request.mockResolvedValueOnce({}); // wallet_getSnaps

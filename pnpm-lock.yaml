@@ -53,6 +53,10 @@ importers:
         version: 2.1.2(@types/node@22.7.5)
 
   packages/signers:
+    dependencies:
+      '@sovereign-sdk/utils':
+        specifier: workspace:^
+        version: link:../utils
     devDependencies:
       '@metamask/providers':
         specifier: ^18.1.0
