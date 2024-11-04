@@ -79,4 +79,10 @@ impl Schema {
             .rollup_expected_index(known_type_id.into())
             .map_err_to_js()
     }
+
+    /// Get the chain hash from the schema.
+    #[wasm_bindgen(getter, js_name = chainHash)]
+    pub fn chain_hash(&mut self) -> Result<Vec<u8>, JsValue> {
+        Ok(self.inner.chain_hash().map_err_to_js()?.to_vec())
+    }
 }
