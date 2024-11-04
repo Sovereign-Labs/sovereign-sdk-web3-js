@@ -1,6 +1,7 @@
 # Sovereign SDK Web3.js
 
 [![CI](https://github.com/Sovereign-Labs/sovereign-sdk-web3-js/actions/workflows/ci.yaml/badge.svg)](https://github.com/Sovereign-Labs/sovereign-sdk-web3-js/actions/workflows/ci.yaml)
+[![codecov](https://codecov.io/gh/Sovereign-Labs/sovereign-sdk-web3-js/branch/master/graph/badge.svg?token=s8yNoGfFGE)](https://codecov.io/gh/Sovereign-Labs/sovereign-sdk-web3-js)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![pnpm](https://img.shields.io/badge/maintained%20with-pnpm-cc00ff.svg)](https://pnpm.io/)
 
@@ -91,4 +92,3 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 ## Security
 
 For security concerns, please open an issue or contact us directly. We take security issues seriously and will respond promptly.
-
