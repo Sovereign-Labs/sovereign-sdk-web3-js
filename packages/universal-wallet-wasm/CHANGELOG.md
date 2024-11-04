@@ -1,5 +1,11 @@
 # @sovereign-sdk/universal-wallet-wasm
 
+## 0.1.5
+
+### Patch Changes
+
+- 14ecb93: Add chainHash getter on wallet schema
+
 ## 0.1.4
 
 ### Patch Changes

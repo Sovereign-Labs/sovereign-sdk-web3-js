@@ -1,5 +1,17 @@
 # @sovereign-sdk/web3
 
+## 0.0.14
+
+### Patch Changes
+
+- d2f80b3: Introduce utils package, move hex utils there
+- f2eb8d3: Improve dedup situation, refactor rollup to better support rollup genericness
+- Updated dependencies [d2f80b3]
+- Updated dependencies [14ecb93]
+  - @sovereign-sdk/signers@0.0.3
+  - @sovereign-sdk/utils@0.0.2
+  - @sovereign-sdk/universal-wallet-wasm@0.1.5
+
 ## 0.0.13
 
 ### Patch Changes
