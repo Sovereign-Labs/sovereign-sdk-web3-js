@@ -18,6 +18,15 @@ describe("Schema", () => {
       expect(schema.descriptor).toEqual(expected);
     });
   });
+  describe("chainHash", () => {
+    it("should calculate the chain hash successfully", () => {
+      const expected =
+        "2da13d16ed133dad58faa0d031eeee90b1ed232b5fcb80b37c5c4c84cd241421";
+      const actual = bytesToHex(schema.chainHash);
+
+      expect(actual).toEqual(expected);
+    });
+  });
   describe("jsonToBorsh", () => {
     it("should serialize a simple json object to borsh", () => {
       const call = { value_setter: { set_many_values: [4, 6] } };
