@@ -30,6 +30,10 @@ jobs:
       - name: Build
         run: pnpm build
       - name: Test
-        run: pnpm test
+        run: pnpm coverage
         env:
           CARGO_NET_GIT_FETCH_WITH_CLI: true
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

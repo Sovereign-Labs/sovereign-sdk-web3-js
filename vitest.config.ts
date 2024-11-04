@@ -7,7 +7,6 @@ function includePackages(...packages: string[]) {
 export default defineConfig({
   test: {
     coverage: {
-      enabled: true,
       provider: "v8",
       include: includePackages("web3", "signers", "utils"),
     },
