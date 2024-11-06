@@ -20,7 +20,7 @@ const mockSerializer: RollupSerializer = {
 
 const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
   config?: Partial<RollupConfig<C>>,
-  builder?: Partial<TypeBuilder<S, C>>
+  builder?: Partial<TypeBuilder<S, C>>,
 ) =>
   new Rollup(
     {
@@ -33,14 +33,14 @@ const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
       unsignedTransaction: vi.fn(),
       transaction: vi.fn(),
       ...builder,
-    }
+    },
   );
 
 describe("Rollup", () => {
   describe("constructor", () => {
     it("should throw an error if no schema or serializer is provided", () => {
       expect(() =>
-        testRollup({ schema: undefined, serializer: undefined })
+        testRollup({ schema: undefined, serializer: undefined }),
       ).toThrowError(InvalidRollupConfigError); // todo, also assert text so we know it's the right error
     });
     it("should create a serializer if only schema is provided", () => {
@@ -127,7 +127,7 @@ describe("Rollup", () => {
 
       expect(mockSigner.sign).toHaveBeenCalledWith(new Uint8Array([7, 8, 9]));
       expect(mockSerializer.serializeUnsignedTx).toHaveBeenCalledWith(
-        unsignedTx
+        unsignedTx,
       );
     });
     it("should call type builder with correct parameters", async () => {
