@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import { createStandardRollup } from "@sovereign-sdk/web3";
 import demoSchema from "../../../__fixtures__/demo-rollup-schema.json";
 import { getSigner } from "./signer";
-import { sleep } from "./utils";
 
 const signer = getSigner();
 const rollup = createStandardRollup({
@@ -30,11 +29,6 @@ describe("rollup", () => {
         signer,
       });
       expect(response.data!.status).toEqual("submitted");
-
-      const batch = [transaction];
-      const batchResult = await rollup.submitBatch(batch);
-
-      expect(batchResult.data!.num_txs).toEqual(1);
     });
     it.todo(
       "should submit a batch with incrementing nonces successfully",
@@ -61,11 +55,6 @@ describe("rollup", () => {
 
         expect(batch.length).toEqual(3);
         expect(nonce).toEqual(startingNonce + 3);
-
-        await sleep(500);
-
-        const batchResult = await rollup.submitBatch(batch);
-        expect(batchResult.data!.num_txs).toEqual(3);
       }
     );
     it.todo(

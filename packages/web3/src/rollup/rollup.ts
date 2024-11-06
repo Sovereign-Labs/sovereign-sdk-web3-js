@@ -13,7 +13,7 @@ import type { DeepPartial } from "../utils";
 
 export type UnsignedTransactionContext<
   S extends BaseTypeSpec,
-  C extends RollupContext,
+  C extends RollupContext
 > = {
   runtimeCall: S["RuntimeCall"];
   sender: Uint8Array;
@@ -24,7 +24,7 @@ export type UnsignedTransactionContext<
 
 export type TransactionContext<
   S extends BaseTypeSpec,
-  C extends RollupContext,
+  C extends RollupContext
 > = {
   unsignedTx: S["UnsignedTransaction"];
   sender: Uint8Array;
@@ -34,7 +34,7 @@ export type TransactionContext<
 
 export type TypeBuilder<S extends BaseTypeSpec, C extends RollupContext> = {
   unsignedTransaction: (
-    context: UnsignedTransactionContext<S, C>,
+    context: UnsignedTransactionContext<S, C>
   ) => Promise<S["UnsignedTransaction"]>;
 
   transaction: (context: TransactionContext<S, C>) => Promise<S["Transaction"]>;
@@ -133,7 +133,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
     } else {
       if (!config.schema) {
         throw new InvalidRollupConfigError(
-          "At least 1 of config.schema or config.serializer must be provided",
+          "At least 1 of config.schema or config.serializer must be provided"
         );
       }
       this._serializer = createSerializer(config.schema);
@@ -156,28 +156,12 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   }
 
   /**
-   * Submits a batch to the rollup.
-   *
-   * @param batch - The batch of transactions to submit.
-   */
-  async submitBatch(
-    batch: S["Transaction"][],
-  ): Promise<SovereignClient.Sequencer.BatchCreateResponse> {
-    const transactions = batch.map((tx) => {
-      const txBytes = this._serializer.serializeTx(tx);
-      return Base64.fromUint8Array(txBytes);
-    });
-
-    return this.sequencer.batches.create({ transactions });
-  }
-
-  /**
    * Submits a transaction to the rollup.
    *
    * @param transaction - The transaction to submit.
    */
   async submitTransaction(
-    transaction: S["Transaction"],
+    transaction: S["Transaction"]
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializedTx = this.serializer.serializeTx(transaction);
 
@@ -195,7 +179,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    */
   async signAndSubmitTransaction(
     unsignedTx: S["UnsignedTransaction"],
-    { signer }: SignerParams,
+    { signer }: SignerParams
   ): Promise<TransactionResult<S["Transaction"]>> {
     const serializedUnsignedTx =
       this.serializer.serializeUnsignedTx(unsignedTx);
@@ -222,7 +206,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    */
   async call(
     runtimeCall: S["RuntimeCall"],
-    { signer, overrides }: CallParams<S>,
+    { signer, overrides }: CallParams<S>
   ): Promise<TransactionResult<S["Transaction"]>> {
     const publicKey = await signer.publicKey();
     const context = {
