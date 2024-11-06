@@ -87,23 +87,6 @@ describe("Rollup", () => {
 
     expect(result).toEqual(expectedDedup);
   });
-  describe("submitBatch", () => {
-    it("should correctly serialize and submit the batch", async () => {
-      const client = new SovereignClient({ fetch: vi.fn() });
-      client.sequencer.batches.create = vi.fn();
-      const rollup = testRollup({ client });
-      const batch = [{ foo: "bar" }, { baz: "qux" }];
-
-      await rollup.submitBatch(batch);
-
-      expect(mockSerializer.serializeTx).toHaveBeenCalledTimes(2);
-      expect(mockSerializer.serializeTx).toHaveBeenNthCalledWith(1, batch[0]);
-      expect(mockSerializer.serializeTx).toHaveBeenNthCalledWith(2, batch[1]);
-      expect(rollup.http.sequencer.batches.create).toHaveBeenCalledWith({
-        transactions: ["CgsM", "CgsM"], // Base64 encoded [10,11,12]
-      });
-    });
-  });
   describe("submitTransaction", () => {
     it("should correctly serialize and submit the transaction", async () => {
       const client = new SovereignClient({ fetch: vi.fn() });

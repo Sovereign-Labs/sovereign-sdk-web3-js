@@ -156,22 +156,6 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   }
 
   /**
-   * Submits a batch to the rollup.
-   *
-   * @param batch - The batch of transactions to submit.
-   */
-  async submitBatch(
-    batch: S["Transaction"][],
-  ): Promise<SovereignClient.Sequencer.BatchCreateResponse> {
-    const transactions = batch.map((tx) => {
-      const txBytes = this._serializer.serializeTx(tx);
-      return Base64.fromUint8Array(txBytes);
-    });
-
-    return this.sequencer.batches.create({ transactions });
-  }
-
-  /**
    * Submits a transaction to the rollup.
    *
    * @param transaction - The transaction to submit.
