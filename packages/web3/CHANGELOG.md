@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.0.15
+
+### Patch Changes
+
+- 684614c: Remove submitBatch method on main rollup class, this endpoint is not intended for normal use (mainly tests and debugging)
+
 ## 0.0.14
 
 ### Patch Changes
