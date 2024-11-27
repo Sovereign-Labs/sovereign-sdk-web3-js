@@ -21,8 +21,17 @@ describe("Schema", () => {
   describe("chainHash", () => {
     it("should calculate the chain hash successfully", () => {
       const expected =
-        "2da13d16ed133dad58faa0d031eeee90b1ed232b5fcb80b37c5c4c84cd241421";
+        "44187785252131f9a1ccd1bda83ac148d2cd3c8c6de1c8b9f0791a8df83870f6";
       const actual = bytesToHex(schema.chainHash);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+  describe("metadataHash", () => {
+    it("should restore the metadata hash successfully", () => {
+      const expected =
+        "53581b24de2172d28ccc508d7572c91b2afe8ff87ef0faad0c8712e8cf016353";
+      const actual = bytesToHex(schema.metadataHash);
 
       expect(actual).toEqual(expected);
     });

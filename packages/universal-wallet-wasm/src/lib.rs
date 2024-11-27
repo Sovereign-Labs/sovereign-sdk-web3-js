@@ -80,6 +80,12 @@ impl Schema {
             .map_err_to_js()
     }
 
+    /// Get the metadata hash from the schema.
+    #[wasm_bindgen(getter, js_name = metadataHash)]
+    pub fn metadata_hash(&mut self) -> Vec<u8> {
+        self.inner.metadata_hash().to_vec()
+    }
+
     /// Get the chain hash from the schema.
     #[wasm_bindgen(getter, js_name = chainHash)]
     pub fn chain_hash(&mut self) -> Result<Vec<u8>, JsValue> {

@@ -10,18 +10,22 @@ describe("serialization", () => {
     };
 
     expect(() => createSerializer(invalidSchema)).toThrow(
-      /Failed to create runtime schema due to:/,
+      /Failed to create runtime schema due to:/
     );
   });
   it("should handle Uint8Array fields in json objects", () => {
     const serializer = createSerializer(demoRollupSchema);
     const unsignedTx = {
-      runtime_msg: new Uint8Array([2, 1, 2, 0, 0, 0, 4, 6]),
+      runtime_call: {
+        value_setter: {
+          set_value: 5,
+        },
+      },
       nonce: 0,
       details: {
         max_priority_fee_bips: 0,
         max_fee: 0,
-        gas_limit: { Some: [500, 500] },
+        gas_limit: [500, 500],
         chain_id: 1337,
       },
     };
@@ -37,7 +41,7 @@ describe("serialization", () => {
 
       // Try to serialize with an invalid type index
       expect(() => serializer.serialize(invalidInput, 999999)).toThrow(
-        /Failed to serialize input due to:/,
+        /Failed to serialize input due to:/
       );
     });
   });
@@ -53,18 +57,22 @@ describe("serialization", () => {
     it("should serialize an unsigned transaction", () => {
       const serializer = createSerializer(demoRollupSchema);
       const unsignedTx = {
-        runtime_msg: new Uint8Array([2, 0, 5, 0, 0, 0]),
+        runtime_call: {
+          value_setter: {
+            set_value: 5,
+          },
+        },
         nonce: 1,
         details: {
           max_priority_fee_bips: 0,
           max_fee: 1000,
-          gas_limit: "None",
+          gas_limit: null,
           chain_id: 1337,
         },
       };
       const actual = bytesToHex(serializer.serializeUnsignedTx(unsignedTx));
       const expected =
-        "0600000002000500000001000000000000000000000000000000e803000000000000003905000000000000";
+        "02000500000001000000000000000000000000000000e803000000000000003905000000000000";
 
       expect(actual).toEqual(expected);
     });
@@ -86,18 +94,18 @@ describe("serialization", () => {
       const tx = {
         pub_key: { pub_key: publicKey },
         signature: { msg_sig: signature },
-        runtime_msg: new Uint8Array([2, 0, 5, 0, 0, 0]),
+        runtime_call: { value_setter: { set_value: 0 } },
         nonce: 0,
         details: {
           max_priority_fee_bips: 0,
           max_fee: 10000000000,
-          gas_limit: "None",
+          gas_limit: null,
           chain_id: 4321,
         },
       };
       const actual = bytesToHex(serializer.serializeTx(tx));
       const expected =
-        "c5a11079c4fd275060d306833d203064f6d7e9840022fab66e53d512d7280169b5707aab240e030ae6e352f4387d8877752722d87f1815dc7064c38a503b3e021ea77bb8f81915816c4e985c680fa990377dc948f11d834b6eb187fb2a53cce6060000000200050000000000000000000000000000000000000000e40b540200000000e110000000000000";
+        "c5a11079c4fd275060d306833d203064f6d7e9840022fab66e53d512d7280169b5707aab240e030ae6e352f4387d8877752722d87f1815dc7064c38a503b3e021ea77bb8f81915816c4e985c680fa990377dc948f11d834b6eb187fb2a53cce60200000000000000000000000000000000000000000000e40b540200000000e110000000000000";
 
       expect(actual).toEqual(expected);
     });
