@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.0.17
+
+### Patch Changes
+
+- 2f03f4b: Sign over chain hash as well, update standard rollup types
+
 ## 0.0.16
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @sovereign-sdk/integration-tests
 
+## 1.0.3
+
+### Patch Changes
+
+- 2f03f4b: Sign over chain hash as well, update standard rollup types
+
 ## 1.0.2
 
 ### Patch Changes
