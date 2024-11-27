@@ -12,20 +12,20 @@ import {
 export type TxDetails = {
   max_priority_fee_bips: number;
   max_fee: number;
-  gas_limit?: number[];
+  gas_limit: number[] | null;
   chain_id: number;
 };
 
-export type UnsignedTransaction = {
-  runtime_msg: Uint8Array;
+export type UnsignedTransaction<RuntimeCall> = {
+  runtime_call: RuntimeCall;
   nonce: number;
   details: TxDetails;
 };
 
-export type Transaction = {
+export type Transaction<RuntimeCall> = {
   pub_key: { pub_key: Uint8Array };
   signature: { msg_sig: Uint8Array };
-} & UnsignedTransaction;
+} & UnsignedTransaction<RuntimeCall>;
 
 export type Dedup = {
   nonce: number;
@@ -36,8 +36,8 @@ export type StandardRollupContext = {
 };
 
 export type StandardRollupSpec<RuntimeCall> = {
-  UnsignedTransaction: UnsignedTransaction;
-  Transaction: Transaction;
+  UnsignedTransaction: UnsignedTransaction<RuntimeCall>;
+  Transaction: Transaction<RuntimeCall>;
   RuntimeCall: RuntimeCall;
   Dedup: Dedup;
 };
@@ -66,7 +66,6 @@ export function standardTypeBuilder<
       context: UnsignedTransactionContext<S, StandardRollupContext>,
     ) {
       const { rollup, runtimeCall } = context;
-      const runtime_msg = rollup.serializer.serializeRuntimeCall(runtimeCall);
       const { nonce: _, ...overrides } = context.overrides;
       const nonce = await useOrFetchNonce(context);
       const details: TxDetails = {
@@ -75,7 +74,7 @@ export function standardTypeBuilder<
       };
 
       return {
-        runtime_msg,
+        runtime_call: runtimeCall,
         nonce,
         details,
       };
@@ -134,7 +133,11 @@ export class StandardRollup<RuntimeCall> extends Rollup<
     });
     const response = await this.rollup.simulate({
       body: {
-        details: txDetails,
+        details: {
+          ...txDetails,
+          // simulate needs this field as `undefined` currently
+          gas_limit: txDetails.gas_limit || undefined,
+        },
         encoded_call_message: bytesToHex(runtimeCall),
         nonce,
         sender_pub_key: bytesToHex(publicKey),
