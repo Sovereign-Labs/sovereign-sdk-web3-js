@@ -12,7 +12,6 @@ import {
 } from "./rollup";
 
 const mockSerializer: RollupSerializer = {
-  schema: { chainHash: new Uint8Array([1]) } as any,
   serialize: vi.fn().mockReturnValue(new Uint8Array([1, 2, 3])),
   serializeRuntimeCall: vi.fn().mockReturnValue(new Uint8Array([4, 5, 6])),
   serializeUnsignedTx: vi.fn().mockReturnValue(new Uint8Array([7, 8, 9])),
@@ -126,9 +125,7 @@ describe("Rollup", () => {
 
       await rollup.signAndSubmitTransaction(unsignedTx, { signer: mockSigner });
 
-      expect(mockSigner.sign).toHaveBeenCalledWith(
-        new Uint8Array([7, 8, 9, 1]),
-      );
+      expect(mockSigner.sign).toHaveBeenCalledWith(new Uint8Array([7, 8, 9]));
       expect(mockSerializer.serializeUnsignedTx).toHaveBeenCalledWith(
         unsignedTx,
       );

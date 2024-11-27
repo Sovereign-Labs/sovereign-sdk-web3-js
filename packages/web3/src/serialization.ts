@@ -24,11 +24,6 @@ export type RollupSchema = object;
  */
 export type RollupSerializer = {
   /**
-   * Retrieve the underlying Schema instance.
-   */
-  get schema(): Schema;
-
-  /**
    * Serialize an input to Borsh bytes.
    *
    * Treats `Uint8Array` as a plain array of numbers as this is the format used by universal-wallet-wasm
@@ -84,7 +79,6 @@ export function createSerializer(schemaObject: RollupSchema): RollupSerializer {
   const schema = loadSchema(schemaObject);
 
   return {
-    schema,
     serialize(input: unknown, index: number): Uint8Array {
       try {
         return schema.jsonToBorsh(
