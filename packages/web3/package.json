@@ -1,6 +1,6 @@
 {
   "name": "@sovereign-sdk/web3",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "scripts": {
     "build": "pnpm typecheck && tsup",
     "ci": "biome ci",
