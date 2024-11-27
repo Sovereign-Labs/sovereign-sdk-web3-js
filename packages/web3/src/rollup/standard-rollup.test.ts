@@ -42,7 +42,7 @@ describe("standardTypeBuilder", () => {
       });
 
       expect(result).toEqual({
-        runtime_msg: new Uint8Array([1, 2, 3]),
+        runtime_call: { foo: "bar" },
         nonce: 10,
         details: {
           max_priority_fee_bips: 100,
@@ -62,7 +62,7 @@ describe("standardTypeBuilder", () => {
       });
 
       expect(result).toEqual({
-        runtime_msg: new Uint8Array([1, 2, 3]),
+        runtime_call: { foo: "bar" },
         nonce: 5,
         details: {
           max_priority_fee_bips: 100,
@@ -87,7 +87,7 @@ describe("standardTypeBuilder", () => {
       });
 
       expect(result).toEqual({
-        runtime_msg: new Uint8Array([1, 2, 3]),
+        runtime_call: { foo: "bar" },
         nonce: 5,
         details: {
           max_priority_fee_bips: 100,
@@ -103,7 +103,7 @@ describe("standardTypeBuilder", () => {
     it("should correctly format the transaction", async () => {
       const result = await builder.transaction({
         unsignedTx: {
-          runtime_msg: new Uint8Array([1, 2, 3]),
+          runtime_call: { value_setter: { set_value: 5 } },
           nonce: 5,
           details: {
             max_priority_fee_bips: 100,
@@ -123,7 +123,7 @@ describe("standardTypeBuilder", () => {
         signature: {
           msg_sig: new Uint8Array([7, 8, 9]),
         },
-        runtime_msg: new Uint8Array([1, 2, 3]),
+        runtime_call: { value_setter: { set_value: 5 } },
         nonce: 5,
         details: {
           max_priority_fee_bips: 100,
