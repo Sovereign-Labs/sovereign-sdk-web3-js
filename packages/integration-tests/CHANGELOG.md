@@ -1,5 +1,11 @@
 # @sovereign-sdk/integration-tests
 
+## 1.0.2
+
+### Patch Changes
+
+- 761baf0: Update to latest universal wallet version. Includes improvements to `Result<T>` types & runtime call objects in transaction types
+
 ## 1.0.1
 
 ### Patch Changes
