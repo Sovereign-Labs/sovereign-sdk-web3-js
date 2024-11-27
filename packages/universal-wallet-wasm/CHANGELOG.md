@@ -1,5 +1,11 @@
 # @sovereign-sdk/universal-wallet-wasm
 
+## 0.1.6
+
+### Patch Changes
+
+- 761baf0: Update to latest universal wallet version. Includes improvements to `Result<T>` types & runtime call objects in transaction types
+
 ## 0.1.5
 
 ### Patch Changes
