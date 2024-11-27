@@ -2,7 +2,7 @@
   "name": "@sovereign-sdk/web3",
   "version": "0.0.16",
   "scripts": {
-    "build": "tsup",
+    "build": "pnpm typecheck && tsup",
     "ci": "biome ci",
     "fix": "biome check --write",
     "lint": "biome lint",
