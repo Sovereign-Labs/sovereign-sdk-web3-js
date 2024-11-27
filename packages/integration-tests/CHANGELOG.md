@@ -1,5 +1,11 @@
 # @sovereign-sdk/integration-tests
 
+## 1.0.4
+
+### Patch Changes
+
+- 9684f2b: Remove chain hash appending, signers should do this
+
 ## 1.0.3
 
 ### Patch Changes

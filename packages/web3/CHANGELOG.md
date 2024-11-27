@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.0.18
+
+### Patch Changes
+
+- 9684f2b: Remove chain hash appending, signers should do this
+
 ## 0.0.17
 
 ### Patch Changes
