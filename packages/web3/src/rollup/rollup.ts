@@ -64,7 +64,7 @@ export type RollupConfig<C extends RollupContext> = {
   schema?: RollupSchema;
   /**
    * The serializer to use for the rollup.
-   * If not provided, a serializer will be created using the provided {@link RollupConfig.schema}.
+   * If not provided, a serializer will be created using the provided {@link RollupConfig["schema"]}.
    */
   serializer?: RollupSerializer;
   /**
@@ -183,7 +183,11 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   ): Promise<TransactionResult<S["Transaction"]>> {
     const serializedUnsignedTx =
       this.serializer.serializeUnsignedTx(unsignedTx);
-    const signature = await signer.sign(serializedUnsignedTx);
+    const message = new Uint8Array([
+      ...serializedUnsignedTx,
+      ...this.serializer.schema.chainHash,
+    ]);
+    const signature = await signer.sign(message);
     const publicKey = await signer.publicKey();
     const context = {
       unsignedTx,

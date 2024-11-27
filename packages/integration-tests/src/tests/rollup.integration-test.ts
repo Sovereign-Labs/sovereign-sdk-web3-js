@@ -10,8 +10,7 @@ const rollup = createStandardRollup({
     defaultTxDetails: {
       max_priority_fee_bips: 0,
       max_fee: 100000000,
-      // currently need to do `None` for None Option variant
-      gas_limit: "None" as any,
+      gas_limit: null,
       chain_id: 4321,
     },
   },

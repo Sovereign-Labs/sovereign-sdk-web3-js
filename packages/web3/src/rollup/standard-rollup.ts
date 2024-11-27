@@ -133,7 +133,11 @@ export class StandardRollup<RuntimeCall> extends Rollup<
     });
     const response = await this.rollup.simulate({
       body: {
-        details: txDetails,
+        details: {
+          ...txDetails,
+          // simulate needs this field as `undefined` currently
+          gas_limit: txDetails.gas_limit || undefined,
+        },
         encoded_call_message: bytesToHex(runtimeCall),
         nonce,
         sender_pub_key: bytesToHex(publicKey),
