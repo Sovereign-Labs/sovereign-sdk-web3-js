@@ -18,7 +18,7 @@ const rollup = createStandardRollup({
 
 describe("rollup", () => {
   describe.sequential("transaction submission", () => {
-    it.todo("should successfully sign and submit a transaction", async () => {
+    it("should successfully sign and submit a transaction", async () => {
       const runtimeCall = {
         value_setter: {
           set_value: 5,
@@ -27,6 +27,7 @@ describe("rollup", () => {
       const { transaction, response } = await rollup.call(runtimeCall, {
         signer,
       });
+      console.log(response);
       expect(response.data!.status).toEqual("submitted");
     });
     it.todo(
