@@ -10,7 +10,7 @@ describe("serialization", () => {
     };
 
     expect(() => createSerializer(invalidSchema)).toThrow(
-      /Failed to create runtime schema due to:/
+      /Failed to create runtime schema due to:/,
     );
   });
   it("should handle Uint8Array fields in json objects", () => {
@@ -41,7 +41,7 @@ describe("serialization", () => {
 
       // Try to serialize with an invalid type index
       expect(() => serializer.serialize(invalidInput, 999999)).toThrow(
-        /Failed to serialize input due to:/
+        /Failed to serialize input due to:/,
       );
     });
   });
