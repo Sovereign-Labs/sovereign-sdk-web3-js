@@ -1,5 +1,11 @@
 # @sovereign-sdk/universal-wallet-wasm
 
+## 0.1.7
+
+### Patch Changes
+
+- 54f3ea2: Bump Sovereign SDK version used in universal wallet wasm crate
+
 ## 0.1.6
 
 ### Patch Changes
