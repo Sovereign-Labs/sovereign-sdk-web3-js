@@ -10,6 +10,6 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wasm-bindgen = "0.2.93"
-sov-universal-wallet = { git = "ssh://git@github.com/Sovereign-Labs/sovereign-sdk-wip.git", rev = "c245fe22dfb6d59c26f17a66241e911308ef4a7b", package = "sov-universal-wallet", features = [
+sov-universal-wallet = { git = "ssh://git@github.com/Sovereign-Labs/sovereign-sdk-wip.git", rev = "7c6717cea2602f024a540f2ede39c15d29fcc761", package = "sov-universal-wallet", features = [
   "serde",
 ] }
