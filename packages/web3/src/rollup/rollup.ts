@@ -1,13 +1,8 @@
-import SovereignClient from "@sovereign-sdk/client";
+import type SovereignClient from "@sovereign-sdk/client";
 import type { Signer } from "@sovereign-sdk/signers";
 import { bytesToHex } from "@sovereign-sdk/utils";
 import { Base64 } from "js-base64";
-import { InvalidRollupConfigError } from "../errors";
-import {
-  type RollupSchema,
-  type RollupSerializer,
-  createSerializer,
-} from "../serialization";
+import type { RollupSerializer } from "../serialization";
 import type { BaseTypeSpec } from "../type-spec";
 import type { DeepPartial } from "../utils";
 
@@ -17,7 +12,7 @@ export type UnsignedTransactionContext<
 > = {
   runtimeCall: S["RuntimeCall"];
   sender: Uint8Array;
-  // able to override nonce
+  // Provides the ability to override the nonce instead of retrieving it automatically.
   overrides: DeepPartial<S["UnsignedTransaction"]>;
   rollup: Rollup<S, C>;
 };
@@ -47,30 +42,40 @@ export type RollupContext = Record<string, unknown>;
 
 /**
  * The configuration for a rollup client.
+ * This is a partial version of the configuration object, using a partial version
+ * allows setup code to initialize fields automatically for SDK users, for example
+ * fetching a `serializer` instance from the rollups endpoint.
  */
-export type RollupConfig<C extends RollupContext> = {
+export type PartialRollupConfig<C extends RollupContext> = {
   /**
    * The base URL of the rollup full node API.
    */
   url?: string;
   /**
    * The Sovereign SDK client to use for the rollup.
-   * If not provided, the default client will be used using {@link RollupConfig.url}.
+   * If not provided, the default client will be used using {@link PartialRollupConfig.url}.
    */
   client?: SovereignClient;
   /**
-   * The schema of the rollup.
-   */
-  schema?: RollupSchema;
-  /**
    * The serializer to use for the rollup.
-   * If not provided, a serializer will be created using the provided {@link RollupConfig.schema}.
+   * If not provided, a serializer will be created using the provided client and the rollup HTTP endpoint.
    */
   serializer?: RollupSerializer;
   /**
    * Arbitrary context that is associated with the rollup.
    */
   context: C;
+};
+
+/**
+ * Fully initialized rollup configuration.
+ */
+export type RollupConfig<C extends RollupContext> = Omit<
+  PartialRollupConfig<C>,
+  "client" | "serializer"
+> & {
+  client: SovereignClient;
+  serializer: RollupSerializer;
 };
 
 /**
@@ -115,32 +120,15 @@ export type CallParams<S extends BaseTypeSpec> = {
  */
 export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   private readonly _config: RollupConfig<C>;
-  private readonly _client: SovereignClient;
-  private readonly _serializer: RollupSerializer;
   private readonly _typeBuilder: TypeBuilder<S, C>;
 
   /**
    * Creates a new rollup client.
    *
-   * @throws {@link InvalidRollupConfigError} - If no schema or serializer is provided.
-   *
    * @param config - The configuration for the rollup client.
    * @param typeBuilder - The type builder for the rollup.
    */
   constructor(config: RollupConfig<C>, typeBuilder: TypeBuilder<S, C>) {
-    if (config.serializer) {
-      this._serializer = config.serializer;
-    } else {
-      if (!config.schema) {
-        throw new InvalidRollupConfigError(
-          "At least 1 of config.schema or config.serializer must be provided",
-        );
-      }
-      this._serializer = createSerializer(config.schema);
-    }
-
-    this._client =
-      config.client ?? new SovereignClient({ baseURL: config.url });
     this._config = config;
     this._typeBuilder = typeBuilder;
   }
@@ -249,7 +237,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    * if the operation is not supported by `ledger`, `sequencer`, or `rollup` clients.
    */
   get http(): SovereignClient {
-    return this._client;
+    return this._config.client;
   }
 
   /**
@@ -258,7 +246,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    * See {@link RollupSerializer} for more information.
    */
   get serializer(): RollupSerializer {
-    return this._serializer;
+    return this._config.serializer;
   }
 
   /**

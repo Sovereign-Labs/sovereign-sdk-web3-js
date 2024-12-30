@@ -1,12 +1,11 @@
 import SovereignClient from "@sovereign-sdk/client";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import demoSchema from "../../../__fixtures__/demo-rollup-schema.json";
 import { InvalidRollupConfigError } from "../errors";
 import type { RollupSerializer } from "../serialization";
 import type { BaseTypeSpec } from "../type-spec";
 import {
+  type PartialRollupConfig,
   Rollup,
-  type RollupConfig,
   type RollupContext,
   type TypeBuilder,
 } from "./rollup";
@@ -19,7 +18,7 @@ const mockSerializer: RollupSerializer = {
 };
 
 const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
-  config?: Partial<RollupConfig<C>>,
+  config?: Partial<PartialRollupConfig<C>>,
   builder?: Partial<TypeBuilder<S, C>>,
 ) =>
   new Rollup(
@@ -38,16 +37,6 @@ const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
 
 describe("Rollup", () => {
   describe("constructor", () => {
-    it("should throw an error if no schema or serializer is provided", () => {
-      expect(() =>
-        testRollup({ schema: undefined, serializer: undefined }),
-      ).toThrowError(InvalidRollupConfigError); // todo, also assert text so we know it's the right error
-    });
-    it("should create a serializer if only schema is provided", () => {
-      const rollup = testRollup({ schema: demoSchema, serializer: undefined });
-      expect(rollup.serializer).toBeDefined();
-      expect(rollup.serializer).not.toBe(mockSerializer);
-    });
     it("should use the provided serializer if it is provided", () => {
       const rollup = testRollup({ serializer: mockSerializer });
       expect(rollup.serializer).toBe(mockSerializer);
@@ -56,10 +45,6 @@ describe("Rollup", () => {
       const client = new SovereignClient({ fetch: vi.fn() });
       const rollup = testRollup({ client });
       expect(rollup.http).toBe(client);
-    });
-    it("should create a new client if none is provided", () => {
-      const rollup = testRollup({ client: undefined });
-      expect(rollup.http).toBeInstanceOf(SovereignClient);
     });
   });
   it("should call the rollup addresses dedup endpoint with hex-encoded address", async () => {

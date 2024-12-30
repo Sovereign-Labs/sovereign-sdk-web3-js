@@ -1,5 +1,6 @@
+import type SovereignClient from "@sovereign-sdk/client";
 import { KnownTypeId, Schema } from "@sovereign-sdk/universal-wallet-wasm";
-import { SovereignError } from "./errors";
+import { RollupInterfaceError, SovereignError } from "./errors";
 
 /**
  * A rollup schema is a description of the types that are utilized in the rollup.
@@ -113,4 +114,18 @@ export function createSerializer(schemaObject: RollupSchema): RollupSerializer {
       );
     },
   };
+}
+
+export async function createSerializerFromHttp(
+  client: SovereignClient,
+): Promise<RollupSerializer> {
+  const { data: schema } = await client.rollup.schema.retrieve();
+
+  if (!schema) {
+    throw new RollupInterfaceError(
+      "Endpoint that should return the rollup schema returned empty response",
+    );
+  }
+
+  return createSerializer(schema as RollupSchema);
 }

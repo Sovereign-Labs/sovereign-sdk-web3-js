@@ -158,14 +158,19 @@ describe("createStandardRollup", () => {
     },
   };
 
-  it("should create a StandardRollup instance", () => {
-    const rollup = createStandardRollup(mockConfig);
+  it("should create a new client if none is provided", async () => {
+    const rollup = await createStandardRollup(mockConfig);
+    expect(rollup.http).toBeInstanceOf(SovereignClient);
+  });
+
+  it("should create a StandardRollup instance", async () => {
+    const rollup = await createStandardRollup(mockConfig);
     expect(rollup).toBeInstanceOf(StandardRollup);
   });
 
-  it("should use the provided type builder overrides", () => {
+  it("should use the provided type builder overrides", async () => {
     const customUnsignedTransaction = vi.fn();
-    const rollup = createStandardRollup(mockConfig, {
+    const rollup = await createStandardRollup(mockConfig, {
       unsignedTransaction: customUnsignedTransaction,
     });
 
@@ -174,9 +179,9 @@ describe("createStandardRollup", () => {
     expect(typeBuilder.unsignedTransaction).toBe(customUnsignedTransaction);
   });
 
-  it("should maintain default type builder methods when providing partial overrides", () => {
+  it("should maintain default type builder methods when providing partial overrides", async () => {
     const customUnsignedTransaction = vi.fn();
-    const rollup = createStandardRollup(mockConfig, {
+    const rollup = await createStandardRollup(mockConfig, {
       unsignedTransaction: customUnsignedTransaction,
     });
 

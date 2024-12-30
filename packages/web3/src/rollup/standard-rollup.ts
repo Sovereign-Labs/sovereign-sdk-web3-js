@@ -1,8 +1,10 @@
-import type SovereignClient from "@sovereign-sdk/client";
+import SovereignClient from "@sovereign-sdk/client";
 import { bytesToHex } from "@sovereign-sdk/utils";
+import { RollupInterfaceError } from "../errors";
+import { createSerializerFromHttp } from "../serialization";
 import {
+  type PartialRollupConfig,
   Rollup,
-  type RollupConfig,
   type SignerParams,
   type TransactionContext,
   type TypeBuilder,
@@ -54,6 +56,12 @@ const useOrFetchNonce = async <S extends StandardRollupSpec<unknown>>({
     return overrides.nonce;
   }
   const { data } = await rollup.rollup.addresses.dedup(bytesToHex(sender));
+
+  if (data === undefined) {
+    throw new RollupInterfaceError(
+      "Endpoint that should return dedup information returned empty response",
+    );
+  }
 
   return (data as S["Dedup"]).nonce;
 };
@@ -149,17 +157,24 @@ export class StandardRollup<RuntimeCall> extends Rollup<
   }
 }
 
-export function createStandardRollup<
+export async function createStandardRollup<
   RuntimeCall,
   C extends StandardRollupContext = StandardRollupContext,
 >(
-  config: RollupConfig<C>,
+  config: PartialRollupConfig<C>,
   typeBuilderOverrides?: Partial<
     TypeBuilder<StandardRollupSpec<RuntimeCall>, C>
   >,
 ) {
-  return new StandardRollup<RuntimeCall>(config, {
-    ...standardTypeBuilder(),
-    ...typeBuilderOverrides,
-  });
+  const client = config.client ?? new SovereignClient({ baseURL: config.url });
+  const serializer =
+    config.serializer ?? (await createSerializerFromHttp(client));
+
+  return new StandardRollup<RuntimeCall>(
+    { ...config, client, serializer },
+    {
+      ...standardTypeBuilder(),
+      ...typeBuilderOverrides,
+    },
+  );
 }

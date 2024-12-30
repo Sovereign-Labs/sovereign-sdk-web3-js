@@ -11,3 +11,5 @@ export class SovereignError extends Error {
 }
 
 export class InvalidRollupConfigError extends SovereignError {}
+
+export class RollupInterfaceError extends SovereignError {}
