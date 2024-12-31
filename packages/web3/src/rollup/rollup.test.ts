@@ -1,6 +1,5 @@
 import SovereignClient from "@sovereign-sdk/client";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { InvalidRollupConfigError } from "../errors";
 import type { RollupSerializer } from "../serialization";
 import type { BaseTypeSpec } from "../type-spec";
 import {
@@ -11,16 +10,16 @@ import {
 } from "./rollup";
 
 const mockSerializer: RollupSerializer = {
-  version: "01",
   serialize: vi.fn().mockReturnValue(new Uint8Array([1, 2, 3])),
   serializeRuntimeCall: vi.fn().mockReturnValue(new Uint8Array([4, 5, 6])),
   serializeUnsignedTx: vi.fn().mockReturnValue(new Uint8Array([7, 8, 9])),
   serializeTx: vi.fn().mockReturnValue(new Uint8Array([10, 11, 12])),
+  schema: {} as any,
 };
 
 const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
   config?: Partial<PartialRollupConfig<C>>,
-  builder?: Partial<TypeBuilder<S, C>>
+  builder?: Partial<TypeBuilder<S, C>>,
 ) =>
   new Rollup(
     {
@@ -33,7 +32,7 @@ const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
       unsignedTransaction: vi.fn(),
       transaction: vi.fn(),
       ...builder,
-    }
+    },
   );
 
 describe("Rollup", () => {
@@ -76,7 +75,7 @@ describe("Rollup", () => {
   describe("submitTransaction", () => {
     it("should correctly serialize and submit the transaction", async () => {
       const client = new SovereignClient({ fetch: vi.fn() });
-      client.sequencer.txs.create = vi.fn();
+      client.sequencer.txs.create = vi.fn().mockResolvedValue({});
       const rollup = testRollup({ client });
       const transaction = { foo: "bar" };
 
@@ -113,7 +112,7 @@ describe("Rollup", () => {
 
       expect(mockSigner.sign).toHaveBeenCalledWith(new Uint8Array([7, 8, 9]));
       expect(mockSerializer.serializeUnsignedTx).toHaveBeenCalledWith(
-        unsignedTx
+        unsignedTx,
       );
     });
     it("should call type builder with correct parameters", async () => {

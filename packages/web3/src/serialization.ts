@@ -1,6 +1,5 @@
 import type SovereignClient from "@sovereign-sdk/client";
 import { KnownTypeId, Schema } from "@sovereign-sdk/universal-wallet-wasm";
-import { bytesToHex } from "@sovereign-sdk/utils";
 import { RollupInterfaceError, SovereignError } from "./errors";
 
 /**
@@ -62,9 +61,9 @@ export type RollupSerializer = {
   serializeTx(input: unknown): Uint8Array;
 
   /**
-   * Returns the version of the Schema used by the serializer as a hex string.
+   * Returns the `Schema` used by the serializer.
    */
-  get version(): string;
+  get schema(): Schema;
 };
 
 function loadSchema(schemaObject: RollupSchema): Schema {
@@ -84,10 +83,9 @@ function loadSchema(schemaObject: RollupSchema): Schema {
  */
 export function createSerializer(schemaObject: RollupSchema): RollupSerializer {
   const schema = loadSchema(schemaObject);
-  const version = bytesToHex(schema.chainHash);
 
   return {
-    version,
+    schema,
     serialize(input: unknown, index: number): Uint8Array {
       try {
         return schema.jsonToBorsh(

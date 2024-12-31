@@ -1,12 +1,9 @@
 import type SovereignClient from "@sovereign-sdk/client";
+import type { APIError } from "@sovereign-sdk/client";
 import type { Signer } from "@sovereign-sdk/signers";
 import { bytesToHex } from "@sovereign-sdk/utils";
 import { Base64 } from "js-base64";
-import {
-  RollupInterfaceError,
-  VersionMismatchError,
-  isVersionMismatchError,
-} from "../errors";
+import { RollupInterfaceError, VersionMismatchError } from "../errors";
 import {
   type RollupSerializer,
   createSerializerFromHttp,
@@ -171,24 +168,24 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializedTx = this.serializer.serializeTx(transaction);
 
-    try {
-      return this.sequencer.txs.create({
-        body: Base64.fromUint8Array(serializedTx),
-      });
-    } catch (e) {
-      if (isVersionMismatchError(e as Error)) {
-        const oldVersion = this.serializer.version;
-        this._config.serializer = await createSerializerFromHttp(this.http);
-        const newVersion = this.serializer.version;
+    return this.sequencer.txs
+      .create({ body: Base64.fromUint8Array(serializedTx) })
+      .catch(async (e) => {
+        if (isVersionMismatchError(e as APIError)) {
+          const oldVersion = bytesToHex(this.chainHash);
+          this._config.serializer = await createSerializerFromHttp(this.http);
+          const newVersion = bytesToHex(this.chainHash);
 
-        throw new VersionMismatchError(
-          "Schema version mismatch when submitting transaction",
-          newVersion,
-          oldVersion,
-        );
-      }
-      throw e;
-    }
+          if (oldVersion !== newVersion) {
+            throw new VersionMismatchError(
+              "Schema version mismatch when submitting transaction",
+              newVersion,
+              oldVersion,
+            );
+          }
+        }
+        throw e;
+      });
   }
 
   /**
@@ -288,4 +285,24 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   get context(): C {
     return this._config.context;
   }
+
+  /**
+   * The chain hash of the rollup.
+   */
+  get chainHash(): Uint8Array {
+    return this.serializer.schema.chainHash;
+  }
+}
+
+function isVersionMismatchError(e: APIError): boolean {
+  if (
+    // biome-ignore lint/suspicious/noExplicitAny: yolo
+    (e.error as any)?.errors[0]?.details?.message.includes(
+      "Signature verification failed",
+    )
+  ) {
+    return true;
+  }
+
+  return false;
 }

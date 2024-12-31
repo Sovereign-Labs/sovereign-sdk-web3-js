@@ -139,7 +139,7 @@ describe("standardTypeBuilder", () => {
 });
 
 const mockSerializer: RollupSerializer = {
-  version: "01",
+  schema: {} as any,
   serialize: vi.fn().mockReturnValue(new Uint8Array([1, 2, 3])),
   serializeRuntimeCall: vi.fn().mockReturnValue(new Uint8Array([4, 5, 6])),
   serializeUnsignedTx: vi.fn().mockReturnValue(new Uint8Array([7, 8, 9])),

@@ -35,7 +35,3 @@ export class VersionMismatchError extends SovereignError {
     this.retryable = newVersion !== currentVersion;
   }
 }
-
-export function isVersionMismatchError(e: Error): boolean {
-  return true;
-}
