@@ -1,7 +1,7 @@
 import { bytesToHex } from "@sovereign-sdk/utils";
 import { describe, expect, it } from "vitest";
 import demoRollupSchema from "../../__fixtures__/demo-rollup-schema.json";
-import { createSerializer } from "./serialization";
+import { createSerializer, createSerializerFromHttp } from "./serialization";
 
 describe("serialization", () => {
   it("should throw SovereignError when schema is invalid", () => {
@@ -109,5 +109,36 @@ describe("serialization", () => {
 
       expect(actual).toEqual(expected);
     });
+  });
+});
+
+describe("createSerializerFromHttp", () => {
+  it("should create a serializer from HTTP response", async () => {
+    const mockClient = {
+      rollup: {
+        schema: {
+          retrieve: async () => ({ data: demoRollupSchema }),
+        },
+      },
+    };
+
+    const serializer = await createSerializerFromHttp(mockClient as any);
+    const call = { value_setter: { set_value: 5 } };
+    const actual = serializer.serializeRuntimeCall(call);
+    expect(actual).toEqual(new Uint8Array([2, 0, 5, 0, 0, 0]));
+  });
+
+  it("should throw RollupInterfaceError when response is empty", async () => {
+    const mockClient = {
+      rollup: {
+        schema: {
+          retrieve: async () => ({ data: null }),
+        },
+      },
+    };
+
+    await expect(createSerializerFromHttp(mockClient as any)).rejects.toThrow(
+      "Endpoint returned empty response",
+    );
   });
 });
