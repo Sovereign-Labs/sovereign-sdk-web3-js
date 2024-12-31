@@ -12,4 +12,30 @@ export class SovereignError extends Error {
 
 export class InvalidRollupConfigError extends SovereignError {}
 
-export class RollupInterfaceError extends SovereignError {}
+export class RollupInterfaceError extends SovereignError {
+  public readonly method: string;
+
+  constructor(message: string, method: string) {
+    super(message);
+
+    this.method = method;
+  }
+}
+
+export class VersionMismatchError extends SovereignError {
+  public readonly newVersion: string;
+  public readonly currentVersion: string;
+  public readonly retryable: boolean;
+
+  constructor(message: string, newVersion: string, currentVersion: string) {
+    super(message);
+
+    this.newVersion = newVersion;
+    this.currentVersion = currentVersion;
+    this.retryable = newVersion !== currentVersion;
+  }
+}
+
+export function isVersionMismatchError(e: Error): boolean {
+  return true;
+}

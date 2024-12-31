@@ -2,7 +2,15 @@ import type SovereignClient from "@sovereign-sdk/client";
 import type { Signer } from "@sovereign-sdk/signers";
 import { bytesToHex } from "@sovereign-sdk/utils";
 import { Base64 } from "js-base64";
-import type { RollupSerializer } from "../serialization";
+import {
+  RollupInterfaceError,
+  VersionMismatchError,
+  isVersionMismatchError,
+} from "../errors";
+import {
+  type RollupSerializer,
+  createSerializerFromHttp,
+} from "../serialization";
 import type { BaseTypeSpec } from "../type-spec";
 import type { DeepPartial } from "../utils";
 
@@ -139,8 +147,18 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    * @param address - The public key to dedup.
    */
   async dedup(address: Uint8Array): Promise<S["Dedup"]> {
-    const response = await this.rollup.addresses.dedup(bytesToHex(address));
-    return response.data as S["Dedup"];
+    const { data: dedup } = await this.rollup.addresses.dedup(
+      bytesToHex(address),
+    );
+
+    if (dedup === undefined) {
+      throw new RollupInterfaceError(
+        "Endpoint returned empty response",
+        "dedup",
+      );
+    }
+
+    return dedup as S["Dedup"];
   }
 
   /**
@@ -153,9 +171,24 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializedTx = this.serializer.serializeTx(transaction);
 
-    return this.sequencer.txs.create({
-      body: Base64.fromUint8Array(serializedTx),
-    });
+    try {
+      return this.sequencer.txs.create({
+        body: Base64.fromUint8Array(serializedTx),
+      });
+    } catch (e) {
+      if (isVersionMismatchError(e as Error)) {
+        const oldVersion = this.serializer.version;
+        this._config.serializer = await createSerializerFromHttp(this.http);
+        const newVersion = this.serializer.version;
+
+        throw new VersionMismatchError(
+          "Schema version mismatch when submitting transaction",
+          newVersion,
+          oldVersion,
+        );
+      }
+      throw e;
+    }
   }
 
   /**

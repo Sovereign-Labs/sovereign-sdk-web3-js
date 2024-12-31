@@ -11,6 +11,7 @@ import {
 } from "./rollup";
 
 const mockSerializer: RollupSerializer = {
+  version: "01",
   serialize: vi.fn().mockReturnValue(new Uint8Array([1, 2, 3])),
   serializeRuntimeCall: vi.fn().mockReturnValue(new Uint8Array([4, 5, 6])),
   serializeUnsignedTx: vi.fn().mockReturnValue(new Uint8Array([7, 8, 9])),
@@ -19,7 +20,7 @@ const mockSerializer: RollupSerializer = {
 
 const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
   config?: Partial<PartialRollupConfig<C>>,
-  builder?: Partial<TypeBuilder<S, C>>,
+  builder?: Partial<TypeBuilder<S, C>>
 ) =>
   new Rollup(
     {
@@ -32,7 +33,7 @@ const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
       unsignedTransaction: vi.fn(),
       transaction: vi.fn(),
       ...builder,
-    },
+    }
   );
 
 describe("Rollup", () => {
@@ -112,7 +113,7 @@ describe("Rollup", () => {
 
       expect(mockSigner.sign).toHaveBeenCalledWith(new Uint8Array([7, 8, 9]));
       expect(mockSerializer.serializeUnsignedTx).toHaveBeenCalledWith(
-        unsignedTx,
+        unsignedTx
       );
     });
     it("should call type builder with correct parameters", async () => {

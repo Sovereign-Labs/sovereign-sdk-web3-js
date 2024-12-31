@@ -9,6 +9,7 @@ import {
 
 describe("standardTypeBuilder", () => {
   const mockRollup = {
+    dedup: vi.fn().mockResolvedValue({ nonce: 5 }),
     serializer: {
       serializeRuntimeCall: vi.fn().mockReturnValue(new Uint8Array([1, 2, 3])),
     },
@@ -70,7 +71,7 @@ describe("standardTypeBuilder", () => {
           chain_id: 1,
         },
       });
-      expect(mockRollup.rollup.addresses.dedup).toHaveBeenCalledWith("040506");
+      expect(mockRollup.dedup).toHaveBeenCalledWith(new Uint8Array([4, 5, 6]));
     });
 
     it("should merge overridden details with defaults", async () => {
@@ -138,6 +139,7 @@ describe("standardTypeBuilder", () => {
 });
 
 const mockSerializer: RollupSerializer = {
+  version: "01",
   serialize: vi.fn().mockReturnValue(new Uint8Array([1, 2, 3])),
   serializeRuntimeCall: vi.fn().mockReturnValue(new Uint8Array([4, 5, 6])),
   serializeUnsignedTx: vi.fn().mockReturnValue(new Uint8Array([7, 8, 9])),

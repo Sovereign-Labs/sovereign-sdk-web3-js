@@ -1,6 +1,5 @@
 import SovereignClient from "@sovereign-sdk/client";
 import { bytesToHex } from "@sovereign-sdk/utils";
-import { RollupInterfaceError } from "../errors";
 import { createSerializerFromHttp } from "../serialization";
 import {
   type PartialRollupConfig,
@@ -55,15 +54,9 @@ const useOrFetchNonce = async <S extends StandardRollupSpec<unknown>>({
   if (overrides?.nonce !== undefined && overrides.nonce >= 0) {
     return overrides.nonce;
   }
-  const { data } = await rollup.rollup.addresses.dedup(bytesToHex(sender));
+  const dedup = await rollup.dedup(sender);
 
-  if (data === undefined) {
-    throw new RollupInterfaceError(
-      "Endpoint that should return dedup information returned empty response",
-    );
-  }
-
-  return (data as S["Dedup"]).nonce;
+  return dedup.nonce;
 };
 
 export function standardTypeBuilder<
