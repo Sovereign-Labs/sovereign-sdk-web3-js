@@ -47,32 +47,58 @@ describe("Rollup", () => {
       expect(rollup.http).toBe(client);
     });
   });
-  it("should call the rollup addresses dedup endpoint with hex-encoded address", async () => {
-    const client = new SovereignClient({ fetch: vi.fn() });
-    client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
-      data: { nonce: 1 },
+  describe("dedup", () => {
+    it("should call the rollup addresses dedup endpoint with hex-encoded address", async () => {
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
+        data: { nonce: 1 },
+      });
+      const rollup = testRollup({ client });
+
+      const address = new Uint8Array([1, 2, 3]);
+      await rollup.dedup(address);
+
+      expect(client.rollup.addresses.dedup).toHaveBeenCalledWith("010203");
     });
-    const rollup = testRollup({ client });
 
-    const address = new Uint8Array([1, 2, 3]);
-    await rollup.dedup(address);
+    it("should return the dedup data from the response", async () => {
+      const expectedDedup = { nonce: 42 };
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
+        data: expectedDedup,
+      });
+      const rollup = testRollup({ client });
 
-    expect(client.rollup.addresses.dedup).toHaveBeenCalledWith("010203");
-  });
+      const result = await rollup.dedup(new Uint8Array([1, 2, 3]));
 
-  it("should return the dedup data from the response", async () => {
-    const expectedDedup = { nonce: 42 };
-    const client = new SovereignClient({ fetch: vi.fn() });
-    client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
-      data: expectedDedup,
+      expect(result).toEqual(expectedDedup);
     });
-    const rollup = testRollup({ client });
 
-    const result = await rollup.dedup(new Uint8Array([1, 2, 3]));
+    it("should throw RollupInterfaceError when endpoint returns undefined data", async () => {
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
+        data: undefined,
+      });
+      const rollup = testRollup({ client });
 
-    expect(result).toEqual(expectedDedup);
+      await expect(rollup.dedup(new Uint8Array([1, 2, 3]))).rejects.toThrow(
+        "Endpoint returned empty response",
+      );
+    });
   });
   describe("submitTransaction", () => {
+    const versionMismatchError = {
+      error: {
+        errors: [
+          {
+            details: {
+              message: "Signature verification failed",
+            },
+          },
+        ],
+      },
+    };
+
     it("should correctly serialize and submit the transaction", async () => {
       const client = new SovereignClient({ fetch: vi.fn() });
       client.sequencer.txs.create = vi.fn().mockResolvedValue({});
@@ -85,6 +111,44 @@ describe("Rollup", () => {
       expect(rollup.http.sequencer.txs.create).toHaveBeenCalledWith({
         body: "CgsM", // Base64 encoded [10,11,12]
       });
+    });
+    it("should identify version mismatch errors correctly", async () => {
+      const nonVersionMismatchError = {
+        error: {
+          errors: [
+            {
+              details: {
+                message: "Some other error",
+              },
+            },
+          ],
+        },
+      };
+
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.sequencer.txs.create = vi
+        .fn()
+        .mockRejectedValue(nonVersionMismatchError);
+
+      const rollup = testRollup({ client });
+      const transaction = { foo: "bar" };
+
+      await expect(rollup.submitTransaction(transaction)).rejects.toEqual(
+        nonVersionMismatchError,
+      );
+    });
+
+    it("should propagate non-version-mismatch errors", async () => {
+      const client = new SovereignClient({ fetch: vi.fn() });
+      const error = new Error("Different error");
+      client.sequencer.txs.create = vi.fn().mockRejectedValue(error);
+
+      const rollup = testRollup({ client });
+      const transaction = { foo: "bar" };
+
+      await expect(rollup.submitTransaction(transaction)).rejects.toThrow(
+        error,
+      );
     });
   });
   describe("signAndSubmitTransaction", () => {
