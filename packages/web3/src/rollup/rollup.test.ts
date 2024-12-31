@@ -1,12 +1,12 @@
 import SovereignClient from "@sovereign-sdk/client";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import demoSchema from "../../../__fixtures__/demo-rollup-schema.json";
-import { InvalidRollupConfigError } from "../errors";
-import type { RollupSerializer } from "../serialization";
+import demoRollupSchema from "../../../__fixtures__/demo-rollup-schema.json";
+import { VersionMismatchError } from "../errors";
+import { type RollupSerializer, createSerializer } from "../serialization";
 import type { BaseTypeSpec } from "../type-spec";
 import {
+  type PartialRollupConfig,
   Rollup,
-  type RollupConfig,
   type RollupContext,
   type TypeBuilder,
 } from "./rollup";
@@ -16,10 +16,11 @@ const mockSerializer: RollupSerializer = {
   serializeRuntimeCall: vi.fn().mockReturnValue(new Uint8Array([4, 5, 6])),
   serializeUnsignedTx: vi.fn().mockReturnValue(new Uint8Array([7, 8, 9])),
   serializeTx: vi.fn().mockReturnValue(new Uint8Array([10, 11, 12])),
+  schema: { chainHash: new Uint8Array([1, 2, 3, 4]) } as any,
 };
 
 const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
-  config?: Partial<RollupConfig<C>>,
+  config?: Partial<PartialRollupConfig<C>>,
   builder?: Partial<TypeBuilder<S, C>>,
 ) =>
   new Rollup(
@@ -38,16 +39,6 @@ const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
 
 describe("Rollup", () => {
   describe("constructor", () => {
-    it("should throw an error if no schema or serializer is provided", () => {
-      expect(() =>
-        testRollup({ schema: undefined, serializer: undefined }),
-      ).toThrowError(InvalidRollupConfigError); // todo, also assert text so we know it's the right error
-    });
-    it("should create a serializer if only schema is provided", () => {
-      const rollup = testRollup({ schema: demoSchema, serializer: undefined });
-      expect(rollup.serializer).toBeDefined();
-      expect(rollup.serializer).not.toBe(mockSerializer);
-    });
     it("should use the provided serializer if it is provided", () => {
       const rollup = testRollup({ serializer: mockSerializer });
       expect(rollup.serializer).toBe(mockSerializer);
@@ -57,40 +48,62 @@ describe("Rollup", () => {
       const rollup = testRollup({ client });
       expect(rollup.http).toBe(client);
     });
-    it("should create a new client if none is provided", () => {
-      const rollup = testRollup({ client: undefined });
-      expect(rollup.http).toBeInstanceOf(SovereignClient);
-    });
   });
-  it("should call the rollup addresses dedup endpoint with hex-encoded address", async () => {
-    const client = new SovereignClient({ fetch: vi.fn() });
-    client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
-      data: { nonce: 1 },
+  describe("dedup", () => {
+    it("should call the rollup addresses dedup endpoint with hex-encoded address", async () => {
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
+        data: { nonce: 1 },
+      });
+      const rollup = testRollup({ client });
+
+      const address = new Uint8Array([1, 2, 3]);
+      await rollup.dedup(address);
+
+      expect(client.rollup.addresses.dedup).toHaveBeenCalledWith("010203");
     });
-    const rollup = testRollup({ client });
 
-    const address = new Uint8Array([1, 2, 3]);
-    await rollup.dedup(address);
+    it("should return the dedup data from the response", async () => {
+      const expectedDedup = { nonce: 42 };
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
+        data: expectedDedup,
+      });
+      const rollup = testRollup({ client });
 
-    expect(client.rollup.addresses.dedup).toHaveBeenCalledWith("010203");
-  });
+      const result = await rollup.dedup(new Uint8Array([1, 2, 3]));
 
-  it("should return the dedup data from the response", async () => {
-    const expectedDedup = { nonce: 42 };
-    const client = new SovereignClient({ fetch: vi.fn() });
-    client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
-      data: expectedDedup,
+      expect(result).toEqual(expectedDedup);
     });
-    const rollup = testRollup({ client });
 
-    const result = await rollup.dedup(new Uint8Array([1, 2, 3]));
+    it("should throw RollupInterfaceError when endpoint returns undefined data", async () => {
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
+        data: undefined,
+      });
+      const rollup = testRollup({ client });
 
-    expect(result).toEqual(expectedDedup);
+      await expect(rollup.dedup(new Uint8Array([1, 2, 3]))).rejects.toThrow(
+        "Endpoint returned empty response",
+      );
+    });
   });
   describe("submitTransaction", () => {
+    const versionMismatchError = {
+      error: {
+        errors: [
+          {
+            details: {
+              message: "Signature verification failed",
+            },
+          },
+        ],
+      },
+    };
+
     it("should correctly serialize and submit the transaction", async () => {
       const client = new SovereignClient({ fetch: vi.fn() });
-      client.sequencer.txs.create = vi.fn();
+      client.sequencer.txs.create = vi.fn().mockResolvedValue({});
       const rollup = testRollup({ client });
       const transaction = { foo: "bar" };
 
@@ -100,6 +113,86 @@ describe("Rollup", () => {
       expect(rollup.http.sequencer.txs.create).toHaveBeenCalledWith({
         body: "CgsM", // Base64 encoded [10,11,12]
       });
+    });
+    it("should identify version mismatch errors correctly", async () => {
+      const nonVersionMismatchError = {
+        error: {
+          errors: [
+            {
+              details: {
+                message: "Some other error",
+              },
+            },
+          ],
+        },
+      };
+
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.sequencer.txs.create = vi
+        .fn()
+        .mockRejectedValue(nonVersionMismatchError);
+
+      const rollup = testRollup({ client });
+      const transaction = { foo: "bar" };
+
+      await expect(rollup.submitTransaction(transaction)).rejects.toEqual(
+        nonVersionMismatchError,
+      );
+    });
+
+    it("should throw VersionMismatchError when chain hash changes", async () => {
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.sequencer.txs.create = vi
+        .fn()
+        .mockRejectedValue(versionMismatchError);
+      client.rollup.schema.retrieve = vi
+        .fn()
+        .mockResolvedValue({ data: demoRollupSchema });
+
+      const rollup = testRollup({ client });
+
+      vi.spyOn(rollup, "chainHash", "get")
+        .mockReturnValueOnce(new Uint8Array([1, 2, 3, 4]))
+        .mockReturnValueOnce(new Uint8Array([5, 5, 5, 5]));
+      const transaction = { foo: "bar" };
+
+      await expect(rollup.submitTransaction(transaction)).rejects.toThrow(
+        VersionMismatchError,
+      );
+    });
+
+    it("should bubble error if chain hash does not change", async () => {
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.sequencer.txs.create = vi
+        .fn()
+        .mockRejectedValue(versionMismatchError);
+      client.rollup.schema.retrieve = vi
+        .fn()
+        .mockResolvedValue({ data: demoRollupSchema });
+
+      const rollup = testRollup({ client });
+
+      vi.spyOn(rollup, "chainHash", "get")
+        .mockReturnValueOnce(new Uint8Array([1, 2, 3, 4]))
+        .mockReturnValueOnce(new Uint8Array([1, 2, 3, 4]));
+      const transaction = { foo: "bar" };
+
+      await expect(rollup.submitTransaction(transaction)).rejects.toEqual(
+        versionMismatchError,
+      );
+    });
+
+    it("should propagate non-version-mismatch errors", async () => {
+      const client = new SovereignClient({ fetch: vi.fn() });
+      const error = new Error("Different error");
+      client.sequencer.txs.create = vi.fn().mockRejectedValue(error);
+
+      const rollup = testRollup({ client });
+      const transaction = { foo: "bar" };
+
+      await expect(rollup.submitTransaction(transaction)).rejects.toThrow(
+        error,
+      );
     });
   });
   describe("signAndSubmitTransaction", () => {
@@ -248,6 +341,19 @@ describe("Rollup", () => {
       const rollup = testRollup({ context });
 
       expect(rollup.context).toBe(context);
+    });
+
+    it("should return the chain hash from the serializer schema", () => {
+      const chainHash = new Uint8Array([1, 2, 3, 4]);
+      const serializer = {
+        ...mockSerializer,
+        schema: {
+          chainHash,
+        },
+      } as any;
+      const rollup = testRollup({ serializer });
+
+      expect(rollup.chainHash).toBe(chainHash);
     });
   });
 });

@@ -9,6 +9,7 @@ import {
 
 describe("standardTypeBuilder", () => {
   const mockRollup = {
+    dedup: vi.fn().mockResolvedValue({ nonce: 5 }),
     serializer: {
       serializeRuntimeCall: vi.fn().mockReturnValue(new Uint8Array([1, 2, 3])),
     },
@@ -70,7 +71,7 @@ describe("standardTypeBuilder", () => {
           chain_id: 1,
         },
       });
-      expect(mockRollup.rollup.addresses.dedup).toHaveBeenCalledWith("040506");
+      expect(mockRollup.dedup).toHaveBeenCalledWith(new Uint8Array([4, 5, 6]));
     });
 
     it("should merge overridden details with defaults", async () => {
@@ -138,6 +139,7 @@ describe("standardTypeBuilder", () => {
 });
 
 const mockSerializer: RollupSerializer = {
+  schema: {} as any,
   serialize: vi.fn().mockReturnValue(new Uint8Array([1, 2, 3])),
   serializeRuntimeCall: vi.fn().mockReturnValue(new Uint8Array([4, 5, 6])),
   serializeUnsignedTx: vi.fn().mockReturnValue(new Uint8Array([7, 8, 9])),
@@ -158,14 +160,19 @@ describe("createStandardRollup", () => {
     },
   };
 
-  it("should create a StandardRollup instance", () => {
-    const rollup = createStandardRollup(mockConfig);
+  it("should create a new client if none is provided", async () => {
+    const rollup = await createStandardRollup(mockConfig);
+    expect(rollup.http).toBeInstanceOf(SovereignClient);
+  });
+
+  it("should create a StandardRollup instance", async () => {
+    const rollup = await createStandardRollup(mockConfig);
     expect(rollup).toBeInstanceOf(StandardRollup);
   });
 
-  it("should use the provided type builder overrides", () => {
+  it("should use the provided type builder overrides", async () => {
     const customUnsignedTransaction = vi.fn();
-    const rollup = createStandardRollup(mockConfig, {
+    const rollup = await createStandardRollup(mockConfig, {
       unsignedTransaction: customUnsignedTransaction,
     });
 
@@ -174,9 +181,9 @@ describe("createStandardRollup", () => {
     expect(typeBuilder.unsignedTransaction).toBe(customUnsignedTransaction);
   });
 
-  it("should maintain default type builder methods when providing partial overrides", () => {
+  it("should maintain default type builder methods when providing partial overrides", async () => {
     const customUnsignedTransaction = vi.fn();
-    const rollup = createStandardRollup(mockConfig, {
+    const rollup = await createStandardRollup(mockConfig, {
       unsignedTransaction: customUnsignedTransaction,
     });
 

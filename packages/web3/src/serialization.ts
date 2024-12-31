@@ -1,5 +1,6 @@
+import type SovereignClient from "@sovereign-sdk/client";
 import { KnownTypeId, Schema } from "@sovereign-sdk/universal-wallet-wasm";
-import { SovereignError } from "./errors";
+import { RollupInterfaceError, SovereignError } from "./errors";
 
 /**
  * A rollup schema is a description of the types that are utilized in the rollup.
@@ -58,6 +59,11 @@ export type RollupSerializer = {
    * @returns The serialized Borsh bytes.
    */
   serializeTx(input: unknown): Uint8Array;
+
+  /**
+   * Returns the `Schema` used by the serializer.
+   */
+  get schema(): Schema;
 };
 
 function loadSchema(schemaObject: RollupSchema): Schema {
@@ -79,6 +85,7 @@ export function createSerializer(schemaObject: RollupSchema): RollupSerializer {
   const schema = loadSchema(schemaObject);
 
   return {
+    schema,
     serialize(input: unknown, index: number): Uint8Array {
       try {
         return schema.jsonToBorsh(
@@ -113,4 +120,19 @@ export function createSerializer(schemaObject: RollupSchema): RollupSerializer {
       );
     },
   };
+}
+
+export async function createSerializerFromHttp(
+  client: SovereignClient,
+): Promise<RollupSerializer> {
+  const { data: schema } = await client.rollup.schema.retrieve();
+
+  if (!schema) {
+    throw new RollupInterfaceError(
+      "Endpoint returned empty response",
+      "schema",
+    );
+  }
+
+  return createSerializer(schema as RollupSchema);
 }
