@@ -298,5 +298,18 @@ describe("Rollup", () => {
 
       expect(rollup.context).toBe(context);
     });
+
+    it("should return the chain hash from the serializer schema", () => {
+      const chainHash = new Uint8Array([1, 2, 3, 4]);
+      const serializer = {
+        ...mockSerializer,
+        schema: {
+          chainHash,
+        },
+      } as any;
+      const rollup = testRollup({ serializer });
+
+      expect(rollup.chainHash).toBe(chainHash);
+    });
   });
 });
