@@ -1,6 +1,8 @@
 import SovereignClient from "@sovereign-sdk/client";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { RollupSerializer } from "../serialization";
+import demoRollupSchema from "../../../__fixtures__/demo-rollup-schema.json";
+import { VersionMismatchError } from "../errors";
+import { type RollupSerializer, createSerializer } from "../serialization";
 import type { BaseTypeSpec } from "../type-spec";
 import {
   type PartialRollupConfig,
@@ -14,7 +16,7 @@ const mockSerializer: RollupSerializer = {
   serializeRuntimeCall: vi.fn().mockReturnValue(new Uint8Array([4, 5, 6])),
   serializeUnsignedTx: vi.fn().mockReturnValue(new Uint8Array([7, 8, 9])),
   serializeTx: vi.fn().mockReturnValue(new Uint8Array([10, 11, 12])),
-  schema: {} as any,
+  schema: { chainHash: new Uint8Array([1, 2, 3, 4]) } as any,
 };
 
 const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
@@ -135,6 +137,48 @@ describe("Rollup", () => {
 
       await expect(rollup.submitTransaction(transaction)).rejects.toEqual(
         nonVersionMismatchError,
+      );
+    });
+
+    it("should throw VersionMismatchError when chain hash changes", async () => {
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.sequencer.txs.create = vi
+        .fn()
+        .mockRejectedValue(versionMismatchError);
+      client.rollup.schema.retrieve = vi
+        .fn()
+        .mockResolvedValue({ data: demoRollupSchema });
+
+      const rollup = testRollup({ client });
+
+      vi.spyOn(rollup, "chainHash", "get")
+        .mockReturnValueOnce(new Uint8Array([1, 2, 3, 4]))
+        .mockReturnValueOnce(new Uint8Array([5, 5, 5, 5]));
+      const transaction = { foo: "bar" };
+
+      await expect(rollup.submitTransaction(transaction)).rejects.toThrow(
+        VersionMismatchError,
+      );
+    });
+
+    it("should bubble error if chain hash does not change", async () => {
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.sequencer.txs.create = vi
+        .fn()
+        .mockRejectedValue(versionMismatchError);
+      client.rollup.schema.retrieve = vi
+        .fn()
+        .mockResolvedValue({ data: demoRollupSchema });
+
+      const rollup = testRollup({ client });
+
+      vi.spyOn(rollup, "chainHash", "get")
+        .mockReturnValueOnce(new Uint8Array([1, 2, 3, 4]))
+        .mockReturnValueOnce(new Uint8Array([1, 2, 3, 4]));
+      const transaction = { foo: "bar" };
+
+      await expect(rollup.submitTransaction(transaction)).rejects.toEqual(
+        versionMismatchError,
       );
     });
 
