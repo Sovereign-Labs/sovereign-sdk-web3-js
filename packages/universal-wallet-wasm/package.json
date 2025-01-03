@@ -22,7 +22,6 @@
   "exports": {
     ".": {
       "types": "./dist/node/wallet_wasm.d.ts",
-      "node": "./dist/node/wallet_wasm.js",
       "import": "./dist/esm/wallet_wasm.js",
       "require": "./dist/node/wallet_wasm.js"
     }
