@@ -18,6 +18,9 @@ importers:
       typedoc:
         specifier: ^0.26.10
         version: 0.26.10(typescript@5.6.3)
+      vite-plugin-wasm:
+        specifier: ^3.4.1
+        version: 3.4.1(vite@5.4.8(@types/node@22.7.5))
       vitest:
         specifier: ^2.1.1
         version: 2.1.2(@types/node@22.7.5)
@@ -2341,6 +2344,11 @@ packages:
     resolution: {integrity: sha512-HPcGNN5g/7I2OtPjLqgOtCRu/qhVvBxTUD3qzitmL0SrG1cWFzxzhMDWussxSbrRYWqnKf8P2jiNhPMSN+ymsQ==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
+
+  vite-plugin-wasm@3.4.1:
+    resolution: {integrity: sha512-ja3nSo2UCkVeitltJGkS3pfQHAanHv/DqGatdI39ja6McgABlpsZ5hVgl6wuR8Qx5etY3T5qgDQhOWzc5RReZA==}
+    peerDependencies:
+      vite: ^2 || ^3 || ^4 || ^5 || ^6
 
   vite@5.4.8:
     resolution: {integrity: sha512-FqrItQ4DT1NC4zCUqMB4c4AZORMKIa0m8/URVCZ77OZ/QSNeJ54bU1vrFADbDsuwfIPcgknRkmqakQcgnL4GiQ==}
@@ -4678,6 +4686,10 @@ snapshots:
       - sugarss
       - supports-color
       - terser
+
+  vite-plugin-wasm@3.4.1(vite@5.4.8(@types/node@22.7.5)):
+    dependencies:
+      vite: 5.4.8(@types/node@22.7.5)
 
   vite@5.4.8(@types/node@22.7.5):
     dependencies:

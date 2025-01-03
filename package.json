@@ -23,6 +23,7 @@
   "devDependencies": {
     "@vitest/coverage-v8": "2.1.2",
     "typedoc": "^0.26.10",
+    "vite-plugin-wasm": "^3.4.1",
     "vitest": "^2.1.1"
   }
 }

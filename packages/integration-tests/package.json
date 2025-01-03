@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Package containing integration tests for web3 sdk functionality",
   "scripts": {
-    "playground": "node --loader ts-node/esm src/tests/playground.ts",
+    "playground": "node --experimental-wasm-modules --loader ts-node/esm src/tests/playground.ts",
     "test:integration": "vitest"
   },
   "keywords": [],
