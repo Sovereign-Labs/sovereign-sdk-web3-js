@@ -1,5 +1,11 @@
 # @sovereign-sdk/universal-wallet-wasm
 
+## 0.1.8
+
+### Patch Changes
+
+- aad0d22: Fix hardcoded cjs export in nodejs runtimes. This was causing the cjs entry point to be loaded even if the nodejs env was using a bundler/esm like in the case of nextjs
+
 ## 0.1.7
 
 ### Patch Changes
