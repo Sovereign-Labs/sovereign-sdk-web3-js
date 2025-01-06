@@ -1,5 +1,11 @@
 # @sovereign-sdk/universal-wallet-wasm
 
+## 0.1.9
+
+### Patch Changes
+
+- 66db1e5: Ensure `esm` files are always treated as esm by nodejs by including sub package.json
+
 ## 0.1.8
 
 ### Patch Changes
