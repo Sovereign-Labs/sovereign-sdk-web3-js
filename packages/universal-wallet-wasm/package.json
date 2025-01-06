@@ -2,7 +2,7 @@
   "name": "@sovereign-sdk/universal-wallet-wasm",
   "version": "0.1.8",
   "scripts": {
-    "build": "pnpm run compile:node && pnpm run compile:esm",
+    "build": "pnpm run compile:node && pnpm run compile:esm && ./scripts/ensure_module_types.sh",
     "compile:esm": "wasm-pack build --target bundler --release --out-dir dist/esm",
     "compile:node": "wasm-pack build --target nodejs --release --out-dir dist/node",
     "test": "pnpm compile:node && vitest"
@@ -10,7 +10,6 @@
   "files": [
     "dist/**/*",
     "!dist/**/.gitignore",
-    "!dist/**/package.json",
     "!dist/**/README.md",
     "package.json",
     "README.md"
