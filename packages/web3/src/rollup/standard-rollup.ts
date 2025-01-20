@@ -143,7 +143,7 @@ export class StandardRollup<RuntimeCall> extends Rollup<
         encoded_call_message: bytesToHex(runtimeCall),
         generation,
         sender_pub_key: bytesToHex(publicKey),
-      } as any, // TODO: fix this when client update is pushed
+      },
     });
 
     // biome-ignore lint/style/noNonNullAssertion: fix later
