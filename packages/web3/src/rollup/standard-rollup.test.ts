@@ -38,13 +38,13 @@ describe("standardTypeBuilder", () => {
       const result = await builder.unsignedTransaction({
         runtimeCall: { foo: "bar" },
         sender: new Uint8Array([4, 5, 6]),
-        overrides: { nonce: 10 },
+        overrides: { generation: 10 },
         rollup: mockRollup as any,
       });
 
       expect(result).toEqual({
         runtime_call: { foo: "bar" },
-        nonce: 10,
+        generation: 10,
         details: {
           max_priority_fee_bips: 100,
           max_fee: 1000,
@@ -64,7 +64,7 @@ describe("standardTypeBuilder", () => {
 
       expect(result).toEqual({
         runtime_call: { foo: "bar" },
-        nonce: 5,
+        generation: 5,
         details: {
           max_priority_fee_bips: 100,
           max_fee: 1000,
@@ -89,7 +89,7 @@ describe("standardTypeBuilder", () => {
 
       expect(result).toEqual({
         runtime_call: { foo: "bar" },
-        nonce: 5,
+        generation: 5,
         details: {
           max_priority_fee_bips: 100,
           max_fee: 2000,
@@ -105,7 +105,7 @@ describe("standardTypeBuilder", () => {
       const result = await builder.transaction({
         unsignedTx: {
           runtime_call: { value_setter: { set_value: 5 } },
-          nonce: 5,
+          generation: 5,
           details: {
             max_priority_fee_bips: 100,
             max_fee: 1000,
@@ -126,7 +126,7 @@ describe("standardTypeBuilder", () => {
           msg_sig: new Uint8Array([7, 8, 9]),
         },
         runtime_call: { value_setter: { set_value: 5 } },
-        nonce: 5,
+        generation: 5,
         details: {
           max_priority_fee_bips: 100,
           max_fee: 1000,
