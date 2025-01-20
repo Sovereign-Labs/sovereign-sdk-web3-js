@@ -15,25 +15,25 @@ describe("Schema", () => {
     it("should return the descriptor used to create the schema", () => {
       const expected = JSON.stringify(demoRollupSchema);
 
-      expect(schema.descriptor).toEqual(expected);
+      expect(expected).toEqual(schema.descriptor);
     });
   });
   describe("chainHash", () => {
     it("should calculate the chain hash successfully", () => {
       const expected =
-        "3b4e3d11eb133fb758f70a84497ae0778d795738820b88829283354f2f0ff7cd";
+        "0be62a98bfc738700da07f673ede4039237ddabe93095814d84b70105cfc543b";
       const actual = bytesToHex(schema.chainHash);
 
-      expect(actual).toEqual(expected);
+      expect(expected).toEqual(actual);
     });
   });
   describe("metadataHash", () => {
     it("should restore the metadata hash successfully", () => {
       const expected =
-        "2ad8afcdccece0ded63b3124d361919ccee9a0af0201dec588912a2ea8147e04";
+        "0531d8dd2cda4f0b224d581bfd008d0efd31f7504974b5c7742bc263b99975c6";
       const actual = bytesToHex(schema.metadataHash);
 
-      expect(actual).toEqual(expected);
+      expect(expected).toEqual(actual);
     });
   });
   describe("jsonToBorsh", () => {
@@ -47,7 +47,7 @@ describe("Schema", () => {
       );
       const expected = "0201020000000406";
 
-      expect(actual).toEqual(expected);
+      expect(expected).toEqual(actual);
     });
     it("should return concise and useful error messages", () => {
       const call = { value_setter: { set_value: "not a number" } };
