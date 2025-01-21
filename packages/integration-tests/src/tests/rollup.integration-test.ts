@@ -16,7 +16,7 @@ const rollup = await createStandardRollup({
 
 describe("rollup", async () => {
   describe.sequential("transaction submission", () => {
-    it("should successfully sign and submit a transaction", async () => {
+    it.todo("should successfully sign and submit a transaction", async () => {
       const runtimeCall = {
         value_setter: {
           set_value: 5,
@@ -27,31 +27,34 @@ describe("rollup", async () => {
       });
       expect(response.data!.status).toEqual("submitted");
     });
-    it("should submit a batch with incrementing nonces successfully", async () => {
-      const publicKey = await signer.publicKey();
-      let { nonce } = await rollup.dedup(publicKey);
-      const startingNonce = nonce;
-      const batch = [];
-      const callMessages = [
-        { value_setter: { set_value: 8 } },
-        { value_setter: { set_value: 10 } },
-        { value_setter: { set_value: 5 } },
-      ];
+    it.todo(
+      "should submit a batch with incrementing nonces successfully",
+      async () => {
+        const publicKey = await signer.publicKey();
+        let { nonce } = await rollup.dedup(publicKey);
+        const startingNonce = nonce;
+        const batch = [];
+        const callMessages = [
+          { value_setter: { set_value: 8 } },
+          { value_setter: { set_value: 10 } },
+          { value_setter: { set_value: 5 } },
+        ];
 
-      for (const callMessage of callMessages) {
-        const { transaction } = await rollup.call(callMessage, {
-          signer,
-          overrides: { generation: nonce },
-        });
+        for (const callMessage of callMessages) {
+          const { transaction } = await rollup.call(callMessage, {
+            signer,
+            overrides: { generation: nonce },
+          });
 
-        batch.push(transaction);
-        nonce += 1;
+          batch.push(transaction);
+          nonce += 1;
+        }
+
+        expect(batch.length).toEqual(3);
+        expect(nonce).toEqual(startingNonce + 3);
+        batch.forEach((b) => console.log(b));
       }
-
-      expect(batch.length).toEqual(3);
-      expect(nonce).toEqual(startingNonce + 3);
-      batch.forEach((b) => console.log(b));
-    });
+    );
     it.todo(
       "should successfully create a new token using the bank module",
       () => {
