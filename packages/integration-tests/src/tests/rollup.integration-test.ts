@@ -1,11 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { createStandardRollup } from "@sovereign-sdk/web3";
-import demoSchema from "../../../__fixtures__/demo-rollup-schema.json";
 import { getSigner } from "./signer";
 
 const signer = getSigner();
-const rollup = createStandardRollup({
-  schema: demoSchema,
+const rollup = await createStandardRollup({
   context: {
     defaultTxDetails: {
       max_priority_fee_bips: 0,
@@ -16,9 +14,9 @@ const rollup = createStandardRollup({
   },
 });
 
-describe("rollup", () => {
+describe("rollup", async () => {
   describe.sequential("transaction submission", () => {
-    it.todo("should successfully sign and submit a transaction", async () => {
+    it("should successfully sign and submit a transaction", async () => {
       const runtimeCall = {
         value_setter: {
           set_value: 5,
@@ -29,33 +27,31 @@ describe("rollup", () => {
       });
       expect(response.data!.status).toEqual("submitted");
     });
-    it.todo(
-      "should submit a batch with incrementing nonces successfully",
-      async () => {
-        const publicKey = await signer.publicKey();
-        let { nonce } = await rollup.dedup(publicKey);
-        const startingNonce = nonce;
-        const batch = [];
-        const callMessages = [
-          { value_setter: { set_value: 8 } },
-          { value_setter: { set_value: 10 } },
-          { value_setter: { set_value: 5 } },
-        ];
+    it("should submit a batch with incrementing nonces successfully", async () => {
+      const publicKey = await signer.publicKey();
+      let { nonce } = await rollup.dedup(publicKey);
+      const startingNonce = nonce;
+      const batch = [];
+      const callMessages = [
+        { value_setter: { set_value: 8 } },
+        { value_setter: { set_value: 10 } },
+        { value_setter: { set_value: 5 } },
+      ];
 
-        for (const callMessage of callMessages) {
-          const { transaction } = await rollup.call(callMessage, {
-            signer,
-            overrides: { nonce },
-          });
+      for (const callMessage of callMessages) {
+        const { transaction } = await rollup.call(callMessage, {
+          signer,
+          overrides: { generation: nonce },
+        });
 
-          batch.push(transaction);
-          nonce += 1;
-        }
-
-        expect(batch.length).toEqual(3);
-        expect(nonce).toEqual(startingNonce + 3);
+        batch.push(transaction);
+        nonce += 1;
       }
-    );
+
+      expect(batch.length).toEqual(3);
+      expect(nonce).toEqual(startingNonce + 3);
+      batch.forEach((b) => console.log(b));
+    });
     it.todo(
       "should successfully create a new token using the bank module",
       () => {
