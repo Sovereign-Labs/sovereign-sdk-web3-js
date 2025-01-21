@@ -1,5 +1,13 @@
 # @sovereign-sdk/universal-wallet-wasm
 
+## 0.1.10
+
+### Patch Changes
+
+- a0b15a1: update wallet wasm to latest sovereign sdk commit
+- a0b15a1: Renames the `nonce` field in transactions to be `generation`.
+  Similarily `overrideNonce` is now named `overrideGeneration`.
+
 ## 0.1.9
 
 ### Patch Changes
