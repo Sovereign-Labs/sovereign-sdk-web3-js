@@ -34,7 +34,7 @@ describe("standardTypeBuilder", () => {
   });
 
   describe("unsignedTransaction", () => {
-    it("should use provided nonce from overrides", async () => {
+    it("should use provided generation from overrides", async () => {
       const result = await builder.unsignedTransaction({
         runtimeCall: { foo: "bar" },
         sender: new Uint8Array([4, 5, 6]),
