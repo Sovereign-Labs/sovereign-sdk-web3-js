@@ -2,7 +2,7 @@ import * as ed from "@noble/ed25519";
 import { sha256 } from "@noble/hashes/sha2";
 import { bech32m } from "bech32";
 import type { Signer } from "@sovereign-sdk/signers";
-import demoSchema from "../../../__fixtures__/demo-rollup-schema.json";
+import demoSchema from "../../../__fixtures__/demo-rollup-schema.json" assert { type: "json" };
 import { Schema } from "@sovereign-sdk/web3";
 
 const privateKey = new Uint8Array([

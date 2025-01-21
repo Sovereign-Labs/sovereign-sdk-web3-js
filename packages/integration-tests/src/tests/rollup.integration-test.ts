@@ -1,22 +1,26 @@
-import { describe, it, expect } from "vitest";
-import { createStandardRollup } from "@sovereign-sdk/web3";
-import demoSchema from "../../../__fixtures__/demo-rollup-schema.json";
+import { describe, it, expect, beforeAll } from "vitest";
+import { createStandardRollup, StandardRollup } from "@sovereign-sdk/web3";
 import { getSigner } from "./signer";
+import { Signer } from "@sovereign-sdk/signers";
 
-const signer = getSigner();
-const rollup = createStandardRollup({
-  schema: demoSchema,
-  context: {
-    defaultTxDetails: {
-      max_priority_fee_bips: 0,
-      max_fee: 100000000,
-      gas_limit: null,
-      chain_id: 4321,
-    },
-  },
-});
+let signer: Signer;
+let rollup: StandardRollup<any>;
 
-describe("rollup", () => {
+describe("rollup", async () => {
+  beforeAll(async () => {
+    signer = getSigner();
+    rollup = await createStandardRollup({
+      context: {
+        defaultTxDetails: {
+          max_priority_fee_bips: 0,
+          max_fee: 100000000,
+          gas_limit: null,
+          chain_id: 4321,
+        },
+      },
+    });
+  });
+
   describe.sequential("transaction submission", () => {
     it.todo("should successfully sign and submit a transaction", async () => {
       const runtimeCall = {
@@ -45,7 +49,7 @@ describe("rollup", () => {
         for (const callMessage of callMessages) {
           const { transaction } = await rollup.call(callMessage, {
             signer,
-            overrides: { nonce },
+            overrides: { generation: nonce },
           });
 
           batch.push(transaction);
