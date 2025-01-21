@@ -21,7 +21,7 @@ describe("serialization", () => {
           set_value: 5,
         },
       },
-      nonce: 0,
+      generation: 0,
       details: {
         max_priority_fee_bips: 0,
         max_fee: 0,
@@ -62,7 +62,7 @@ describe("serialization", () => {
             set_value: 5,
           },
         },
-        nonce: 1,
+        generation: 1,
         details: {
           max_priority_fee_bips: 0,
           max_fee: 1000,
@@ -95,7 +95,7 @@ describe("serialization", () => {
         pub_key: { pub_key: publicKey },
         signature: { msg_sig: signature },
         runtime_call: { value_setter: { set_value: 0 } },
-        nonce: 0,
+        generation: 0,
         details: {
           max_priority_fee_bips: 0,
           max_fee: 10000000000,

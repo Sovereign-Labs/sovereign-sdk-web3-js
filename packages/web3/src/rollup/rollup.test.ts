@@ -269,7 +269,7 @@ describe("Rollup", () => {
     const mockUnsignedTx = { type: "unsigned-tx" };
     const mockTransaction = { type: "signed-tx" };
     const mockRuntimeCall = { method: "test", args: [] };
-    const mockOverrides = { nonce: 1 };
+    const mockOverrides = { generation: 1 };
 
     const mockTypeBuilder = {
       unsignedTransaction: vi.fn().mockResolvedValue(mockUnsignedTx),

@@ -34,8 +34,8 @@
             "doc": ""
           },
           {
-            "display_name": "nonce",
-            "serde_display_name": "nonce",
+            "display_name": "generation",
+            "serde_display_name": "generation",
             "silent": false,
             "value": {
               "Immediate": {
@@ -52,7 +52,7 @@
             "serde_display_name": "details",
             "silent": false,
             "value": {
-              "ByIndex": 74
+              "ByIndex": 78
             },
             "doc": ""
           }
@@ -123,7 +123,7 @@
             "serde_name": "sequencer_registry",
             "template": null,
             "value": {
-              "ByIndex": 15
+              "ByIndex": 19
             }
           },
           {
@@ -131,7 +131,7 @@
             "serde_name": "value_setter",
             "template": null,
             "value": {
-              "ByIndex": 21
+              "ByIndex": 25
             }
           },
           {
@@ -139,7 +139,7 @@
             "serde_name": "attester_incentives",
             "template": null,
             "value": {
-              "ByIndex": 25
+              "ByIndex": 29
             }
           },
           {
@@ -147,7 +147,7 @@
             "serde_name": "prover_incentives",
             "template": null,
             "value": {
-              "ByIndex": 30
+              "ByIndex": 34
             }
           },
           {
@@ -155,15 +155,15 @@
             "serde_name": "accounts",
             "template": null,
             "value": {
-              "ByIndex": 34
+              "ByIndex": 38
             }
           },
           {
-            "name": "Nonces",
-            "serde_name": "nonces",
+            "name": "Uniqueness",
+            "serde_name": "uniqueness",
             "template": null,
             "value": {
-              "ByIndex": 39
+              "ByIndex": 43
             }
           },
           {
@@ -171,7 +171,7 @@
             "serde_name": "chain_state",
             "template": null,
             "value": {
-              "ByIndex": 41
+              "ByIndex": 45
             }
           },
           {
@@ -179,7 +179,7 @@
             "serde_name": "blob_storage",
             "template": null,
             "value": {
-              "ByIndex": 42
+              "ByIndex": 46
             }
           },
           {
@@ -187,7 +187,7 @@
             "serde_name": "paymaster",
             "template": null,
             "value": {
-              "ByIndex": 43
+              "ByIndex": 47
             }
           },
           {
@@ -195,7 +195,7 @@
             "serde_name": "evm",
             "template": null,
             "value": {
-              "ByIndex": 71
+              "ByIndex": 75
             }
           }
         ],
@@ -234,7 +234,7 @@
             "serde_name": "transfer",
             "template": "Transfer to address {} {}.",
             "value": {
-              "ByIndex": 9
+              "ByIndex": 13
             }
           },
           {
@@ -242,7 +242,7 @@
             "serde_name": "burn",
             "template": null,
             "value": {
-              "ByIndex": 12
+              "ByIndex": 16
             }
           },
           {
@@ -250,7 +250,7 @@
             "serde_name": "mint",
             "template": null,
             "value": {
-              "ByIndex": 13
+              "ByIndex": 17
             }
           },
           {
@@ -258,7 +258,7 @@
             "serde_name": "freeze",
             "template": null,
             "value": {
-              "ByIndex": 14
+              "ByIndex": 18
             }
           }
         ],
@@ -308,8 +308,47 @@
             "serde_display_name": "admins",
             "silent": false,
             "value": {
-              "ByIndex": 8
+              "ByIndex": 12
             },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Enum": {
+        "type_name": "MultiAddress",
+        "serde_type_name": "MultiAddress",
+        "variants": [
+          {
+            "name": "Standard",
+            "serde_name": "Standard",
+            "template": null,
+            "value": {
+              "ByIndex": 8
+            }
+          },
+          {
+            "name": "Vm",
+            "serde_name": "Vm",
+            "template": null,
+            "value": {
+              "ByIndex": 10
+            }
+          }
+        ],
+        "hide_tag": true
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 9
+            },
+            "silent": false,
             "doc": ""
           }
         ]
@@ -323,12 +362,45 @@
             "value": {
               "Immediate": {
                 "ByteArray": {
-                  "len": 32,
+                  "len": 28,
                   "display": {
                     "Bech32m": {
                       "prefix": "sov"
                     }
                   }
+                }
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 11
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "ByteArray": {
+                  "len": 20,
+                  "display": "Hex"
                 }
               }
             },
@@ -365,7 +437,7 @@
             "serde_display_name": "coins",
             "silent": false,
             "value": {
-              "ByIndex": 10
+              "ByIndex": 14
             },
             "doc": ""
           }
@@ -397,7 +469,7 @@
             "serde_display_name": "token_id",
             "silent": false,
             "value": {
-              "ByIndex": 11
+              "ByIndex": 15
             },
             "doc": ""
           }
@@ -438,7 +510,7 @@
             "serde_display_name": "coins",
             "silent": false,
             "value": {
-              "ByIndex": 10
+              "ByIndex": 14
             },
             "doc": ""
           }
@@ -456,7 +528,7 @@
             "serde_display_name": "coins",
             "silent": false,
             "value": {
-              "ByIndex": 10
+              "ByIndex": 14
             },
             "doc": ""
           },
@@ -483,7 +555,7 @@
             "serde_display_name": "token_id",
             "silent": false,
             "value": {
-              "ByIndex": 11
+              "ByIndex": 15
             },
             "doc": ""
           }
@@ -496,7 +568,7 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 16
+              "ByIndex": 20
             },
             "silent": false,
             "doc": ""
@@ -514,7 +586,7 @@
             "serde_name": "register",
             "template": null,
             "value": {
-              "ByIndex": 17
+              "ByIndex": 21
             }
           },
           {
@@ -522,7 +594,7 @@
             "serde_name": "deposit",
             "template": null,
             "value": {
-              "ByIndex": 19
+              "ByIndex": 23
             }
           },
           {
@@ -530,7 +602,7 @@
             "serde_name": "exit",
             "template": null,
             "value": {
-              "ByIndex": 20
+              "ByIndex": 24
             }
           }
         ],
@@ -548,7 +620,7 @@
             "serde_display_name": "da_address",
             "silent": false,
             "value": {
-              "ByIndex": 18
+              "ByIndex": 22
             },
             "doc": ""
           },
@@ -599,7 +671,7 @@
             "serde_display_name": "da_address",
             "silent": false,
             "value": {
-              "ByIndex": 18
+              "ByIndex": 22
             },
             "doc": ""
           },
@@ -631,7 +703,7 @@
             "serde_display_name": "da_address",
             "silent": false,
             "value": {
-              "ByIndex": 18
+              "ByIndex": 22
             },
             "doc": ""
           }
@@ -644,7 +716,7 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 22
+              "ByIndex": 26
             },
             "silent": false,
             "doc": ""
@@ -662,7 +734,7 @@
             "serde_name": "set_value",
             "template": null,
             "value": {
-              "ByIndex": 23
+              "ByIndex": 27
             }
           },
           {
@@ -670,7 +742,7 @@
             "serde_name": "set_many_values",
             "template": null,
             "value": {
-              "ByIndex": 24
+              "ByIndex": 28
             }
           }
         ],
@@ -720,7 +792,7 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 26
+              "ByIndex": 30
             },
             "silent": false,
             "doc": ""
@@ -738,7 +810,7 @@
             "serde_name": "register_attester",
             "template": null,
             "value": {
-              "ByIndex": 27
+              "ByIndex": 31
             }
           },
           {
@@ -758,7 +830,7 @@
             "serde_name": "register_challenger",
             "template": null,
             "value": {
-              "ByIndex": 28
+              "ByIndex": 32
             }
           },
           {
@@ -772,113 +844,30 @@
             "serde_name": "deposit_attester",
             "template": null,
             "value": {
-              "ByIndex": 29
-            }
-          }
-        ],
-        "hide_tag": false
-      }
-    },
-    {
-      "Tuple": {
-        "template": null,
-        "fields": [
-          {
-            "value": {
-              "Immediate": {
-                "Integer": [
-                  "u64",
-                  "Decimal"
-                ]
-              }
-            },
-            "silent": false,
-            "doc": ""
-          }
-        ]
-      }
-    },
-    {
-      "Tuple": {
-        "template": null,
-        "fields": [
-          {
-            "value": {
-              "Immediate": {
-                "Integer": [
-                  "u64",
-                  "Decimal"
-                ]
-              }
-            },
-            "silent": false,
-            "doc": ""
-          }
-        ]
-      }
-    },
-    {
-      "Tuple": {
-        "template": null,
-        "fields": [
-          {
-            "value": {
-              "Immediate": {
-                "Integer": [
-                  "u64",
-                  "Decimal"
-                ]
-              }
-            },
-            "silent": false,
-            "doc": ""
-          }
-        ]
-      }
-    },
-    {
-      "Tuple": {
-        "template": null,
-        "fields": [
-          {
-            "value": {
-              "ByIndex": 31
-            },
-            "silent": false,
-            "doc": ""
-          }
-        ]
-      }
-    },
-    {
-      "Enum": {
-        "type_name": "CallMessage",
-        "serde_type_name": "CallMessage",
-        "variants": [
-          {
-            "name": "Register",
-            "serde_name": "register",
-            "template": null,
-            "value": {
-              "ByIndex": 32
-            }
-          },
-          {
-            "name": "Deposit",
-            "serde_name": "deposit",
-            "template": null,
-            "value": {
               "ByIndex": 33
             }
-          },
-          {
-            "name": "Exit",
-            "serde_name": "exit",
-            "template": null,
-            "value": null
           }
         ],
         "hide_tag": false
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
       }
     },
     {
@@ -939,12 +928,26 @@
         "serde_type_name": "CallMessage",
         "variants": [
           {
-            "name": "InsertCredentialId",
-            "serde_name": "insert_credential_id",
+            "name": "Register",
+            "serde_name": "register",
             "template": null,
             "value": {
               "ByIndex": 36
             }
+          },
+          {
+            "name": "Deposit",
+            "serde_name": "deposit",
+            "template": null,
+            "value": {
+              "ByIndex": 37
+            }
+          },
+          {
+            "name": "Exit",
+            "serde_name": "exit",
+            "template": null,
+            "value": null
           }
         ],
         "hide_tag": false
@@ -956,7 +959,12 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 37
+              "Immediate": {
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
+              }
             },
             "silent": false,
             "doc": ""
@@ -970,7 +978,71 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 38
+              "Immediate": {
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 39
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Enum": {
+        "type_name": "CallMessage",
+        "serde_type_name": "CallMessage",
+        "variants": [
+          {
+            "name": "InsertCredentialId",
+            "serde_name": "insert_credential_id",
+            "template": null,
+            "value": {
+              "ByIndex": 40
+            }
+          }
+        ],
+        "hide_tag": false
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 41
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 42
             },
             "silent": false,
             "doc": ""
@@ -1003,7 +1075,7 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 40
+              "ByIndex": 44
             },
             "silent": false,
             "doc": ""
@@ -1025,21 +1097,7 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 40
-            },
-            "silent": false,
-            "doc": ""
-          }
-        ]
-      }
-    },
-    {
-      "Tuple": {
-        "template": null,
-        "fields": [
-          {
-            "value": {
-              "ByIndex": 40
+              "ByIndex": 44
             },
             "silent": false,
             "doc": ""
@@ -1062,6 +1120,20 @@
       }
     },
     {
+      "Tuple": {
+        "template": null,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 48
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
       "Enum": {
         "type_name": "CallMessage",
         "serde_type_name": "CallMessage",
@@ -1071,7 +1143,7 @@
             "serde_name": "register_paymaster",
             "template": null,
             "value": {
-              "ByIndex": 45
+              "ByIndex": 49
             }
           },
           {
@@ -1079,7 +1151,7 @@
             "serde_name": "set_payer_for_sequencer",
             "template": null,
             "value": {
-              "ByIndex": 60
+              "ByIndex": 64
             }
           },
           {
@@ -1087,7 +1159,7 @@
             "serde_name": "update_policy",
             "template": null,
             "value": {
-              "ByIndex": 61
+              "ByIndex": 65
             }
           }
         ],
@@ -1105,7 +1177,7 @@
             "serde_display_name": "policy",
             "silent": false,
             "value": {
-              "ByIndex": 46
+              "ByIndex": 50
             },
             "doc": ""
           }
@@ -1114,8 +1186,8 @@
     },
     {
       "Struct": {
-        "type_name": "PaymasterPolicy",
-        "serde_type_name": "PaymasterPolicy",
+        "type_name": "PaymasterPolicyInitializer",
+        "serde_type_name": "PaymasterPolicyInitializer",
         "template": null,
         "fields": [
           {
@@ -1123,7 +1195,7 @@
             "serde_display_name": "default_payee_policy",
             "silent": false,
             "value": {
-              "ByIndex": 47
+              "ByIndex": 51
             },
             "doc": ""
           },
@@ -1132,7 +1204,7 @@
             "serde_display_name": "payees",
             "silent": false,
             "value": {
-              "ByIndex": 55
+              "ByIndex": 59
             },
             "doc": ""
           },
@@ -1141,7 +1213,7 @@
             "serde_display_name": "authorized_updaters",
             "silent": false,
             "value": {
-              "ByIndex": 8
+              "ByIndex": 12
             },
             "doc": ""
           },
@@ -1150,7 +1222,7 @@
             "serde_display_name": "authorized_sequencers",
             "silent": false,
             "value": {
-              "ByIndex": 57
+              "ByIndex": 61
             },
             "doc": ""
           }
@@ -1167,7 +1239,7 @@
             "serde_name": "allow",
             "template": null,
             "value": {
-              "ByIndex": 48
+              "ByIndex": 52
             }
           },
           {
@@ -1191,7 +1263,7 @@
             "serde_display_name": "max_fee",
             "silent": false,
             "value": {
-              "ByIndex": 49
+              "ByIndex": 53
             },
             "doc": ""
           },
@@ -1200,7 +1272,7 @@
             "serde_display_name": "gas_limit",
             "silent": false,
             "value": {
-              "ByIndex": 50
+              "ByIndex": 54
             },
             "doc": ""
           },
@@ -1209,7 +1281,7 @@
             "serde_display_name": "max_gas_price",
             "silent": false,
             "value": {
-              "ByIndex": 53
+              "ByIndex": 57
             },
             "doc": ""
           }
@@ -1231,7 +1303,7 @@
     {
       "Option": {
         "value": {
-          "ByIndex": 51
+          "ByIndex": 55
         }
       }
     },
@@ -1241,7 +1313,7 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 52
+              "ByIndex": 56
             },
             "silent": false,
             "doc": ""
@@ -1265,19 +1337,23 @@
     {
       "Option": {
         "value": {
-          "ByIndex": 54
+          "ByIndex": 58
         }
       }
     },
     {
-      "Tuple": {
+      "Struct": {
+        "type_name": "GasPrice",
+        "serde_type_name": "GasPrice",
         "template": null,
         "fields": [
           {
-            "value": {
-              "ByIndex": 52
-            },
+            "display_name": "value",
+            "serde_display_name": "value",
             "silent": false,
+            "value": {
+              "ByIndex": 56
+            },
             "doc": ""
           }
         ]
@@ -1286,7 +1362,7 @@
     {
       "Vec": {
         "value": {
-          "ByIndex": 56
+          "ByIndex": 60
         }
       }
     },
@@ -1303,7 +1379,7 @@
           },
           {
             "value": {
-              "ByIndex": 47
+              "ByIndex": 51
             },
             "silent": false,
             "doc": ""
@@ -1327,7 +1403,7 @@
             "serde_name": "some",
             "template": null,
             "value": {
-              "ByIndex": 58
+              "ByIndex": 62
             }
           }
         ],
@@ -1340,7 +1416,7 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 59
+              "ByIndex": 63
             },
             "silent": false,
             "doc": ""
@@ -1351,7 +1427,7 @@
     {
       "Vec": {
         "value": {
-          "ByIndex": 18
+          "ByIndex": 22
         }
       }
     },
@@ -1393,7 +1469,7 @@
             "serde_display_name": "update",
             "silent": false,
             "value": {
-              "ByIndex": 62
+              "ByIndex": 66
             },
             "doc": ""
           }
@@ -1411,7 +1487,7 @@
             "serde_display_name": "sequencer_update",
             "silent": false,
             "value": {
-              "ByIndex": 63
+              "ByIndex": 67
             },
             "doc": ""
           },
@@ -1420,7 +1496,7 @@
             "serde_display_name": "updaters_to_add",
             "silent": false,
             "value": {
-              "ByIndex": 68
+              "ByIndex": 72
             },
             "doc": ""
           },
@@ -1429,7 +1505,7 @@
             "serde_display_name": "updaters_to_remove",
             "silent": false,
             "value": {
-              "ByIndex": 68
+              "ByIndex": 72
             },
             "doc": ""
           },
@@ -1438,7 +1514,7 @@
             "serde_display_name": "payee_policies_to_set",
             "silent": false,
             "value": {
-              "ByIndex": 69
+              "ByIndex": 73
             },
             "doc": ""
           },
@@ -1447,7 +1523,7 @@
             "serde_display_name": "payee_policies_to_delete",
             "silent": false,
             "value": {
-              "ByIndex": 68
+              "ByIndex": 72
             },
             "doc": ""
           },
@@ -1456,7 +1532,7 @@
             "serde_display_name": "default_policy",
             "silent": false,
             "value": {
-              "ByIndex": 70
+              "ByIndex": 74
             },
             "doc": ""
           }
@@ -1466,7 +1542,7 @@
     {
       "Option": {
         "value": {
-          "ByIndex": 64
+          "ByIndex": 68
         }
       }
     },
@@ -1486,7 +1562,7 @@
             "serde_name": "update",
             "template": null,
             "value": {
-              "ByIndex": 65
+              "ByIndex": 69
             }
           }
         ],
@@ -1499,7 +1575,7 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 66
+              "ByIndex": 70
             },
             "silent": false,
             "doc": ""
@@ -1518,7 +1594,7 @@
             "serde_display_name": "to_add",
             "silent": false,
             "value": {
-              "ByIndex": 67
+              "ByIndex": 71
             },
             "doc": ""
           },
@@ -1527,11 +1603,25 @@
             "serde_display_name": "to_remove",
             "silent": false,
             "value": {
-              "ByIndex": 67
+              "ByIndex": 71
             },
             "doc": ""
           }
         ]
+      }
+    },
+    {
+      "Option": {
+        "value": {
+          "ByIndex": 63
+        }
+      }
+    },
+    {
+      "Option": {
+        "value": {
+          "ByIndex": 12
+        }
       }
     },
     {
@@ -1544,21 +1634,7 @@
     {
       "Option": {
         "value": {
-          "ByIndex": 8
-        }
-      }
-    },
-    {
-      "Option": {
-        "value": {
-          "ByIndex": 55
-        }
-      }
-    },
-    {
-      "Option": {
-        "value": {
-          "ByIndex": 47
+          "ByIndex": 51
         }
       }
     },
@@ -1568,7 +1644,7 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 72
+              "ByIndex": 76
             },
             "silent": false,
             "doc": ""
@@ -1587,7 +1663,7 @@
             "serde_display_name": "rlp",
             "silent": false,
             "value": {
-              "ByIndex": 73
+              "ByIndex": 77
             },
             "doc": ""
           }
@@ -1627,7 +1703,7 @@
             "serde_display_name": "max_priority_fee_bips",
             "silent": false,
             "value": {
-              "ByIndex": 75
+              "ByIndex": 79
             },
             "doc": ""
           },
@@ -1650,7 +1726,7 @@
             "serde_display_name": "gas_limit",
             "silent": false,
             "value": {
-              "ByIndex": 50
+              "ByIndex": 54
             },
             "doc": ""
           },
@@ -1706,8 +1782,8 @@
             "doc": ""
           },
           {
-            "display_name": "nonce",
-            "serde_display_name": "nonce",
+            "display_name": "generation",
+            "serde_display_name": "generation",
             "silent": false,
             "value": {
               "Immediate": {
@@ -1724,7 +1800,7 @@
             "serde_display_name": "details",
             "silent": false,
             "value": {
-              "ByIndex": 74
+              "ByIndex": 78
             },
             "doc": ""
           }
@@ -1734,42 +1810,42 @@
   ],
   "root_type_indices": [
     0,
-    76,
+    80,
     3
   ],
   "metadata_hash": [
-    42,
-    216,
-    175,
-    205,
-    204,
-    236,
-    224,
-    222,
-    214,
-    59,
+    5,
     49,
-    36,
-    211,
-    97,
-    145,
-    156,
-    206,
-    233,
-    160,
-    175,
-    2,
-    1,
-    222,
-    197,
-    136,
-    145,
-    42,
-    46,
-    168,
-    20,
-    126,
-    4
+    216,
+    221,
+    44,
+    218,
+    79,
+    11,
+    34,
+    77,
+    88,
+    27,
+    253,
+    0,
+    141,
+    14,
+    253,
+    49,
+    247,
+    80,
+    73,
+    116,
+    181,
+    199,
+    116,
+    43,
+    194,
+    99,
+    185,
+    153,
+    117,
+    198
   ],
   "templates": [
     {},
@@ -1808,7 +1884,7 @@
             "token_id",
             {
               "type_link": {
-                "ByIndex": 11
+                "ByIndex": 15
               },
               "offset": 2
             }

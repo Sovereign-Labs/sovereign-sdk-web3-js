@@ -50,7 +50,7 @@ type OverrideType<Base, Override> = {
  *
  * type UnsignedTransaction = {
  *   runtimeMsg: Uint8Array;
- *   nonce: number;
+ *   generation: number;
  *   details: TxDetails;
  * };
  *

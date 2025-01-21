@@ -19,7 +19,7 @@ export type TxDetails = {
 
 export type UnsignedTransaction<RuntimeCall> = {
   runtime_call: RuntimeCall;
-  nonce: number;
+  generation: number;
   details: TxDetails;
 };
 
@@ -43,7 +43,7 @@ export type StandardRollupSpec<RuntimeCall> = {
   Dedup: Dedup;
 };
 
-const useOrFetchNonce = async <S extends StandardRollupSpec<unknown>>({
+const useOrFetchGeneration = async <S extends StandardRollupSpec<unknown>>({
   sender,
   rollup,
   overrides,
@@ -51,8 +51,8 @@ const useOrFetchNonce = async <S extends StandardRollupSpec<unknown>>({
   UnsignedTransactionContext<S, StandardRollupContext>,
   "runtimeCall"
 >) => {
-  if (overrides?.nonce !== undefined && overrides.nonce >= 0) {
-    return overrides.nonce;
+  if (overrides?.generation !== undefined && overrides.generation >= 0) {
+    return overrides.generation;
   }
   const dedup = await rollup.dedup(sender);
 
@@ -67,8 +67,8 @@ export function standardTypeBuilder<
       context: UnsignedTransactionContext<S, StandardRollupContext>,
     ) {
       const { rollup, runtimeCall } = context;
-      const { nonce: _, ...overrides } = context.overrides;
-      const nonce = await useOrFetchNonce(context);
+      const { generation: _, ...overrides } = context.overrides;
+      const generation = await useOrFetchGeneration(context);
       const details: TxDetails = {
         ...rollup.context.defaultTxDetails,
         ...overrides.details,
@@ -76,7 +76,7 @@ export function standardTypeBuilder<
 
       return {
         runtime_call: runtimeCall,
-        nonce,
+        generation,
         details,
       };
     },
@@ -107,7 +107,8 @@ export type SimulateParams = {
    */
   txDetails: TxDetails;
 
-  nonce?: number;
+  /** The generation of the transaction for uniquness purposes. */
+  generation?: number;
 } & SignerParams;
 
 export class StandardRollup<RuntimeCall> extends Rollup<
@@ -123,14 +124,14 @@ export class StandardRollup<RuntimeCall> extends Rollup<
    */
   async simulate(
     runtimeMessage: StandardRollupSpec<RuntimeCall>["RuntimeCall"],
-    { signer, txDetails, nonce: overrideNonce }: SimulateParams,
+    { signer, txDetails, generation: overrideGeneration }: SimulateParams,
   ): Promise<SovereignClient.Rollup.SimulateExecutionResponse> {
     const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
     const publicKey = await signer.publicKey();
-    const nonce = await useOrFetchNonce({
+    const generation = await useOrFetchGeneration({
       sender: publicKey,
       rollup: this,
-      overrides: { nonce: overrideNonce },
+      overrides: { generation: overrideGeneration },
     });
     const response = await this.rollup.simulate({
       body: {
@@ -140,7 +141,7 @@ export class StandardRollup<RuntimeCall> extends Rollup<
           gas_limit: txDetails.gas_limit || undefined,
         },
         encoded_call_message: bytesToHex(runtimeCall),
-        nonce,
+        generation,
         sender_pub_key: bytesToHex(publicKey),
       },
     });

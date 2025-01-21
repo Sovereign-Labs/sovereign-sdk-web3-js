@@ -17,7 +17,7 @@ export type UnsignedTransactionContext<
 > = {
   runtimeCall: S["RuntimeCall"];
   sender: Uint8Array;
-  // Provides the ability to override the nonce instead of retrieving it automatically.
+  // Provides the ability to override the generation data instead of retrieving it automatically.
   overrides: DeepPartial<S["UnsignedTransaction"]>;
   rollup: Rollup<S, C>;
 };
