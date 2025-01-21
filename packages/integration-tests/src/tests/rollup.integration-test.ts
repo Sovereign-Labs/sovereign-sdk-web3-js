@@ -58,7 +58,6 @@ describe("rollup", async () => {
 
         expect(batch.length).toEqual(3);
         expect(nonce).toEqual(startingNonce + 3);
-        batch.forEach((b) => console.log(b));
       }
     );
     it.todo(
