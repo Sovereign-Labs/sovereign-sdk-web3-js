@@ -1308,18 +1308,14 @@
       }
     },
     {
-      "Struct": {
-        "type_name": "GasUnit",
-        "serde_type_name": "GasUnit",
+      "Tuple": {
         "template": null,
         "fields": [
           {
-            "display_name": "value",
-            "serde_display_name": "value",
-            "silent": false,
             "value": {
               "ByIndex": 56
             },
+            "silent": false,
             "doc": ""
           }
         ]
