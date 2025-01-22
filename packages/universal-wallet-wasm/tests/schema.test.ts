@@ -21,7 +21,7 @@ describe("Schema", () => {
   describe("chainHash", () => {
     it("should calculate the chain hash successfully", () => {
       const expected =
-        "8a18a1513ae6988e5e03b67dd46c7e5381277f262184caff15cd2701643bbce8";
+        "e197ca0c6f394e8de989f0e94a4a2125703aa6f90d239c1078a3aea6f060a22e";
       const actual = bytesToHex(schema.chainHash);
 
       expect(expected).toEqual(actual);
@@ -57,7 +57,7 @@ describe("Schema", () => {
           JSON.stringify(call)
         );
       expect(doConversion).toThrow(
-        'Expected u32, encountered invalid JSON value "not a number"'
+        'Expected __SovVirtualWallet_CallMessage_SetValue struct, encountered invalid JSON value "not a number"'
       );
     });
   });
