@@ -20,7 +20,7 @@ describe("serialization", () => {
         value_setter: {
           set_value: {
             value: 5,
-            gas: null
+            gas: null,
           },
         },
       },
@@ -51,13 +51,13 @@ describe("serialization", () => {
   describe("serializeRuntimeCall", () => {
     it("should serialize a runtime call", () => {
       const serializer = createSerializer(demoRollupSchema);
-      const call = { 
-        value_setter: { 
+      const call = {
+        value_setter: {
           set_value: {
             value: 5,
-            gas: null
-          }
-        } 
+            gas: null,
+          },
+        },
       };
       const actual = serializer.serializeRuntimeCall(call);
       expect(actual).toEqual(new Uint8Array([2, 0, 5, 0, 0, 0, 0]));
@@ -71,8 +71,8 @@ describe("serialization", () => {
           value_setter: {
             set_value: {
               value: 5,
-              gas: null
-            }
+              gas: null,
+            },
           },
         },
         generation: 1,
@@ -107,13 +107,13 @@ describe("serialization", () => {
       const tx = {
         pub_key: { pub_key: publicKey },
         signature: { msg_sig: signature },
-        runtime_call: { 
-          value_setter: { 
+        runtime_call: {
+          value_setter: {
             set_value: {
               value: 5,
-              gas: null
-            }
-          } 
+              gas: null,
+            },
+          },
         },
         generation: 0,
         details: {
@@ -143,13 +143,13 @@ describe("createSerializerFromHttp", () => {
     };
 
     const serializer = await createSerializerFromHttp(mockClient as any);
-    const call = { 
-      value_setter: { 
+    const call = {
+      value_setter: {
         set_value: {
           value: 5,
-          gas: null
-        }
-      } 
+          gas: null,
+        },
+      },
     };
     const actual = serializer.serializeRuntimeCall(call);
     expect(actual).toEqual(new Uint8Array([2, 0, 5, 0, 0, 0, 0]));
