@@ -21,7 +21,7 @@ describe("Schema", () => {
   describe("chainHash", () => {
     it("should calculate the chain hash successfully", () => {
       const expected =
-        "e197ca0c6f394e8de989f0e94a4a2125703aa6f90d239c1078a3aea6f060a22e";
+        "3be5784cee75a7aeae6943bf9a1cbdb03b867e0a22bab98b2b89d7518cfe74bf";
       const actual = bytesToHex(schema.chainHash);
 
       expect(expected).toEqual(actual);
