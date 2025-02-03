@@ -53,7 +53,10 @@ const signer = newMetaMaskSnapSigner({
 const result = await rollup.call(
   {
     value_setter: {
-      set_value: 100,
+      set_value: {
+        value: 100,
+        gas: null,
+      },
     },
   },
   { signer }
@@ -66,7 +69,10 @@ const result = await rollup.call(
 type MyRollupTypes = RollupTypeSpec<{
   RuntimeCall: {
     value_setter: {
-      set_value: number;
+      set_value: {
+        value: number;
+        gas: null;
+      };
     };
   };
   // Add other type specifications as needed
