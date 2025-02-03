@@ -104,7 +104,9 @@ describe("standardTypeBuilder", () => {
     it("should correctly format the transaction", async () => {
       const result = await builder.transaction({
         unsignedTx: {
-          runtime_call: { value_setter: { set_value: 5 } },
+          runtime_call: {
+            value_setter: { set_value: { value: 5, gas: null } },
+          },
           generation: 5,
           details: {
             max_priority_fee_bips: 100,
@@ -125,7 +127,7 @@ describe("standardTypeBuilder", () => {
         signature: {
           msg_sig: new Uint8Array([7, 8, 9]),
         },
-        runtime_call: { value_setter: { set_value: 5 } },
+        runtime_call: { value_setter: { set_value: { value: 5, gas: null } } },
         generation: 5,
         details: {
           max_priority_fee_bips: 100,

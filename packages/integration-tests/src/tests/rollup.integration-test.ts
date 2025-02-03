@@ -25,7 +25,10 @@ describe("rollup", async () => {
     it.todo("should successfully sign and submit a transaction", async () => {
       const runtimeCall = {
         value_setter: {
-          set_value: 5,
+          set_value: {
+            value: 5,
+            gas: null,
+          },
         },
       };
       const { transaction, response } = await rollup.call(runtimeCall, {
@@ -41,9 +44,9 @@ describe("rollup", async () => {
         const startingNonce = nonce;
         const batch = [];
         const callMessages = [
-          { value_setter: { set_value: 8 } },
-          { value_setter: { set_value: 10 } },
-          { value_setter: { set_value: 5 } },
+          { value_setter: { set_value: { value: 8, gas: null } } },
+          { value_setter: { set_value: { value: 10, gas: null } } },
+          { value_setter: { set_value: { value: 12, gas: null } } },
         ];
 
         for (const callMessage of callMessages) {
@@ -58,7 +61,7 @@ describe("rollup", async () => {
 
         expect(batch.length).toEqual(3);
         expect(nonce).toEqual(startingNonce + 3);
-      }
+      },
     );
     it.todo(
       "should successfully create a new token using the bank module",
@@ -76,7 +79,7 @@ describe("rollup", async () => {
         //     ],
         //   },
         // },
-      }
+      },
     );
   });
 });

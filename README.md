@@ -58,7 +58,10 @@ const signer = newMetaMaskSnapSigner({
 const result = await rollup.call(
   {
     value_setter: {
-      set_value: 100,
+      set_value: {
+        value: 100,
+        gas: null,
+      },
     },
   },
   { signer }

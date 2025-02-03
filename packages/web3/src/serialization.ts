@@ -17,8 +17,10 @@ export type RollupSchema = object;
  * const serializer = createSerializer(yourSchema);
  * const runtimeCall = {
  *   value_setter: {
- *     set_value: 100,
- *     gas: null
+ *     set_value: {
+ *       value: 100,
+ *       gas: null
+ *     },
  *   },
  * };
  * const borshBytes = serializer.serializeRuntimeCall(runtimeCall);
