@@ -71,7 +71,7 @@ type MyRollupTypes = RollupTypeSpec<{
     value_setter: {
       set_value: {
         value: number;
-        gas: null;
+        gas: number[] | null;
       };
     };
   };
