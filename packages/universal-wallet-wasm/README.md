@@ -13,7 +13,7 @@ npm install @sovereign-sdk/universal-wallet-wasm
 
 ## Features
 
-- 🔄 JSON to Borsh serialization of rollup types
+- 🔄 JSON to [Borsh](https://borsh.io/) serialization of rollup types
 - 📝 Schema validation
 - 📄 Human-readable display of Borsh bytes
 

@@ -297,7 +297,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
 function isVersionMismatchError(e: APIError): boolean {
   if (
     // biome-ignore lint/suspicious/noExplicitAny: yolo
-    (e.error as any)?.errors[0]?.details?.message.includes(
+    (e.error as any)?.errors[0]?.details?.message?.includes(
       "Signature verification failed",
     )
   ) {
