@@ -86,7 +86,7 @@ pnpm test
 pnpm run fix
 ```
 
-For detailed development instructions, see [DEVELOPMENT.md](DEVELOPMENT.md).
+For detailed development instructions, see [DEVELOPMENT.md](./DEVELOPMENT.md).
 
 ## License
 
