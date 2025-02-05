@@ -15,7 +15,7 @@ describe("Schema", () => {
     it("should return the descriptor used to create the schema", () => {
       const expected = JSON.stringify(demoRollupSchema);
 
-      expect(expected).toEqual(schema.descriptor);
+      expect(schema.descriptor).toEqual(expected);
     });
   });
   describe("chainHash", () => {
