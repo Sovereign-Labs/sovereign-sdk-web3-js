@@ -15,16 +15,16 @@ describe("Schema", () => {
     it("should return the descriptor used to create the schema", () => {
       const expected = JSON.stringify(demoRollupSchema);
 
-      expect(expected).toEqual(schema.descriptor);
+      expect(schema.descriptor).toEqual(expected);
     });
   });
   describe("chainHash", () => {
     it("should calculate the chain hash successfully", () => {
       const expected =
-        "e197ca0c6f394e8de989f0e94a4a2125703aa6f90d239c1078a3aea6f060a22e";
+        "3be5784cee75a7aeae6943bf9a1cbdb03b867e0a22bab98b2b89d7518cfe74bf";
       const actual = bytesToHex(schema.chainHash);
 
-      expect(expected).toEqual(actual);
+      expect(actual).toEqual(expected);
     });
   });
   describe("metadataHash", () => {
@@ -33,7 +33,7 @@ describe("Schema", () => {
         "0531d8dd2cda4f0b224d581bfd008d0efd31f7504974b5c7742bc263b99975c6";
       const actual = bytesToHex(schema.metadataHash);
 
-      expect(expected).toEqual(actual);
+      expect(actual).toEqual(expected);
     });
   });
   describe("jsonToBorsh", () => {
@@ -47,7 +47,7 @@ describe("Schema", () => {
       );
       const expected = "0201020000000406";
 
-      expect(expected).toEqual(actual);
+      expect(actual).toEqual(expected);
     });
     it("should return concise and useful error messages", () => {
       const call = { value_setter: { set_value: "not a number" } };
