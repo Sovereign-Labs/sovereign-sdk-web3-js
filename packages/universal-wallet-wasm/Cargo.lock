@@ -342,7 +342,7 @@ dependencies = [
 [[package]]
 name = "sov-universal-wallet"
 version = "0.1.0"
-source = "git+ssh://git@github.com/Sovereign-Labs/sovereign-sdk-wip.git?rev=ba45bb0e22c36cb100c95110f6e706f58c1e0a8f#ba45bb0e22c36cb100c95110f6e706f58c1e0a8f"
+source = "git+ssh://git@github.com/Sovereign-Labs/sovereign-sdk-wip.git?rev=d0099b4918267b1cdd60c0733a77d6c02f56512c#d0099b4918267b1cdd60c0733a77d6c02f56512c"
 dependencies = [
  "arrayvec",
  "bech32",
