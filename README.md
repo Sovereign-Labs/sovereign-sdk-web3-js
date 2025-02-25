@@ -45,7 +45,7 @@ const rollup = new StandardRollup({
   schema: yourSchema,
   defaultTxDetails: {
     max_priority_fee_bips: 1000,
-    max_fee: 1000000,
+    max_fee: "1000000",
     chain_id: 1,
   },
 });
