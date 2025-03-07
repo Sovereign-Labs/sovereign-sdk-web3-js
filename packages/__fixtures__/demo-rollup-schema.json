@@ -294,6 +294,20 @@
             "doc": ""
           },
           {
+            "display_name": "token_decimals",
+            "serde_display_name": "token_decimals",
+            "silent": false,
+            "value": {
+              "Immediate": {
+                "Integer": [
+                  "u8",
+                  "Decimal"
+                ]
+              }
+            },
+            "doc": ""
+          },
+          {
             "display_name": "initial_balance",
             "serde_display_name": "initial_balance",
             "silent": false,
@@ -498,14 +512,26 @@
         "type_name": "Coins",
         "serde_type_name": "Coins",
         "template": "{} coins of token ID {}",
-        "peekable": false,
+        "peekable": true,
         "fields": [
           {
             "display_name": "amount",
             "serde_display_name": "amount",
             "silent": false,
             "value": {
-              "ByIndex": 7
+              "Immediate": {
+                "Integer": [
+                  "u128",
+                  {
+                    "FixedPoint": {
+                      "FromSiblingField": {
+                        "field_index": 1,
+                        "byte_offset": 31
+                      }
+                    }
+                  }
+                ]
+              }
             },
             "doc": ""
           },
@@ -2656,38 +2682,38 @@
     3
   ],
   "metadata_hash": [
-    241,
-    235,
-    212,
+    161,
+    228,
+    214,
+    94,
+    150,
+    101,
     25,
-    55,
-    251,
-    224,
-    239,
-    212,
-    37,
-    78,
-    197,
-    0,
-    169,
-    41,
-    59,
-    220,
-    230,
-    73,
-    107,
-    146,
-    147,
-    125,
+    100,
+    137,
+    243,
+    156,
+    148,
+    28,
+    227,
+    42,
+    142,
+    176,
     231,
-    168,
-    83,
-    32,
-    219,
-    109,
-    59,
-    249,
-    164
+    154,
+    254,
+    99,
+    241,
+    210,
+    171,
+    212,
+    24,
+    36,
+    184,
+    74,
+    22,
+    163,
+    141
   ],
   "templates": [
     {},
@@ -2712,7 +2738,19 @@
             "amount",
             {
               "type_link": {
-                "ByIndex": 7
+                "Immediate": {
+                  "Integer": [
+                    "u128",
+                    {
+                      "FixedPoint": {
+                        "FromSiblingField": {
+                          "field_index": 1,
+                          "byte_offset": 31
+                        }
+                      }
+                    }
+                  ]
+                }
               },
               "offset": 2
             }
