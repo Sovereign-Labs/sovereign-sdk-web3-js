@@ -1,5 +1,11 @@
 # @sovereign-sdk/universal-wallet-wasm
 
+## 0.1.11
+
+### Patch Changes
+
+- ee328ad: allows u128 rust values to be provided as strings
+
 ## 0.1.10
 
 ### Patch Changes
