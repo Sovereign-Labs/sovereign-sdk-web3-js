@@ -69,8 +69,7 @@ describe("Schema", () => {
           transfer: {
             to: { Standard: Array.from(addr) },
             coins: {
-              amount:
-                "1100000000000000000000000000000009999999999999999999991337",
+              amount: "110000000000000000000000000000000091337",
               token_id:
                 "token_1rwrh8gn2py0dl4vv65twgctmlwck6esm2as9dftumcw89kqqn3nqrduss6",
             },
