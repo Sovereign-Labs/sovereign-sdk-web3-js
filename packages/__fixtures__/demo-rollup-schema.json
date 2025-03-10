@@ -39,7 +39,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -331,7 +334,10 @@
           {
             "value": {
               "Immediate": {
-                "Integer": ["u128", "Decimal"]
+                "Integer": [
+                  "u128",
+                  "Decimal"
+                ]
               }
             },
             "silent": false,
@@ -812,7 +818,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u32", "Decimal"]
+                "Integer": [
+                  "u32",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -855,7 +864,10 @@
         "len": 2,
         "value": {
           "Immediate": {
-            "Integer": ["u64", "Decimal"]
+            "Integer": [
+              "u64",
+              "Decimal"
+            ]
           }
         }
       }
@@ -890,7 +902,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -1421,7 +1436,10 @@
       "Option": {
         "value": {
           "Immediate": {
-            "Integer": ["u64", "Decimal"]
+            "Integer": [
+              "u64",
+              "Decimal"
+            ]
           }
         }
       }
@@ -1902,7 +1920,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -1913,7 +1934,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -1924,7 +1948,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u32", "Decimal"]
+                "Integer": [
+                  "u32",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -1944,7 +1971,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -1980,7 +2010,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -1991,7 +2024,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -2011,7 +2047,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u8", "Decimal"]
+                "Integer": [
+                  "u8",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -2022,7 +2061,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u32", "Decimal"]
+                "Integer": [
+                  "u32",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -2180,7 +2222,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -2191,7 +2236,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -2285,7 +2333,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -2296,7 +2347,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -2316,7 +2370,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -2327,7 +2384,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -2338,7 +2398,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u32", "Decimal"]
+                "Integer": [
+                  "u32",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -2358,7 +2421,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -2369,7 +2435,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -2434,7 +2503,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -2449,7 +2521,10 @@
           {
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "silent": false,
@@ -2479,7 +2554,10 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "doc": ""
@@ -2497,17 +2575,54 @@
       }
     }
   ],
-  "root_type_indices": [0, 106, 3],
+  "root_type_indices": [
+    0,
+    106,
+    3
+  ],
   "metadata_hash": [
-    241, 235, 212, 25, 55, 251, 224, 239, 212, 37, 78, 197, 0, 169, 41, 59, 220,
-    230, 73, 107, 146, 147, 125, 231, 168, 83, 32, 219, 109, 59, 249, 164
+    241,
+    235,
+    212,
+    25,
+    55,
+    251,
+    224,
+    239,
+    212,
+    37,
+    78,
+    197,
+    0,
+    169,
+    41,
+    59,
+    220,
+    230,
+    73,
+    107,
+    146,
+    147,
+    125,
+    231,
+    168,
+    83,
+    32,
+    219,
+    109,
+    59,
+    249,
+    164
   ],
   "templates": [
     {},
     {},
     {
       "transfer": {
-        "preencoded_bytes": [0, 1],
+        "preencoded_bytes": [
+          0,
+          1
+        ],
         "inputs": [
           [
             "to",
