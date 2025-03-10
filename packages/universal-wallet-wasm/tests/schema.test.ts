@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Schema, KnownTypeId } from "../";
 import demoRollupSchema from "../../__fixtures__/demo-rollup-schema.json";
-import { bytesToHex } from "./utils";
+import { bytesToHex, hexToBytes } from "./utils";
 
 const schema = Schema.fromJSON(JSON.stringify(demoRollupSchema));
 
@@ -59,6 +59,30 @@ describe("Schema", () => {
       expect(doConversion).toThrow(
         'Expected __SovVirtualWallet_CallMessage_SetValue struct, encountered invalid JSON value "not a number"'
       );
+    });
+    it("should allow strings to serialize as u128", () => {
+      const addr = hexToBytes(
+        "b7e23f9dc86a1547ee09d82a5c8f3610d975e2c84fb61038a719e524"
+      );
+      const call = {
+        bank: {
+          transfer: {
+            to: { Standard: Array.from(addr) },
+            coins: {
+              amount:
+                "1100000000000000000000000000000009999999999999999999991337",
+              token_id:
+                "token_1rwrh8gn2py0dl4vv65twgctmlwck6esm2as9dftumcw89kqqn3nqrduss6",
+            },
+          },
+        },
+      };
+      const doConversion = () =>
+        schema.jsonToBorsh(
+          schema.knownTypeIndex(KnownTypeId.RuntimeCall),
+          JSON.stringify(call)
+        );
+      expect(doConversion).not.toThrow();
     });
   });
 });
