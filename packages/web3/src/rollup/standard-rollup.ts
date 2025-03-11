@@ -44,8 +44,6 @@ export type StandardRollupSpec<RuntimeCall> = {
 };
 
 const useOrFetchGeneration = async <S extends StandardRollupSpec<unknown>>({
-  sender,
-  rollup,
   overrides,
 }: Omit<
   UnsignedTransactionContext<S, StandardRollupContext>,
@@ -54,9 +52,8 @@ const useOrFetchGeneration = async <S extends StandardRollupSpec<unknown>>({
   if (overrides?.generation !== undefined && overrides.generation >= 0) {
     return overrides.generation;
   }
-  const dedup = await rollup.dedup(sender);
 
-  return dedup.nonce;
+  return new Date().getTime();
 };
 
 export function standardTypeBuilder<

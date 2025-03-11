@@ -1,5 +1,5 @@
 import SovereignClient from "@sovereign-sdk/client";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { RollupSerializer } from "../serialization";
 import {
   StandardRollup,
@@ -30,7 +30,12 @@ describe("standardTypeBuilder", () => {
   const builder = standardTypeBuilder();
 
   beforeEach(() => {
+    vi.useFakeTimers();
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   describe("unsignedTransaction", () => {
@@ -51,10 +56,11 @@ describe("standardTypeBuilder", () => {
           chain_id: 1,
         },
       });
-      expect(mockRollup.rollup.addresses.dedup).not.toHaveBeenCalled();
     });
 
-    it("should fetch nonce if not provided in overrides", async () => {
+    it("should use current unix timestamp for generation if not provided in overrides", async () => {
+      vi.setSystemTime(1709211600000);
+
       const result = await builder.unsignedTransaction({
         runtimeCall: { foo: "bar" },
         sender: new Uint8Array([4, 5, 6]),
@@ -64,17 +70,18 @@ describe("standardTypeBuilder", () => {
 
       expect(result).toEqual({
         runtime_call: { foo: "bar" },
-        generation: 5,
+        generation: 1709211600000,
         details: {
           max_priority_fee_bips: 100,
           max_fee: 1000,
           chain_id: 1,
         },
       });
-      expect(mockRollup.dedup).toHaveBeenCalledWith(new Uint8Array([4, 5, 6]));
     });
 
     it("should merge overridden details with defaults", async () => {
+      vi.setSystemTime(1709211601100);
+
       const result = await builder.unsignedTransaction({
         runtimeCall: { foo: "bar" },
         sender: new Uint8Array([4, 5, 6]),
@@ -89,7 +96,7 @@ describe("standardTypeBuilder", () => {
 
       expect(result).toEqual({
         runtime_call: { foo: "bar" },
-        generation: 5,
+        generation: 1709211601100,
         details: {
           max_priority_fee_bips: 100,
           max_fee: 2000,
