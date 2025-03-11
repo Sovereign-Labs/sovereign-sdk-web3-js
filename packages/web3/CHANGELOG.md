@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.0.25
+
+### Patch Changes
+
+- 6537182: Use the current UNIX timestamp for transaction dedup generation by default
+
 ## 0.0.24
 
 ### Patch Changes
