@@ -59,8 +59,7 @@ describe("standardTypeBuilder", () => {
     });
 
     it("should use current unix timestamp for generation if not provided in overrides", async () => {
-      const mockedDate = new Date(2024, 2, 1);
-      vi.setSystemTime(mockedDate);
+      vi.setSystemTime(1709211600000);
 
       const result = await builder.unsignedTransaction({
         runtimeCall: { foo: "bar" },
@@ -81,8 +80,7 @@ describe("standardTypeBuilder", () => {
     });
 
     it("should merge overridden details with defaults", async () => {
-      const mockedDate = new Date(2024, 2, 1, 4, 11, 42);
-      vi.setSystemTime(mockedDate);
+      vi.setSystemTime(1709211601100);
 
       const result = await builder.unsignedTransaction({
         runtimeCall: { foo: "bar" },
@@ -98,7 +96,7 @@ describe("standardTypeBuilder", () => {
 
       expect(result).toEqual({
         runtime_call: { foo: "bar" },
-        generation: 1709226702000,
+        generation: 1709211601100,
         details: {
           max_priority_fee_bips: 100,
           max_fee: 2000,
