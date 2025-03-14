@@ -1,5 +1,13 @@
 # @sovereign-sdk/web3
 
+## 0.0.26
+
+### Patch Changes
+
+- b31b811: Updated wasm to the latest SDK changes
+- Updated dependencies [b31b811]
+  - @sovereign-sdk/universal-wallet-wasm@0.1.12
+
 ## 0.0.25
 
 ### Patch Changes
