@@ -1,8 +1,8 @@
 # @sovereign-sdk/universal-wallet-wasm
 
-## 0.2.0
+## 0.1.12
 
-### Minor Changes
+### Patch Changes
 
 - b31b811: Updated wasm to the latest SDK changes
 
