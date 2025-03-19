@@ -35,3 +35,15 @@ export class VersionMismatchError extends SovereignError {
     this.retryable = newVersion !== currentVersion;
   }
 }
+
+export class SchemaError extends SovereignError {
+  public readonly schema: object;
+  public readonly reason: string;
+
+  constructor(message: string, reason: string, schema: object) {
+    super(message);
+
+    this.reason = reason;
+    this.schema = schema;
+  }
+}

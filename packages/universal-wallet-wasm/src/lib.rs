@@ -2,15 +2,15 @@ use sov_universal_wallet::schema::{RollupRoots, Schema as NativeSchema};
 use wasm_bindgen::prelude::*;
 
 trait MapErrorToJs<T> {
-    fn map_err_to_js(self) -> Result<T, JsValue>;
+    fn map_err_to_js(self) -> Result<T, JsError>;
 }
 
 impl<T, E> MapErrorToJs<T> for Result<T, E>
 where
     E: ToString,
 {
-    fn map_err_to_js(self) -> Result<T, JsValue> {
-        self.map_err(|e| JsValue::from_str(&e.to_string()))
+    fn map_err_to_js(self) -> Result<T, JsError> {
+        self.map_err(|e| JsError::new(&e.to_string()))
     }
 }
 
@@ -48,7 +48,7 @@ pub struct Schema {
 impl Schema {
     /// Creates a `Schema` instance from the provided JSON descriptor.
     #[wasm_bindgen(js_name = fromJSON)]
-    pub fn from_json(json: &str) -> Result<Schema, JsValue> {
+    pub fn from_json(json: &str) -> Result<Schema, JsError> {
         Ok(Schema {
             json: json.to_string(),
             inner: NativeSchema::from_json(json).map_err_to_js()?,
@@ -63,18 +63,18 @@ impl Schema {
 
     /// Converts the provided JSON to borsh according to the provided schema.
     #[wasm_bindgen(js_name = jsonToBorsh)]
-    pub fn json_to_borsh(&self, type_index: usize, input: &str) -> Result<Vec<u8>, JsValue> {
+    pub fn json_to_borsh(&self, type_index: usize, input: &str) -> Result<Vec<u8>, JsError> {
         self.inner.json_to_borsh(type_index, input).map_err_to_js()
     }
 
     /// Displays the provided borsh bytes as a string according to the provided schema.
-    pub fn display(&self, type_index: usize, input: &[u8]) -> Result<String, JsValue> {
+    pub fn display(&self, type_index: usize, input: &[u8]) -> Result<String, JsError> {
         self.inner.display(type_index, input).map_err_to_js()
     }
 
     /// Get the index of the provided known type within the schema.
     #[wasm_bindgen(js_name = knownTypeIndex)]
-    pub fn known_type_index(&self, known_type_id: KnownTypeId) -> Result<usize, JsValue> {
+    pub fn known_type_index(&self, known_type_id: KnownTypeId) -> Result<usize, JsError> {
         self.inner
             .rollup_expected_index(known_type_id.into())
             .map_err_to_js()
@@ -88,7 +88,7 @@ impl Schema {
 
     /// Get the chain hash from the schema.
     #[wasm_bindgen(getter, js_name = chainHash)]
-    pub fn chain_hash(&mut self) -> Result<Vec<u8>, JsValue> {
+    pub fn chain_hash(&mut self) -> Result<Vec<u8>, JsError> {
         Ok(self.inner.chain_hash().map_err_to_js()?.to_vec())
     }
 }

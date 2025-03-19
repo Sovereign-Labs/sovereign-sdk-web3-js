@@ -1,6 +1,6 @@
 import type SovereignClient from "@sovereign-sdk/client";
 import { KnownTypeId, Schema } from "@sovereign-sdk/universal-wallet-wasm";
-import { RollupInterfaceError, SovereignError } from "./errors";
+import { RollupInterfaceError, SchemaError } from "./errors";
 
 /**
  * A rollup schema is a description of the types that are utilized in the rollup.
@@ -73,7 +73,11 @@ function loadSchema(schemaObject: RollupSchema): Schema {
   try {
     return Schema.fromJSON(JSON.stringify(schemaObject));
   } catch (err) {
-    throw new SovereignError(`Failed to create runtime schema due to: ${err}`);
+    throw new SchemaError(
+      "Failed to create runtime schema",
+      (err as Error).message,
+      schemaObject,
+    );
   }
 }
 
@@ -101,7 +105,11 @@ export function createSerializer(schemaObject: RollupSchema): RollupSerializer {
           }),
         );
       } catch (err) {
-        throw new SovereignError(`Failed to serialize input due to: ${err}`);
+        throw new SchemaError(
+          "Input serialization failed",
+          (err as Error).message,
+          schemaObject,
+        );
       }
     },
     serializeRuntimeCall(input: unknown): Uint8Array {
