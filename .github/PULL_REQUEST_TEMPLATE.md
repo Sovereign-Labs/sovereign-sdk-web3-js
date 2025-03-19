@@ -8,4 +8,4 @@
 
 ## Checklist
 
-- [ ] PR contains a minor version bump if it contains any breaking changes
+- [ ] PR contains a changeset entry with minor version bump if it contains any breaking changes ([see here for explanation](../DEVELOPMENT.md#changesets-in-monorepo))
