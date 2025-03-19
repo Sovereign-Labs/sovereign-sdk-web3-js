@@ -8,7 +8,16 @@ const schema = Schema.fromJSON(JSON.stringify(demoRollupSchema));
 describe("Schema", () => {
   describe("fromJSON", () => {
     it("should give descriptive error on invalid schema", () => {
-      expect(() => Schema.fromJSON("{}")).toThrow("missing field `types`");
+      let err: Error;
+
+      try {
+        Schema.fromJSON("{}");
+      } catch (e) {
+        err = e as Error;
+      }
+
+      expect(err!).toBeInstanceOf(Error);
+      expect(err!.message).toMatch(/missing field `types`/);
     });
   });
   describe("descriptor", () => {

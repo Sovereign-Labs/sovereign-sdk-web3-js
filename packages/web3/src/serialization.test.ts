@@ -1,6 +1,7 @@
 import { bytesToHex } from "@sovereign-sdk/utils";
 import { describe, expect, it } from "vitest";
 import demoRollupSchema from "../../__fixtures__/demo-rollup-schema.json";
+import type { SchemaError } from "./errors";
 import { createSerializer, createSerializerFromHttp } from "./serialization";
 
 describe("serialization", () => {
@@ -8,10 +9,17 @@ describe("serialization", () => {
     const invalidSchema = {
       invalid_field: "this will cause Schema.fromJSON to fail",
     };
+    let err: SchemaError | undefined;
 
-    expect(() => createSerializer(invalidSchema)).toThrow(
-      /Failed to create runtime schema due to:/,
-    );
+    try {
+      createSerializer(invalidSchema);
+    } catch (e) {
+      err = e as SchemaError;
+    }
+
+    expect(err?.message).toMatch(/Failed to create runtime schema/);
+    expect(err?.reason).toEqual("missing field `types` at line 1 column 59");
+    expect(err?.schema).toEqual(invalidSchema);
   });
   it("should handle Uint8Array fields in json objects", () => {
     const serializer = createSerializer(demoRollupSchema);
@@ -44,7 +52,7 @@ describe("serialization", () => {
 
       // Try to serialize with an invalid type index
       expect(() => serializer.serialize(invalidInput, 999999)).toThrow(
-        /Failed to serialize input due to:/,
+        /Input serialization failed/,
       );
     });
   });
