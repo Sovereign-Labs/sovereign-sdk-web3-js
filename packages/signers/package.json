@@ -9,11 +9,7 @@
     "lint": "biome lint",
     "test": "vitest"
   },
-  "files": [
-    "dist",
-    "README.md",
-    "package.json"
-  ],
+  "files": ["dist", "README.md", "package.json"],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

@@ -4,14 +4,14 @@
 export interface Signer {
   /**
    * Sign a message.
-   * 
+   *
    * @param message - The message to sign
    * @returns A promise that resolves to the signature
    */
   sign(message: Uint8Array): Promise<Uint8Array>;
   /**
    * Get the public key.
-   * 
+   *
    * @returns A promise that resolves to the public key
    */
   publicKey(): Promise<Uint8Array>;
@@ -23,7 +23,7 @@ export interface Signer {
 export type SignerOpt = {
   /**
    * The rollup schema generated during building of the rollup.
-   * 
+   *
    * Can be used to serialize and deserialize types and provide human readable representation
    * of signing data.
    */

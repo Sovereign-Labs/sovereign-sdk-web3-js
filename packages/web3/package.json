@@ -21,7 +21,6 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "devDependencies": {
-    "@biomejs/biome": "^1.9.2",
     "tsup": "^8.3.0",
     "vitest": "^3.0.5"
   },

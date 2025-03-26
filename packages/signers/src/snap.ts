@@ -2,8 +2,8 @@
 
 import type { MetaMaskInpageProvider } from "@metamask/providers";
 import { bytesToHex, hexToBytes } from "@sovereign-sdk/utils";
-import { Signer, type SignerOpt } from "./signer";
 import { SignerError } from "./errors";
+import type { Signer, SignerOpt } from "./signer";
 
 /**
  * Options for initializing a MetaMask Snap signer.
@@ -51,7 +51,7 @@ export const newMetaMaskSnapSigner = ({
     } catch {
       throw new SignerError(
         "Provider does not support MetaMask snaps",
-        signerId
+        signerId,
       );
     }
   };
@@ -72,6 +72,7 @@ export const newMetaMaskSnapSigner = ({
           },
         },
       };
+      // biome-ignore lint/suspicious/noExplicitAny: todo
       const { publicKey } = (await provider.request(args)) as any;
 
       return hexToBytes(publicKey);
@@ -89,6 +90,7 @@ export const newMetaMaskSnapSigner = ({
           },
         },
       };
+      // biome-ignore lint/suspicious/noExplicitAny: todo
       const { signature } = (await provider.request(args)) as any;
 
       return hexToBytes(signature);

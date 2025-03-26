@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { newMetaMaskSnapSigner } from "./snap";
+import type { MetaMaskInpageProvider } from "@metamask/providers";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SignerError } from "./errors";
-import { MetaMaskInpageProvider } from "@metamask/providers";
+import { newMetaMaskSnapSigner } from "./snap";
 
 describe("MetaMask Snap Signer", () => {
   const mockProvider = {
@@ -22,9 +22,9 @@ describe("MetaMask Snap Signer", () => {
     it("should throw if no provider is available and window.ethereum is undefined", () => {
       vi.stubGlobal("window", { ethereum: undefined });
       expect(() =>
-        newMetaMaskSnapSigner({ curve: "ed25519", schema: {} })
+        newMetaMaskSnapSigner({ curve: "ed25519", schema: {} }),
       ).toThrow(
-        new SignerError("Failed to find provider for signer", "MetaMaskSnap")
+        new SignerError("Failed to find provider for signer", "MetaMaskSnap"),
       );
     });
     it("should use window.ethereum if no provider is specified", async () => {
@@ -76,7 +76,7 @@ describe("MetaMask Snap Signer", () => {
           params: expect.objectContaining({
             snapId: "local:test",
           }),
-        })
+        }),
       );
     });
   });
@@ -92,7 +92,7 @@ describe("MetaMask Snap Signer", () => {
       const result = await signer.publicKey();
 
       expect(result).toEqual(
-        new Uint8Array([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef])
+        new Uint8Array([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
       );
     });
 
@@ -103,8 +103,8 @@ describe("MetaMask Snap Signer", () => {
       await expect(signer.publicKey()).rejects.toThrow(
         new SignerError(
           "Provider does not support MetaMask snaps",
-          "MetaMaskSnap"
-        )
+          "MetaMaskSnap",
+        ),
       );
     });
   });
@@ -121,7 +121,7 @@ describe("MetaMask Snap Signer", () => {
       const result = await signer.sign(message);
 
       expect(result).toEqual(
-        new Uint8Array([0xab, 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67, 0x89])
+        new Uint8Array([0xab, 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67, 0x89]),
       );
       expect(mockProvider.request).toHaveBeenCalledWith({
         method: "wallet_invokeSnap",
@@ -147,10 +147,9 @@ describe("MetaMask Snap Signer", () => {
       await expect(signer.sign(new Uint8Array([1, 2, 3, 4]))).rejects.toThrow(
         new SignerError(
           "Provider does not support MetaMask snaps",
-          "MetaMaskSnap"
-        )
+          "MetaMaskSnap",
+        ),
       );
     });
   });
 });
-

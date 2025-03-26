@@ -6,7 +6,7 @@ export class SignerError extends Error {
 
   /**
    * Create a new SignerError.
-   * 
+   *
    * @param message - The error message
    * @param signerId - The ID of the signer that threw the error
    */
