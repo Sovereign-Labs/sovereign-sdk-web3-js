@@ -9,11 +9,7 @@
     "lint": "biome lint",
     "test": "vitest"
   },
-  "files": [
-    "dist",
-    "README.md",
-    "package.json"
-  ],
+  "files": ["dist", "README.md", "package.json"],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -28,10 +24,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "biome": "^0.3.3",
     "tsup": "^8.3.0",
     "typescript": "^5.6.3",
-    "vitest": "^2.1.1"
+    "vitest": "^3.0.5"
   },
   "publishConfig": {
     "access": "public"

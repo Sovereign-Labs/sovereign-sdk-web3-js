@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { SignerError } from "./errors";
 
 describe("SignerError", () => {
@@ -20,4 +20,3 @@ describe("SignerError", () => {
     expect(error.stack).toContain("Error");
   });
 });
-

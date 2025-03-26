@@ -16,7 +16,7 @@ describe("standardTypeBuilder", () => {
     context: {
       defaultTxDetails: {
         max_priority_fee_bips: 100,
-        max_fee: 1000,
+        max_fee: "1000",
         chain_id: 1,
       },
     },
@@ -52,7 +52,7 @@ describe("standardTypeBuilder", () => {
         generation: 10,
         details: {
           max_priority_fee_bips: 100,
-          max_fee: 1000,
+          max_fee: "1000",
           chain_id: 1,
         },
       });
@@ -73,7 +73,7 @@ describe("standardTypeBuilder", () => {
         generation: 1709211600000,
         details: {
           max_priority_fee_bips: 100,
-          max_fee: 1000,
+          max_fee: "1000",
           chain_id: 1,
         },
       });
@@ -87,7 +87,7 @@ describe("standardTypeBuilder", () => {
         sender: new Uint8Array([4, 5, 6]),
         overrides: {
           details: {
-            max_fee: 2000,
+            max_fee: "2000",
             gas_limit: [1000000, 1000000],
           },
         },
@@ -99,7 +99,7 @@ describe("standardTypeBuilder", () => {
         generation: 1709211601100,
         details: {
           max_priority_fee_bips: 100,
-          max_fee: 2000,
+          max_fee: "2000",
           gas_limit: [1000000, 1000000],
           chain_id: 1,
         },
@@ -117,7 +117,7 @@ describe("standardTypeBuilder", () => {
           generation: 5,
           details: {
             max_priority_fee_bips: 100,
-            max_fee: 1000,
+            max_fee: "1000",
             chain_id: 1,
             gas_limit: null,
           },
@@ -138,7 +138,7 @@ describe("standardTypeBuilder", () => {
         generation: 5,
         details: {
           max_priority_fee_bips: 100,
-          max_fee: 1000,
+          max_fee: "1000",
           chain_id: 1,
           gas_limit: null,
         },
@@ -162,7 +162,7 @@ describe("createStandardRollup", () => {
     context: {
       defaultTxDetails: {
         max_priority_fee_bips: 100,
-        max_fee: 1000,
+        max_fee: "1000",
         chain_id: 1,
         gas_limit: null,
       },

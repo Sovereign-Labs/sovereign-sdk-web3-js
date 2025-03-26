@@ -12,7 +12,7 @@ import {
 
 export type TxDetails = {
   max_priority_fee_bips: number;
-  max_fee: number;
+  max_fee: string;
   gas_limit: number[] | null;
   chain_id: number;
 };

@@ -1,17 +1,17 @@
-import { describe, it, expect } from "vitest";
-import { hexToBytes, bytesToHex } from "./hex";
+import { describe, expect, it } from "vitest";
+import { bytesToHex, hexToBytes } from "./hex";
 
 describe("Hex conversion utilities", () => {
   describe("hexToBytes", () => {
     it("should convert valid hex string to bytes", () => {
       expect(hexToBytes("0123456789abcdef")).toEqual(
-        new Uint8Array([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef])
+        new Uint8Array([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
       );
     });
 
     it("should handle uppercase hex strings", () => {
       expect(hexToBytes("DEADBEEF")).toEqual(
-        new Uint8Array([0xde, 0xad, 0xbe, 0xef])
+        new Uint8Array([0xde, 0xad, 0xbe, 0xef]),
       );
     });
 
@@ -25,7 +25,7 @@ describe("Hex conversion utilities", () => {
 
     it("should throw error for invalid hex characters", () => {
       expect(() => hexToBytes("xyz123")).toThrow(
-        "Invalid hex string: No valid hex digits found"
+        "Invalid hex string: No valid hex digits found",
       );
     });
   });
@@ -53,4 +53,3 @@ describe("Hex conversion utilities", () => {
     });
   });
 });
-

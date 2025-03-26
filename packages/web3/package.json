@@ -21,15 +21,14 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "devDependencies": {
-    "@biomejs/biome": "^1.9.2",
     "tsup": "^8.3.0",
-    "vitest": "^2.1.1"
+    "vitest": "^3.0.5"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@sovereign-sdk/client": "0.1.0-alpha.17",
+    "@sovereign-sdk/client": "0.1.0-alpha.23",
     "@sovereign-sdk/signers": "workspace:^",
     "@sovereign-sdk/universal-wallet-wasm": "workspace:^",
     "@sovereign-sdk/utils": "workspace:^",
