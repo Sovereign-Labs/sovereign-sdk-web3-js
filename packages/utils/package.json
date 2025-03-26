@@ -31,7 +31,7 @@
     "biome": "^0.3.3",
     "tsup": "^8.3.0",
     "typescript": "^5.6.3",
-    "vitest": "^2.1.1"
+    "vitest": "^3.0.0"
   },
   "publishConfig": {
     "access": "public"
