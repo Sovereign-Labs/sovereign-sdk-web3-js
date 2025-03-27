@@ -104,6 +104,7 @@
         "variants": [
           {
             "name": "Bank",
+            "discriminant": 0,
             "template": null,
             "value": {
               "ByIndex": 4
@@ -111,6 +112,7 @@
           },
           {
             "name": "SequencerRegistry",
+            "discriminant": 1,
             "template": null,
             "value": {
               "ByIndex": 22
@@ -118,6 +120,7 @@
           },
           {
             "name": "ValueSetter",
+            "discriminant": 2,
             "template": null,
             "value": {
               "ByIndex": 29
@@ -125,6 +128,7 @@
           },
           {
             "name": "AttesterIncentives",
+            "discriminant": 3,
             "template": null,
             "value": {
               "ByIndex": 37
@@ -132,6 +136,7 @@
           },
           {
             "name": "ProverIncentives",
+            "discriminant": 4,
             "template": null,
             "value": {
               "ByIndex": 42
@@ -139,6 +144,7 @@
           },
           {
             "name": "Accounts",
+            "discriminant": 5,
             "template": null,
             "value": {
               "ByIndex": 46
@@ -146,6 +152,7 @@
           },
           {
             "name": "Uniqueness",
+            "discriminant": 6,
             "template": null,
             "value": {
               "ByIndex": 51
@@ -153,6 +160,7 @@
           },
           {
             "name": "ChainState",
+            "discriminant": 7,
             "template": null,
             "value": {
               "ByIndex": 53
@@ -160,6 +168,7 @@
           },
           {
             "name": "BlobStorage",
+            "discriminant": 8,
             "template": null,
             "value": {
               "ByIndex": 54
@@ -167,6 +176,7 @@
           },
           {
             "name": "Paymaster",
+            "discriminant": 9,
             "template": null,
             "value": {
               "ByIndex": 55
@@ -174,6 +184,7 @@
           },
           {
             "name": "Evm",
+            "discriminant": 10,
             "template": null,
             "value": {
               "ByIndex": 81
@@ -181,6 +192,7 @@
           },
           {
             "name": "AccessPattern",
+            "discriminant": 11,
             "template": null,
             "value": {
               "ByIndex": 84
@@ -211,6 +223,7 @@
         "variants": [
           {
             "name": "CreateToken",
+            "discriminant": 0,
             "template": null,
             "value": {
               "ByIndex": 6
@@ -218,6 +231,7 @@
           },
           {
             "name": "Transfer",
+            "discriminant": 1,
             "template": "Transfer to address {} {}.",
             "value": {
               "ByIndex": 16
@@ -225,6 +239,7 @@
           },
           {
             "name": "Burn",
+            "discriminant": 2,
             "template": null,
             "value": {
               "ByIndex": 19
@@ -232,6 +247,7 @@
           },
           {
             "name": "Mint",
+            "discriminant": 3,
             "template": null,
             "value": {
               "ByIndex": 20
@@ -239,6 +255,7 @@
           },
           {
             "name": "Freeze",
+            "discriminant": 4,
             "template": null,
             "value": {
               "ByIndex": 21
@@ -343,6 +360,7 @@
         "variants": [
           {
             "name": "Standard",
+            "discriminant": 0,
             "template": null,
             "value": {
               "ByIndex": 10
@@ -350,6 +368,7 @@
           },
           {
             "name": "Vm",
+            "discriminant": 1,
             "template": null,
             "value": {
               "ByIndex": 12
@@ -613,6 +632,7 @@
         "variants": [
           {
             "name": "Register",
+            "discriminant": 0,
             "template": null,
             "value": {
               "ByIndex": 24
@@ -620,6 +640,7 @@
           },
           {
             "name": "Deposit",
+            "discriminant": 1,
             "template": null,
             "value": {
               "ByIndex": 26
@@ -627,6 +648,7 @@
           },
           {
             "name": "InitiateWithdrawal",
+            "discriminant": 2,
             "template": null,
             "value": {
               "ByIndex": 27
@@ -634,6 +656,7 @@
           },
           {
             "name": "Withdraw",
+            "discriminant": 3,
             "template": null,
             "value": {
               "ByIndex": 28
@@ -768,6 +791,7 @@
         "variants": [
           {
             "name": "SetValue",
+            "discriminant": 0,
             "template": null,
             "value": {
               "ByIndex": 31
@@ -775,6 +799,7 @@
           },
           {
             "name": "SetManyValues",
+            "discriminant": 1,
             "template": null,
             "value": {
               "ByIndex": 35
@@ -782,6 +807,7 @@
           },
           {
             "name": "AssertVisibleSlotNumber",
+            "discriminant": 2,
             "template": null,
             "value": {
               "ByIndex": 36
@@ -918,6 +944,7 @@
         "variants": [
           {
             "name": "RegisterAttester",
+            "discriminant": 0,
             "template": null,
             "value": {
               "ByIndex": 39
@@ -925,16 +952,19 @@
           },
           {
             "name": "BeginExitAttester",
+            "discriminant": 1,
             "template": null,
             "value": null
           },
           {
             "name": "ExitAttester",
+            "discriminant": 2,
             "template": null,
             "value": null
           },
           {
             "name": "RegisterChallenger",
+            "discriminant": 3,
             "template": null,
             "value": {
               "ByIndex": 40
@@ -942,11 +972,13 @@
           },
           {
             "name": "ExitChallenger",
+            "discriminant": 4,
             "template": null,
             "value": null
           },
           {
             "name": "DepositAttester",
+            "discriminant": 5,
             "template": null,
             "value": {
               "ByIndex": 41
@@ -1022,6 +1054,7 @@
         "variants": [
           {
             "name": "Register",
+            "discriminant": 0,
             "template": null,
             "value": {
               "ByIndex": 44
@@ -1029,6 +1062,7 @@
           },
           {
             "name": "Deposit",
+            "discriminant": 1,
             "template": null,
             "value": {
               "ByIndex": 45
@@ -1036,6 +1070,7 @@
           },
           {
             "name": "Exit",
+            "discriminant": 2,
             "template": null,
             "value": null
           }
@@ -1094,6 +1129,7 @@
         "variants": [
           {
             "name": "InsertCredentialId",
+            "discriminant": 0,
             "template": null,
             "value": {
               "ByIndex": 48
@@ -1226,6 +1262,7 @@
         "variants": [
           {
             "name": "RegisterPaymaster",
+            "discriminant": 0,
             "template": null,
             "value": {
               "ByIndex": 57
@@ -1233,6 +1270,7 @@
           },
           {
             "name": "SetPayerForSequencer",
+            "discriminant": 1,
             "template": null,
             "value": {
               "ByIndex": 70
@@ -1240,6 +1278,7 @@
           },
           {
             "name": "UpdatePolicy",
+            "discriminant": 2,
             "template": null,
             "value": {
               "ByIndex": 71
@@ -1313,6 +1352,7 @@
         "variants": [
           {
             "name": "Allow",
+            "discriminant": 0,
             "template": null,
             "value": {
               "ByIndex": 60
@@ -1320,6 +1360,7 @@
           },
           {
             "name": "Deny",
+            "discriminant": 1,
             "template": null,
             "value": null
           }
@@ -1447,11 +1488,13 @@
         "variants": [
           {
             "name": "All",
+            "discriminant": 0,
             "template": null,
             "value": null
           },
           {
             "name": "Some",
+            "discriminant": 1,
             "template": null,
             "value": {
               "ByIndex": 68
@@ -1595,11 +1638,13 @@
         "variants": [
           {
             "name": "AllowAll",
+            "discriminant": 0,
             "template": null,
             "value": null
           },
           {
             "name": "Update",
+            "discriminant": 1,
             "template": null,
             "value": {
               "ByIndex": 75
@@ -1751,6 +1796,7 @@
         "variants": [
           {
             "name": "WriteCells",
+            "discriminant": 0,
             "template": null,
             "value": {
               "ByIndex": 86
@@ -1758,6 +1804,7 @@
           },
           {
             "name": "WriteCustom",
+            "discriminant": 1,
             "template": null,
             "value": {
               "ByIndex": 87
@@ -1765,6 +1812,7 @@
           },
           {
             "name": "ReadCells",
+            "discriminant": 2,
             "template": null,
             "value": {
               "ByIndex": 89
@@ -1772,6 +1820,7 @@
           },
           {
             "name": "HashBytes",
+            "discriminant": 3,
             "template": null,
             "value": {
               "ByIndex": 90
@@ -1779,6 +1828,7 @@
           },
           {
             "name": "HashCustom",
+            "discriminant": 4,
             "template": null,
             "value": {
               "ByIndex": 91
@@ -1786,6 +1836,7 @@
           },
           {
             "name": "StoreSignature",
+            "discriminant": 5,
             "template": null,
             "value": {
               "ByIndex": 92
@@ -1793,11 +1844,13 @@
           },
           {
             "name": "VerifySignature",
+            "discriminant": 6,
             "template": null,
             "value": null
           },
           {
             "name": "VerifyCustomSignature",
+            "discriminant": 7,
             "template": null,
             "value": {
               "ByIndex": 93
@@ -1805,6 +1858,7 @@
           },
           {
             "name": "StoreSerializedString",
+            "discriminant": 8,
             "template": null,
             "value": {
               "ByIndex": 94
@@ -1812,11 +1866,13 @@
           },
           {
             "name": "DeserializeBytesAsString",
+            "discriminant": 9,
             "template": null,
             "value": null
           },
           {
             "name": "DeserializeCustomString",
+            "discriminant": 10,
             "template": null,
             "value": {
               "ByIndex": 95
@@ -1824,6 +1880,7 @@
           },
           {
             "name": "DeleteCells",
+            "discriminant": 11,
             "template": null,
             "value": {
               "ByIndex": 96
@@ -1831,6 +1888,7 @@
           },
           {
             "name": "SetHook",
+            "discriminant": 12,
             "template": null,
             "value": {
               "ByIndex": 97
@@ -1838,6 +1896,7 @@
           },
           {
             "name": "UpdateAdmin",
+            "discriminant": 13,
             "template": null,
             "value": {
               "ByIndex": 104
@@ -2211,6 +2270,7 @@
         "variants": [
           {
             "name": "Read",
+            "discriminant": 0,
             "template": null,
             "value": {
               "ByIndex": 101
@@ -2218,6 +2278,7 @@
           },
           {
             "name": "Write",
+            "discriminant": 1,
             "template": null,
             "value": {
               "ByIndex": 102
@@ -2225,6 +2286,7 @@
           },
           {
             "name": "Delete",
+            "discriminant": 2,
             "template": null,
             "value": {
               "ByIndex": 103
@@ -2480,40 +2542,10 @@
     3,
     11
   ],
-  "metadata_hash": [
-    169,
-    37,
-    75,
-    78,
-    6,
-    207,
-    71,
-    194,
-    32,
-    55,
-    147,
-    98,
-    153,
-    111,
-    86,
-    204,
-    166,
-    138,
-    254,
-    64,
-    252,
-    77,
-    215,
-    16,
-    138,
-    83,
-    176,
-    66,
-    149,
-    151,
-    22,
-    76
-  ],
+  "chain_data": {
+    "chain_id": 4321,
+    "chain_name": "TestChain"
+  },
   "templates": [
     {},
     {},

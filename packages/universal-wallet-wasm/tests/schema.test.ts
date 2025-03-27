@@ -30,7 +30,7 @@ describe("Schema", () => {
   describe("chainHash", () => {
     it("should calculate the chain hash successfully", () => {
       const expected =
-        "d1dd9f0f56237bb7091b22f95dc45f9057243c708ab3847f247358ea0350a3ba";
+        "1c3e725f5b71a2da24d87b586966a51253b5beb68e54634dbd137ac7baf3d93a";
       const actual = bytesToHex(schema.chainHash);
 
       expect(actual).toEqual(expected);
@@ -39,7 +39,7 @@ describe("Schema", () => {
   describe("metadataHash", () => {
     it("should restore the metadata hash successfully", () => {
       const expected =
-        "a9254b4e06cf47c220379362996f56cca68afe40fc4dd7108a53b0429597164c";
+        "77f986b27d5c6e676fdb865f44833b5fe97f5cccafaf5b4733c21ba027f8b725";
       const actual = bytesToHex(schema.metadataHash);
 
       expect(actual).toEqual(expected);
