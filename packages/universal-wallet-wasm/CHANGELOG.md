@@ -1,5 +1,12 @@
 # @sovereign-sdk/universal-wallet-wasm
 
+## 0.2.0
+
+### Minor Changes
+
+- fc0676d: bumps to latest universal wallet version
+- f9c6cfd: improve error types used in universal-wallet and web3 packages
+
 ## 0.1.12
 
 ### Patch Changes
