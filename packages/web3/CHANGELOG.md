@@ -1,5 +1,18 @@
 # @sovereign-sdk/web3
 
+## 0.1.0
+
+### Minor Changes
+
+- 656a3ef: The `max_fee` field in transaction details has been changed from a number to a string type. This was done because it is a u128 type.
+- f9c6cfd: improve error types used in universal-wallet and web3 packages
+
+### Patch Changes
+
+- Updated dependencies [fc0676d]
+- Updated dependencies [f9c6cfd]
+  - @sovereign-sdk/universal-wallet-wasm@0.2.0
+
 ## 0.0.26
 
 ### Patch Changes
