@@ -1,7 +1,12 @@
 import IsoWebSocket from "isomorphic-ws";
 import { WebSocket } from "partysocket";
 import { afterEach, describe, expect, it, test, vi } from "vitest";
-import { _subscriptions, httpToWebSocket, subscribe } from "./subscriptions";
+import {
+  _subscriptions,
+  createSubscription,
+  httpToWebSocket,
+  subscribe,
+} from "./subscriptions";
 
 vi.mock("partysocket", () => {
   const WebSocket = vi.fn();
@@ -118,5 +123,15 @@ describe("subscriptions", () => {
 
       expect(subscription.url).toBe(TEST_URL);
     });
+  });
+});
+
+describe("createSubscription", () => {
+  it("should throw error for invalid subscription type", () => {
+    const callback = async () => {};
+    // @ts-expect-error - Testing invalid subscription type
+    expect(() => createSubscription("invalid", callback, {} as any)).toThrow(
+      "Invalid subscription type 'invalid'",
+    );
   });
 });
