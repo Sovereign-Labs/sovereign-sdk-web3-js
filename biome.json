@@ -6,6 +6,13 @@
   "formatter": {
     "indentStyle": "space"
   },
+  "linter": {
+    "rules": {
+      "complexity": {
+        "noForEach": "info"
+      }
+    }
+  },
   "overrides": [
     {
       "include": ["packages/**/*.test.ts"],

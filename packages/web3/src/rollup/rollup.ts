@@ -8,6 +8,11 @@ import {
   type RollupSerializer,
   createSerializerFromHttp,
 } from "../serialization";
+import {
+  type Subscription,
+  type SubscriptionToCallbackMap,
+  createSubscription,
+} from "../subscriptions";
 import type { BaseTypeSpec } from "../type-spec";
 import type { DeepPartial } from "../utils";
 
@@ -238,6 +243,16 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
     return this.signAndSubmitTransaction(unsignedTx, {
       signer,
     });
+  }
+
+  /**
+   * Create a subscription to events emitted over websockets by the rollup.
+   */
+  subscribe<T extends keyof SubscriptionToCallbackMap>(
+    type: T,
+    callback: SubscriptionToCallbackMap[T],
+  ): Subscription {
+    return createSubscription(type, callback, this.http);
   }
 
   /**
