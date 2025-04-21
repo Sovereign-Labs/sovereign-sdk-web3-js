@@ -87,14 +87,14 @@ export interface SubscriptionToCallbackMap {
 export function createSubscription<T extends keyof SubscriptionToCallbackMap>(
   subscription: T,
   callback: SubscriptionToCallbackMap[T],
-  client: SovereignSDK
+  client: SovereignSDK,
 ): Subscription {
   switch (subscription) {
     case "events": {
       const url = client.buildURL("/sequencer/events/ws", {});
       return subscribe(
         httpToWebSocket(url),
-        callback as SubscriptionToCallbackMap["events"]
+        callback as SubscriptionToCallbackMap["events"],
       );
     }
     default:
