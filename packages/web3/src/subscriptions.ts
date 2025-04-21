@@ -25,9 +25,9 @@ type SubscriptionEntry = {
 export const _subscriptions: Record<Url, SubscriptionEntry> = {};
 
 /** Subscribe to the provided websocket url & call the provided callback on messages received. */
-// biome-ignore lint/suspicious/noExplicitAny: allow
 export function subscribe(
   url: Url,
+  // biome-ignore lint/suspicious/noExplicitAny: allow
   callback: (...args: any[]) => void,
 ): Subscription {
   const subscription = _subscriptions[url];
