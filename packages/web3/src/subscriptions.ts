@@ -22,11 +22,14 @@ type SubscriptionEntry = {
   callbacks: Array<(...args: any[]) => void>;
 };
 
-const _subscriptions: Record<Url, SubscriptionEntry> = {};
+export const _subscriptions: Record<Url, SubscriptionEntry> = {};
 
 /** Subscribe to the provided websocket url & call the provided callback on messages received. */
 // biome-ignore lint/suspicious/noExplicitAny: allow
-function subscribe(url: Url, callback: (...args: any[]) => void): Subscription {
+export function subscribe(
+  url: Url,
+  callback: (...args: any[]) => void,
+): Subscription {
   const subscription = _subscriptions[url];
 
   if (!subscription) {
