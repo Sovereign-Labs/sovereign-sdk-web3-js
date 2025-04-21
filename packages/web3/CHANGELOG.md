@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.2.0
+
+### Minor Changes
+
+- aeac92b: adds subscriptions to sequencer events
+
 ## 0.1.0
 
 ### Minor Changes
