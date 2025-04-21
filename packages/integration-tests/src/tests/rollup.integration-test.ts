@@ -13,7 +13,7 @@ describe("rollup", async () => {
       context: {
         defaultTxDetails: {
           max_priority_fee_bips: 0,
-          max_fee: 100000000,
+          max_fee: "100000000",
           gas_limit: null,
           chain_id: 4321,
         },
@@ -61,7 +61,7 @@ describe("rollup", async () => {
 
         expect(batch.length).toEqual(3);
         expect(nonce).toEqual(startingNonce + 3);
-      },
+      }
     );
     it.todo(
       "should successfully create a new token using the bank module",
@@ -79,7 +79,7 @@ describe("rollup", async () => {
         //     ],
         //   },
         // },
-      },
+      }
     );
   });
 });

@@ -28,11 +28,14 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@sovereign-sdk/client": "0.1.0-alpha.23",
+    "@sovereign-sdk/client": "0.1.0-alpha.28",
     "@sovereign-sdk/signers": "workspace:^",
     "@sovereign-sdk/universal-wallet-wasm": "workspace:^",
     "@sovereign-sdk/utils": "workspace:^",
-    "js-base64": "^3.7.7"
+    "isomorphic-ws": "^5.0.0",
+    "js-base64": "^3.7.7",
+    "partysocket": "^1.1.3",
+    "ws": "^8.18.1"
   },
   "publishConfig": {
     "access": "public"
