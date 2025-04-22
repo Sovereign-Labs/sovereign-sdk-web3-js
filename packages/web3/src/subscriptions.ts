@@ -34,6 +34,8 @@ export function subscribe(
 
   if (!subscription) {
     const websocket = new WebSocket(url, [], { WebSocket: IsoWebSocket });
+    // bun compatibility: https://github.com/partykit/partykit/issues/774
+    websocket.binaryType = "arraybuffer";
 
     _subscriptions[url] = {
       websocket,
@@ -44,6 +46,9 @@ export function subscribe(
       const data = JSON.parse(message.data);
       _subscriptions[url]?.callbacks.forEach((cb) => cb(data));
     });
+    websocket.addEventListener("error", (e) =>
+      console.log("Websocket error", e),
+    );
   } else {
     subscription.callbacks.push(callback);
   }

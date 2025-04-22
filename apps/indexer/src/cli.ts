@@ -1,4 +1,4 @@
-import { createStandardRollup } from "@sovereign-sdk/web3";
+import { Rollup, SovereignClient } from "@sovereign-sdk/web3";
 import { hideBin } from "yargs/helpers";
 import yargs from "yargs/yargs";
 import packageJson from "../package.json";
@@ -39,18 +39,19 @@ process.on("SIGHUP", onExit);
 
 logger.info("Indexer starting..");
 
-const rollup = await createStandardRollup({
-  url: argv.rollupUrl,
-  context: {
-    defaultTxDetails: {
-      max_priority_fee_bips: 0,
-      max_fee: "100000000",
-      gas_limit: null,
-      chain_id: 4321,
-    },
+const rollup = new Rollup(
+  {
+    client: new SovereignClient.SovereignSDK({ baseURL: argv.rollupUrl }),
+    // biome-ignore lint/suspicious/noExplicitAny: types arent used
+    serializer: {} as any,
+    context: {},
   },
-});
+  // biome-ignore lint/suspicious/noExplicitAny: types arent used
+  {} as any,
+);
 _indexer = new Indexer({
   rollup,
   database: getDefaultDatabase(),
 });
+
+_indexer.run().catch(console.error);
