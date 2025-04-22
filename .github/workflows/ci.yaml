@@ -19,6 +19,10 @@ jobs:
         with:
           node-version: 20.x
           cache: "pnpm"
+      # bun is used to compile indexer
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.x
       - uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_SOV_SDK_WIP }}
