@@ -1,10 +1,10 @@
+import { createStandardRollup } from "@sovereign-sdk/web3";
 import { hideBin } from "yargs/helpers";
 import yargs from "yargs/yargs";
 import packageJson from "../package.json";
+import { getDefaultDatabase } from "./db";
 import { Indexer } from "./indexer";
 import logger from "./logger";
-import { createStandardRollup } from "@sovereign-sdk/web3";
-import { getDefaultDatabase } from "./db";
 
 let _indexer: Indexer | undefined = undefined;
 
