@@ -71,7 +71,7 @@ export function subscribe(
   };
 }
 
-type EventPayload = {
+export type EventPayload = {
   tx_hash: string;
   type: "event";
   number: number;

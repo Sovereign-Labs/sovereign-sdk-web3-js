@@ -1,0 +1,9 @@
+CREATE TABLE events (
+    id SERIAL PRIMARY KEY,
+    tx_hash TEXT NOT NULL,
+    number INTEGER NOT NULL,
+    key TEXT NOT NULL,
+    value JSONB NOT NULL,
+    module TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
