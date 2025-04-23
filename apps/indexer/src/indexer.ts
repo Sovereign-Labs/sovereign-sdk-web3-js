@@ -21,12 +21,14 @@ export class Indexer {
   }
 
   async run(): Promise<void> {
-    logger.info("Indexer is starting");
+    logger.info("Indexer started");
 
     this.doBackfill();
     this.subscription = this.rollup.subscribe("events", (event) =>
       this.onNewEvent({ ...event, module: event.module.name }),
     );
+
+    logger.info("Subscribed to rollup events and performing event backfill");
   }
 
   async stop(): Promise<void> {

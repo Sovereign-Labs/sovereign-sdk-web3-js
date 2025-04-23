@@ -37,8 +37,6 @@ process.on("SIGINT", onExit);
 process.on("SIGTERM", onExit);
 process.on("SIGHUP", onExit);
 
-logger.info("Indexer starting..");
-
 const rollup = new Rollup(
   {
     client: new SovereignClient.SovereignSDK({ baseURL: argv.rollupUrl }),
