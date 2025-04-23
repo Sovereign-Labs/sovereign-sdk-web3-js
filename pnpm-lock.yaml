@@ -59,12 +59,6 @@ importers:
         specifier: ^3.0.5
         version: 3.0.5(@types/debug@4.1.12)(@types/node@22.7.5)(yaml@2.6.0)
 
-  examples/event-indexer:
-    dependencies:
-      '@sovereign-sdk/web3':
-        specifier: workspace:^
-        version: link:../../packages/web3
-
   packages/integration-tests:
     devDependencies:
       '@noble/ed25519':
@@ -2045,6 +2039,7 @@ packages:
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
+    deprecated: Use your platform's native DOMException instead
 
   node-fetch@2.7.0:
     resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}

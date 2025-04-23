@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.2.1
+
+### Patch Changes
+
+- 650451c: export `Subscription` type & log subscription errors
+
 ## 0.2.0
 
 ### Minor Changes
