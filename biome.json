@@ -15,12 +15,13 @@
   },
   "overrides": [
     {
-      "include": ["packages/**/*.test.ts"],
+      "include": ["**/*.test.ts", "**/*.integration-test.ts"],
       "linter": {
         "rules": {
           "suspicious": {
             "noExplicitAny": "off"
-          }
+          },
+          "style": { "noNonNullAssertion": "off" }
         }
       }
     }
