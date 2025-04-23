@@ -28,7 +28,6 @@ function getTestEvent(number: number): EventSchema {
   };
 }
 
-// Note: these tests currently reuse the same database/data
 describe("Postgres queries", () => {
   let db: PostgresDatabase | undefined;
   let container: StartedPostgreSqlContainer | undefined;
@@ -38,7 +37,7 @@ describe("Postgres queries", () => {
     db = postgresDatabase(container.getConnectionUri());
     const migration = readFileSync(
       join(__dirname, "..", "db", "create_events_table.sql"),
-      "utf8",
+      "utf8"
     );
     await db.inner.query(migration);
     await db.disconnect();
