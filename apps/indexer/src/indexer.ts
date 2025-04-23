@@ -60,7 +60,16 @@ export class Indexer {
     for (const num of missingEventNums) {
       try {
         const eventResponse = await this.rollup.ledger.events.retrieve(num);
-        const event = eventResponse.data!;
+
+        if (!eventResponse.data) {
+          logger.warn(
+            "Response didnt contain data field, this shouldn't be possible",
+            eventResponse
+          );
+          continue;
+        }
+
+        const event = eventResponse.data;
         this.onNewEvent({ ...event, module: event.module.name });
       } catch (err) {
         this.onError(err as Error);

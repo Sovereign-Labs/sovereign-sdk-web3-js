@@ -1,4 +1,5 @@
 import { Pool } from "pg";
+import { IndexerConfigError } from "./errors";
 
 export type EventSchema = {
   number: number;
@@ -37,7 +38,7 @@ export function postgresDatabase(connectionString: string): PostgresDatabase {
         ORDER BY a.number
         LIMIT $1;
       `,
-        [limit ?? 25]
+        [limit ?? 25],
       );
 
       return result.rows.map((row) => row.number);
@@ -61,5 +62,9 @@ export function postgresDatabase(connectionString: string): PostgresDatabase {
 }
 
 export function getDefaultDatabase(): Database<unknown> {
-  return postgresDatabase(process.env.DATABASE_URL!);
+  if (process.env.DATABASE_URL === undefined) {
+    throw new IndexerConfigError("DATABASE_URL env var not set");
+  }
+
+  return postgresDatabase(process.env.DATABASE_URL);
 }
