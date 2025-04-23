@@ -1,5 +1,11 @@
 # @sovereign-sdk/indexer
 
+## 0.1.2
+
+### Patch Changes
+
+- c2e67f8: fix publishing cli path
+
 ## 0.1.1
 
 ### Patch Changes
