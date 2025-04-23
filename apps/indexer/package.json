@@ -9,7 +9,7 @@
     "ci": "biome ci",
     "fix": "biome check --write",
     "lint": "biome lint",
-    "test:it": "TESTCONTAINERS_RYUK_DISABLED=true bun test ./tests"
+    "test:it": "vitest"
   },
   "dependencies": {
     "@sovereign-sdk/web3": "workspace:^",
@@ -21,7 +21,8 @@
     "@testcontainers/postgresql": "^10.24.2",
     "@types/pg": "^8.11.13",
     "@types/yargs": "^17.0.33",
-    "testcontainers": "^10.24.2"
+    "testcontainers": "^10.24.2",
+    "vitest": "^3.0.5"
   },
   "publishConfig": {
     "access": "public"

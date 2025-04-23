@@ -55,6 +55,9 @@ importers:
       testcontainers:
         specifier: ^10.24.2
         version: 10.24.2
+      vitest:
+        specifier: ^3.0.5
+        version: 3.0.5(@types/debug@4.1.12)(@types/node@22.7.5)(yaml@2.6.0)
 
   examples/event-indexer:
     dependencies:
