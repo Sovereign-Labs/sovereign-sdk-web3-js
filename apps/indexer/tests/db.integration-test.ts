@@ -12,6 +12,7 @@ import {
   describe,
   expect,
   it,
+  vi,
 } from "vitest";
 import {
   type EventSchema,
@@ -29,6 +30,8 @@ function getTestEvent(number: number): EventSchema {
 }
 
 describe("Postgres queries", () => {
+  vi.setConfig({ hookTimeout: 60000 });
+
   let db: PostgresDatabase | undefined;
   let container: StartedPostgreSqlContainer | undefined;
 
