@@ -12,10 +12,7 @@
     "test:it": "vitest"
   },
   "bin": "./bin/sov-indexer",
-  "files": [
-    "package.json",
-    "bin"
-  ],
+  "files": ["package.json", "bin"],
   "dependencies": {
     "@sovereign-sdk/web3": "workspace:^",
     "pg": "^8.14.1",
