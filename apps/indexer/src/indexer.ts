@@ -25,7 +25,7 @@ export class Indexer {
 
     this.doBackfill();
     this.subscription = this.rollup.subscribe("events", (event) =>
-      this.onNewEvent({ ...event, module: event.module.name })
+      this.onNewEvent({ ...event, module: event.module.name }),
     );
   }
 
@@ -64,7 +64,7 @@ export class Indexer {
         if (!eventResponse.data) {
           logger.warn(
             "Response didnt contain data field, this shouldn't be possible",
-            eventResponse
+            eventResponse,
           );
           continue;
         }
