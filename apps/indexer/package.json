@@ -11,7 +11,9 @@
     "lint": "biome lint",
     "test:it": "vitest"
   },
-  "bin": "./bin/sov-indexer",
+  "bin": {
+    "indexer": "./bin/sov-indexer"
+  },
   "files": ["package.json", "bin"],
   "dependencies": {
     "@sovereign-sdk/web3": "workspace:^",
