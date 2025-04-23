@@ -47,7 +47,7 @@ const rollup = new Rollup(
     context: {},
   },
   // biome-ignore lint/suspicious/noExplicitAny: types arent used
-  {} as any,
+  {} as any
 );
 _indexer = new Indexer({
   rollup,

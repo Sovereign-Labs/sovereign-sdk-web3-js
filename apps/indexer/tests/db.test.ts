@@ -3,21 +3,15 @@ import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from "@testcontainers/postgresql";
-import { PostgresDatabase, postgresDatabase } from "../src/db";
+import { EventSchema, PostgresDatabase, postgresDatabase } from "../src/db";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { EventPayload } from "@sovereign-sdk/web3";
 
-function getTestEvent(number: number): EventPayload {
+function getTestEvent(number: number): EventSchema {
   return {
-    tx_hash: "tx124121",
     key: "Bank/TokenTransfer",
     value: { data: "stuff" },
-    type: "event",
-    module: {
-      type: "moduleRef",
-      name: "Bank",
-    },
+    module: "Bank",
     number,
   };
 }

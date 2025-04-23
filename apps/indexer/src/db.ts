@@ -1,10 +1,16 @@
-import type { EventPayload } from "@sovereign-sdk/web3";
 import { Pool } from "pg";
+
+export type EventSchema = {
+  number: number;
+  key: string;
+  value: Record<string, unknown>;
+  module: string;
+};
 
 export type Database<T> = {
   get inner(): T;
   getMissingEvents: (limit?: number) => Promise<number[]>;
-  insertEvent: (event: EventPayload) => Promise<void>;
+  insertEvent: (event: EventSchema) => Promise<void>;
   disconnect: () => Promise<void>;
 };
 
@@ -39,18 +45,12 @@ export function postgresDatabase(connectionString: string): PostgresDatabase {
     async insertEvent(event) {
       const query = `
         INSERT INTO rollup_events 
-          (tx_hash, number, key, value, module) 
+          (number, key, value, module) 
         VALUES 
-          ($1, $2, $3, $4, $5)
+          ($1, $2, $3, $4)
         RETURNING id;
       `;
-      const values = [
-        event.tx_hash,
-        event.number,
-        event.key,
-        event.value,
-        event.module.name,
-      ];
+      const values = [event.number, event.key, event.value, event.module];
 
       await pool.query(query, values);
     },

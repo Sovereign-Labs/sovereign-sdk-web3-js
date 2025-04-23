@@ -1,6 +1,5 @@
 CREATE TABLE rollup_events (
     id SERIAL PRIMARY KEY,
-    tx_hash TEXT NOT NULL,
     number INTEGER NOT NULL UNIQUE,
     key TEXT NOT NULL,
     value JSONB NOT NULL,
