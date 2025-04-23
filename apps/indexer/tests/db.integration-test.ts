@@ -38,7 +38,7 @@ describe("Postgres queries", () => {
     db = postgresDatabase(container.getConnectionUri());
     const migration = readFileSync(
       join(__dirname, "..", "db", "create_events_table.sql"),
-      "utf8"
+      "utf8",
     );
     await db.inner.query(migration);
     await db.disconnect();
