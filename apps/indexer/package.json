@@ -11,6 +11,8 @@
     "lint": "biome lint",
     "test:it": "vitest"
   },
+  "bin": "./bin/sov-indexer",
+  "files": ["package.json", "bin"],
   "dependencies": {
     "@sovereign-sdk/web3": "workspace:^",
     "pg": "^8.14.1",
@@ -26,6 +28,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "private": true
+  }
 }
