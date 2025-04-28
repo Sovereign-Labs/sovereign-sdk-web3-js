@@ -8,6 +8,9 @@ export type IndexerOpts = {
   rollup: Rollup<any, any>;
 };
 
+// if amount of time since last websocket msg > timeout, fetch latest event from api
+// so indexing continues if there's no liveness
+
 export class Indexer {
   private readonly database: Database<unknown>;
   // biome-ignore lint/suspicious/noExplicitAny: types arent used
@@ -25,7 +28,7 @@ export class Indexer {
 
     this.doBackfill();
     this.subscription = this.rollup.subscribe("events", (event) =>
-      this.onNewEvent({ ...event, module: event.module.name }),
+      this.onNewEvent({ ...event, module: event.module.name })
     );
 
     logger.info("Subscribed to rollup events and performing event backfill");
@@ -66,7 +69,7 @@ export class Indexer {
         if (!eventResponse.data) {
           logger.warn(
             "Response didnt contain data field, this shouldn't be possible",
-            eventResponse,
+            eventResponse
           );
           continue;
         }

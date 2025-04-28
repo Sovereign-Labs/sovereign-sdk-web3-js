@@ -40,7 +40,7 @@ describe("Postgres queries", () => {
     db = postgresDatabase(container.getConnectionUri());
     const migration = readFileSync(
       join(__dirname, "..", "db", "create_events_table.sql"),
-      "utf8",
+      "utf8"
     );
     await db.inner.query(migration);
     await db.disconnect();
@@ -99,6 +99,26 @@ describe("Postgres queries", () => {
       }
       const expectedMissing = [3, 5, 6];
       const actualMissing = await db?.getMissingEvents(3);
+
+      expect(actualMissing).toEqual(expectedMissing);
+    });
+    it("should use latestEventNumber if provided", async () => {
+      const events = [getTestEvent(1), getTestEvent(2), getTestEvent(3)];
+      for (const event of events) {
+        await db?.insertEvent(event);
+      }
+      const expectedMissing = [4, 5, 6, 7, 8];
+      const actualMissing = await db?.getMissingEvents(25, 8);
+
+      expect(actualMissing).toEqual(expectedMissing);
+    });
+    it("should use max event number if latestEventNumber param not provided", async () => {
+      const events = [getTestEvent(1), getTestEvent(2), getTestEvent(3)];
+      for (const event of events) {
+        await db?.insertEvent(event);
+      }
+      const expectedMissing: number[] = [];
+      const actualMissing = await db?.getMissingEvents(25);
 
       expect(actualMissing).toEqual(expectedMissing);
     });
