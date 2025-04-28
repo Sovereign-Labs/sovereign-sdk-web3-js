@@ -1,4 +1,4 @@
-import type { Rollup, Subscription } from "@sovereign-sdk/web3";
+import type { EventPayload, Rollup, Subscription } from "@sovereign-sdk/web3";
 import type { Database, EventSchema } from "./db";
 import logger from "./logger";
 
@@ -8,17 +8,17 @@ export type IndexerOpts = {
   rollup: Rollup<any, any>;
 };
 
-// if amount of time since last websocket msg > timeout, fetch latest event from api
-// so indexing continues if there's no liveness
-
 export class Indexer {
   private readonly database: Database<unknown>;
   // biome-ignore lint/suspicious/noExplicitAny: types arent used
   private readonly rollup: Rollup<any, any>;
   private subscription?: Subscription;
+  private lastMessageTimestampMs: number;
   private backfillHandle?: ReturnType<typeof setTimeout>;
 
   constructor(opts: IndexerOpts) {
+    // set it to now so we don't need to deal with an undefined case
+    this.lastMessageTimestampMs = Date.now();
     this.database = opts.database;
     this.rollup = opts.rollup;
   }
@@ -28,7 +28,7 @@ export class Indexer {
 
     this.doBackfill();
     this.subscription = this.rollup.subscribe("events", (event) =>
-      this.onNewEvent({ ...event, module: event.module.name })
+      this.onSubscriptionMessage(event),
     );
 
     logger.info("Subscribed to rollup events and performing event backfill");
@@ -53,13 +53,18 @@ export class Indexer {
     logger.error("An error occurred", err);
   }
 
+  private async onSubscriptionMessage(event: EventPayload): Promise<void> {
+    this.lastMessageTimestampMs = Date.now();
+    return this.onNewEvent({ ...event, module: event.module.name });
+  }
+
   private async onNewEvent(event: EventSchema): Promise<void> {
     logger.debug("Handling new event", event);
     return this.database.insertEvent(event).catch((e) => this.onError(e));
   }
 
   private async doBackfill(): Promise<void> {
-    const missingEventNums = await this.database.getMissingEvents(500);
+    const missingEventNums = await this.getMissingEventNumbers();
     logger.debug("Amount of events being backfilled", missingEventNums.length);
 
     for (const num of missingEventNums) {
@@ -69,7 +74,7 @@ export class Indexer {
         if (!eventResponse.data) {
           logger.warn(
             "Response didnt contain data field, this shouldn't be possible",
-            eventResponse
+            eventResponse,
           );
           continue;
         }
@@ -82,5 +87,24 @@ export class Indexer {
     }
 
     this.backfillHandle = setTimeout(() => this.doBackfill(), 200);
+  }
+
+  private async getMissingEventNumbers(): Promise<number[]> {
+    // We've received websocket events recently, no need to query the REST api for latest event
+    if (Date.now() - this.lastMessageTimestampMs < 2000) {
+      return this.database.getMissingEvents(500);
+    }
+
+    try {
+      const response = await this.rollup.ledger.events.latest();
+      const event = response.data;
+
+      return this.database.getMissingEvents(500, event?.number);
+    } catch {
+      logger.debug(
+        "Failed to retrieve latest event, falling back to latest event number in db",
+      );
+      return this.database.getMissingEvents(500);
+    }
   }
 }

@@ -12,7 +12,7 @@ export type Database<T> = {
   get inner(): T;
   getMissingEvents: (
     limit?: number,
-    latestEventNumber?: number
+    latestEventNumber?: number,
   ) => Promise<number[]>;
   insertEvent: (event: EventSchema) => Promise<void>;
   disconnect: () => Promise<void>;
@@ -49,7 +49,7 @@ export function postgresDatabase(connectionString: string): PostgresDatabase {
         ORDER BY a.number
         LIMIT $1;
       `,
-        values
+        values,
       );
 
       return result.rows.map((row) => row.number);
