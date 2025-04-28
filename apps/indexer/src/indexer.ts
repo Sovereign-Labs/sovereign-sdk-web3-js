@@ -6,6 +6,7 @@ export type IndexerOpts = {
   database: Database<unknown>;
   // biome-ignore lint/suspicious/noExplicitAny: types arent used
   rollup: Rollup<any, any>;
+  backfillIntervalMs?: number;
 };
 
 export class Indexer {
@@ -14,11 +15,13 @@ export class Indexer {
   private readonly rollup: Rollup<any, any>;
   private subscription?: Subscription;
   private lastMessageTimestampMs: number;
+  private readonly backfillIntervalMs: number;
   private backfillHandle?: ReturnType<typeof setTimeout>;
 
   constructor(opts: IndexerOpts) {
     // set it to now so we don't need to deal with an undefined case
     this.lastMessageTimestampMs = Date.now();
+    this.backfillIntervalMs = opts.backfillIntervalMs ?? 200;
     this.database = opts.database;
     this.rollup = opts.rollup;
   }
@@ -86,13 +89,16 @@ export class Indexer {
       }
     }
 
-    this.backfillHandle = setTimeout(() => this.doBackfill(), 200);
+    this.backfillHandle = setTimeout(
+      () => this.doBackfill(),
+      this.backfillIntervalMs,
+    );
   }
 
   private async getMissingEventNumbers(): Promise<number[]> {
     // We've received websocket events recently, no need to query the REST api for latest event
     if (Date.now() - this.lastMessageTimestampMs < 2000) {
-      return this.database.getMissingEvents(500);
+      return this.database.getMissingEvents();
     }
 
     try {
@@ -104,7 +110,7 @@ export class Indexer {
       logger.debug(
         "Failed to retrieve latest event, falling back to latest event number in db",
       );
-      return this.database.getMissingEvents(500);
+      return this.database.getMissingEvents();
     }
   }
 }

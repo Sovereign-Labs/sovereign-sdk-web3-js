@@ -26,7 +26,7 @@ export function postgresDatabase(connectionString: string): PostgresDatabase {
   return {
     inner: pool,
     async getMissingEvents(limit?: number, latestEventNumber?: number) {
-      const values = [limit ?? 25];
+      const values = [limit ?? 500];
 
       if (latestEventNumber) {
         values.push(latestEventNumber);
