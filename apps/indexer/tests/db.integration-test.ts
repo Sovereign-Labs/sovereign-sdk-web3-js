@@ -86,6 +86,16 @@ describe("Postgres queries", () => {
 
       expect(actualMissing).toEqual(expectedMissing);
     });
+    it("should return numbers with leading gaps & trailing gaps", async () => {
+      const events = [getTestEvent(4), getTestEvent(5), getTestEvent(8)];
+      for (const event of events) {
+        await db?.insertEvent(event);
+      }
+      const expectedMissing = [1, 2, 3, 6, 7, 9, 10];
+      const actualMissing = await db?.getMissingEvents(500, 10);
+
+      expect(actualMissing).toEqual(expectedMissing);
+    });
     it("should return numbers of events with limit", async () => {
       const events = [
         getTestEvent(1),

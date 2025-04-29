@@ -32,15 +32,16 @@ export function postgresDatabase(connectionString: string): PostgresDatabase {
         values.push(latestEventNumber);
       }
 
+      // This query will likely be slow when there's lots of events in the db
+      // can re-visit if this turns out to be the case
       const result = await pool.query(
         `
-        WITH number_range AS (
-          SELECT min(number) AS min_number, ${
-            latestEventNumber ? "$2::integer" : "max(number)"
-          } AS max_number FROM rollup_events
+        WITH max_value AS (
+          SELECT COALESCE(${latestEventNumber ? "$2::integer" : "NULL"}, 
+                          (SELECT max(number) FROM rollup_events)) AS max_number
         ),
         all_numbers AS (
-          SELECT generate_series(min_number, max_number) AS number FROM number_range
+          SELECT generate_series(1, (SELECT max_number FROM max_value)) AS number
         )
         SELECT a.number 
         FROM all_numbers a
