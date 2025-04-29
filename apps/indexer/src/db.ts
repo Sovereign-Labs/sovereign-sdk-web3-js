@@ -10,7 +10,10 @@ export type EventSchema = {
 
 export type Database<T> = {
   get inner(): T;
-  getMissingEvents: (limit?: number) => Promise<number[]>;
+  getMissingEvents: (
+    limit?: number,
+    latestEventNumber?: number,
+  ) => Promise<number[]>;
   insertEvent: (event: EventSchema) => Promise<void>;
   disconnect: () => Promise<void>;
 };
@@ -22,11 +25,19 @@ export function postgresDatabase(connectionString: string): PostgresDatabase {
 
   return {
     inner: pool,
-    async getMissingEvents(limit?: number) {
+    async getMissingEvents(limit?: number, latestEventNumber?: number) {
+      const values = [limit ?? 500];
+
+      if (latestEventNumber) {
+        values.push(latestEventNumber);
+      }
+
       const result = await pool.query(
         `
         WITH number_range AS (
-          SELECT min(number) AS min_number, max(number) AS max_number FROM rollup_events
+          SELECT min(number) AS min_number, ${
+            latestEventNumber ? "$2::integer" : "max(number)"
+          } AS max_number FROM rollup_events
         ),
         all_numbers AS (
           SELECT generate_series(min_number, max_number) AS number FROM number_range
@@ -38,7 +49,7 @@ export function postgresDatabase(connectionString: string): PostgresDatabase {
         ORDER BY a.number
         LIMIT $1;
       `,
-        [limit ?? 25],
+        values,
       );
 
       return result.rows.map((row) => row.number);

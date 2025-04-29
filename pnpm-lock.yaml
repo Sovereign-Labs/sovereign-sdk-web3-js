@@ -139,8 +139,8 @@ importers:
   packages/web3:
     dependencies:
       '@sovereign-sdk/client':
-        specifier: 0.1.0-alpha.28
-        version: 0.1.0-alpha.28
+        specifier: 0.1.0-alpha.30
+        version: 0.1.0-alpha.30
       '@sovereign-sdk/signers':
         specifier: workspace:^
         version: link:../signers
@@ -993,8 +993,8 @@ packages:
   '@shikijs/vscode-textmate@9.3.0':
     resolution: {integrity: sha512-jn7/7ky30idSkd/O5yDBfAnVt+JJpepofP/POZ1iMOxK59cOfqIgg/Dj0eFsjOTMw+4ycJN0uhZH/Eb0bs/EUA==}
 
-  '@sovereign-sdk/client@0.1.0-alpha.28':
-    resolution: {integrity: sha512-/kYMVTtIhG1s4eytLsmK2+EK+7ef7BEie7Nln5sW74EBs4NblkSpFAbzc5u7b1NiMOATUrf70vpPERdsDoIojA==}
+  '@sovereign-sdk/client@0.1.0-alpha.30':
+    resolution: {integrity: sha512-EP/96KvUemg4lw0TE5zNmo2x4lhQ/P+ZoGhT6HXBhs1TXs0lWLCfxhCZHPxwt+WFhPBvLO8nAiSsP7vZztdmow==}
 
   '@swc/core-darwin-arm64@1.7.42':
     resolution: {integrity: sha512-fWhaCs2+8GDRIcjExVDEIfbptVrxDqG8oHkESnXgymmvqTWzWei5SOnPNMS8Q+MYsn/b++Y2bDxkcwmq35Bvxg==}
@@ -2039,7 +2039,6 @@ packages:
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
-    deprecated: Use your platform's native DOMException instead
 
   node-fetch@2.7.0:
     resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
@@ -3628,7 +3627,7 @@ snapshots:
 
   '@shikijs/vscode-textmate@9.3.0': {}
 
-  '@sovereign-sdk/client@0.1.0-alpha.28':
+  '@sovereign-sdk/client@0.1.0-alpha.30':
     dependencies:
       '@types/node': 18.19.54
       '@types/node-fetch': 2.6.11

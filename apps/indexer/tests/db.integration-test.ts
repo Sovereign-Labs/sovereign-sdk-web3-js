@@ -102,5 +102,25 @@ describe("Postgres queries", () => {
 
       expect(actualMissing).toEqual(expectedMissing);
     });
+    it("should use latestEventNumber if provided", async () => {
+      const events = [getTestEvent(1), getTestEvent(2), getTestEvent(3)];
+      for (const event of events) {
+        await db?.insertEvent(event);
+      }
+      const expectedMissing = [4, 5, 6, 7, 8];
+      const actualMissing = await db?.getMissingEvents(25, 8);
+
+      expect(actualMissing).toEqual(expectedMissing);
+    });
+    it("should use max event number if latestEventNumber param not provided", async () => {
+      const events = [getTestEvent(1), getTestEvent(2), getTestEvent(3)];
+      for (const event of events) {
+        await db?.insertEvent(event);
+      }
+      const expectedMissing: number[] = [];
+      const actualMissing = await db?.getMissingEvents(25);
+
+      expect(actualMissing).toEqual(expectedMissing);
+    });
   });
 });
