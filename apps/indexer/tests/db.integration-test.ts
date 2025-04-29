@@ -40,7 +40,7 @@ describe("Postgres queries", () => {
     db = postgresDatabase(container.getConnectionUri());
     const migration = readFileSync(
       join(__dirname, "..", "db", "create_events_table.sql"),
-      "utf8",
+      "utf8"
     );
     await db.inner.query(migration);
     await db.disconnect();
@@ -83,6 +83,16 @@ describe("Postgres queries", () => {
       }
       const expectedMissing = [3, 5, 6, 7, 8, 10, 11, 12, 13, 14, 20];
       const actualMissing = await db?.getMissingEvents();
+
+      expect(actualMissing).toEqual(expectedMissing);
+    });
+    it("should return numbers with leading gaps & trailing gaps", async () => {
+      const events = [getTestEvent(4), getTestEvent(5), getTestEvent(8)];
+      for (const event of events) {
+        await db?.insertEvent(event);
+      }
+      const expectedMissing = [1, 2, 3, 6, 7, 9, 10];
+      const actualMissing = await db?.getMissingEvents(500, 10);
 
       expect(actualMissing).toEqual(expectedMissing);
     });
