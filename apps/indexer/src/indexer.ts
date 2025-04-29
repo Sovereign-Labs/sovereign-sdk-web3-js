@@ -1,6 +1,7 @@
 import type { EventPayload, Rollup, Subscription } from "@sovereign-sdk/web3";
 import type { Database, EventSchema } from "./db";
 import logger from "./logger";
+import { chunkArray } from "./utils";
 
 export type IndexerOpts = {
   database: Database<unknown>;
@@ -69,30 +70,40 @@ export class Indexer {
   private async doBackfill(): Promise<void> {
     const missingEventNums = await this.getMissingEventNumbers();
     logger.debug("Amount of events being backfilled", missingEventNums.length);
+    const events = await this.fetchEvents(missingEventNums);
 
-    for (const num of missingEventNums) {
-      try {
-        const eventResponse = await this.rollup.ledger.events.retrieve(num);
-
-        if (!eventResponse.data) {
-          logger.warn(
-            "Response didnt contain data field, this shouldn't be possible",
-            eventResponse,
-          );
-          continue;
-        }
-
-        const event = eventResponse.data;
-        this.onNewEvent({ ...event, module: event.module.name });
-      } catch (err) {
-        this.onError(err as Error);
-      }
+    // TODO: batch insert
+    for (const event of events) {
+      this.onNewEvent(event);
     }
 
     this.backfillHandle = setTimeout(
       () => this.doBackfill(),
       this.backfillIntervalMs,
     );
+  }
+
+  private async fetchEvents(eventNums: number[]): Promise<EventSchema[]> {
+    const chunkedEventNums = chunkArray(eventNums, 15);
+    const events: EventSchema[] = [];
+
+    for (const chunk of chunkedEventNums) {
+      const promises = chunk.map(async (n) => {
+        const eventResponse = await this.rollup.ledger.events.retrieve(n);
+
+        if (!eventResponse.data) {
+          throw new Error(
+            "Response didnt contain data field, this shouldn't be possible",
+          );
+        }
+
+        const event = eventResponse.data;
+        events.push({ ...event, module: event.module.name });
+      });
+      await Promise.allSettled(promises);
+    }
+
+    return events;
   }
 
   private async getMissingEventNumbers(): Promise<number[]> {
