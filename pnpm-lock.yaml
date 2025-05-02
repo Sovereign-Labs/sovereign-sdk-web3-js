@@ -150,6 +150,9 @@ importers:
       '@sovereign-sdk/utils':
         specifier: workspace:^
         version: link:../utils
+      bech32:
+        specifier: ^2.0.0
+        version: 2.0.0
       isomorphic-ws:
         specifier: ^5.0.0
         version: 5.0.0(ws@8.18.1)
