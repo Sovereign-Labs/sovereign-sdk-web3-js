@@ -1,3 +1,4 @@
+export * from "./addresses";
 export * from "./rollup";
 export * from "./serialization";
 export * from "./errors";
