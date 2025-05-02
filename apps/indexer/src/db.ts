@@ -41,7 +41,7 @@ export function postgresDatabase(connectionString: string): PostgresDatabase {
                           (SELECT max(number) FROM rollup_events)) AS max_number
         ),
         all_numbers AS (
-          SELECT generate_series(1, (SELECT max_number FROM max_value)) AS number
+          SELECT generate_series(0, (SELECT max_number FROM max_value)) AS number
         )
         SELECT a.number 
         FROM all_numbers a

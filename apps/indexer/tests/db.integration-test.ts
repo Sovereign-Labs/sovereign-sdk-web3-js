@@ -81,7 +81,7 @@ describe("Postgres queries", () => {
       for (const event of events) {
         await db?.insertEvent(event);
       }
-      const expectedMissing = [3, 5, 6, 7, 8, 10, 11, 12, 13, 14, 20];
+      const expectedMissing = [0, 3, 5, 6, 7, 8, 10, 11, 12, 13, 14, 20];
       const actualMissing = await db?.getMissingEvents();
 
       expect(actualMissing).toEqual(expectedMissing);
@@ -91,13 +91,14 @@ describe("Postgres queries", () => {
       for (const event of events) {
         await db?.insertEvent(event);
       }
-      const expectedMissing = [1, 2, 3, 6, 7, 9, 10];
+      const expectedMissing = [0, 1, 2, 3, 6, 7, 9, 10];
       const actualMissing = await db?.getMissingEvents(500, 10);
 
       expect(actualMissing).toEqual(expectedMissing);
     });
     it("should return numbers of events with limit", async () => {
       const events = [
+        getTestEvent(0),
         getTestEvent(1),
         getTestEvent(2),
         getTestEvent(4),
@@ -113,7 +114,12 @@ describe("Postgres queries", () => {
       expect(actualMissing).toEqual(expectedMissing);
     });
     it("should use latestEventNumber if provided", async () => {
-      const events = [getTestEvent(1), getTestEvent(2), getTestEvent(3)];
+      const events = [
+        getTestEvent(0),
+        getTestEvent(1),
+        getTestEvent(2),
+        getTestEvent(3),
+      ];
       for (const event of events) {
         await db?.insertEvent(event);
       }
@@ -123,7 +129,12 @@ describe("Postgres queries", () => {
       expect(actualMissing).toEqual(expectedMissing);
     });
     it("should use max event number if latestEventNumber param not provided", async () => {
-      const events = [getTestEvent(1), getTestEvent(2), getTestEvent(3)];
+      const events = [
+        getTestEvent(0),
+        getTestEvent(1),
+        getTestEvent(2),
+        getTestEvent(3),
+      ];
       for (const event of events) {
         await db?.insertEvent(event);
       }
