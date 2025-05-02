@@ -32,6 +32,7 @@
     "@sovereign-sdk/signers": "workspace:^",
     "@sovereign-sdk/universal-wallet-wasm": "workspace:^",
     "@sovereign-sdk/utils": "workspace:^",
+    "bech32": "^2.0.0",
     "isomorphic-ws": "^5.0.0",
     "js-base64": "^3.7.7",
     "partysocket": "^1.1.3",
