@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.2.2
+
+### Patch Changes
+
+- 9d0d698: bump http client version, indexer fetch latest event from rollup instead of always relying on websocket messages
+
 ## 0.2.1
 
 ### Patch Changes
