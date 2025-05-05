@@ -1,5 +1,5 @@
+import { type HexString, ensureBytes } from "@sovereign-sdk/utils";
 import { bech32m } from "bech32";
-import { type HexString, ensureBytes } from "./utils";
 
 /**
  * Encodes a public key as a bech32m address with the given human-readable part (hrp).

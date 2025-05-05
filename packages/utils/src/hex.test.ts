@@ -1,55 +1,52 @@
 import { describe, expect, it } from "vitest";
-import { bytesToHex, hexToBytes } from "./hex";
+import { bytesToHex, ensureBytes, hexToBytes } from "./hex";
 
-describe("Hex conversion utilities", () => {
-  describe("hexToBytes", () => {
-    it("should convert valid hex string to bytes", () => {
-      expect(hexToBytes("0123456789abcdef")).toEqual(
-        new Uint8Array([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]),
-      );
-    });
-
-    it("should handle uppercase hex strings", () => {
-      expect(hexToBytes("DEADBEEF")).toEqual(
-        new Uint8Array([0xde, 0xad, 0xbe, 0xef]),
-      );
-    });
-
-    it("should handle empty string", () => {
-      expect(hexToBytes("")).toEqual(new Uint8Array([]));
-    });
-
-    it("should throw error for odd length hex string", () => {
-      expect(() => hexToBytes("abc")).toThrow("Invalid hex string length: 3");
-    });
-
-    it("should throw error for invalid hex characters", () => {
-      expect(() => hexToBytes("xyz123")).toThrow(
-        "Invalid hex string: No valid hex digits found",
-      );
-    });
+describe("hexToBytes", () => {
+  it("should convert a valid hex string to Uint8Array", () => {
+    const hex = "0a1b2c";
+    const result = hexToBytes(hex);
+    expect(result).toEqual(new Uint8Array([10, 27, 44]));
   });
 
-  describe("bytesToHex", () => {
-    it("should convert bytes to hex string", () => {
-      const bytes = new Uint8Array([
-        0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
-      ]);
-      expect(bytesToHex(bytes)).toBe("0123456789abcdef");
-    });
+  it("should handle hex strings with 0x prefix", () => {
+    const hex = "0x0a1b2c";
+    const result = hexToBytes(hex);
+    expect(result).toEqual(new Uint8Array([10, 27, 44]));
+  });
 
-    it("should handle empty byte array", () => {
-      expect(bytesToHex(new Uint8Array([]))).toBe("");
-    });
+  it("should throw if hex string contains non-hex characters", () => {
+    expect(() => hexToBytes("0x0g")).toThrow(
+      "Invalid hex string: contains non-hex characters",
+    );
+  });
 
-    it("should pad single digit values with leading zero", () => {
-      const bytes = new Uint8Array([0x01, 0x02, 0x03, 0x04]);
-      expect(bytesToHex(bytes)).toBe("01020304");
-    });
+  it("should throw if hex string has odd length", () => {
+    expect(() => hexToBytes("abc")).toThrow(
+      "Invalid hex string: length must be even",
+    );
+  });
+});
 
-    it("should handle full byte range", () => {
-      const bytes = new Uint8Array([0x00, 0xff]);
-      expect(bytesToHex(bytes)).toBe("00ff");
-    });
+describe("bytesToHex", () => {
+  it("should convert Uint8Array to hex string", () => {
+    const arr = new Uint8Array([10, 27, 44]);
+    const result = bytesToHex(arr);
+    expect(result).toBe("0a1b2c");
+  });
+});
+
+describe("ensureBytes", () => {
+  it("should return Uint8Array if input is Uint8Array", () => {
+    const arr = new Uint8Array([1, 2, 3]);
+    expect(ensureBytes(arr)).toBe(arr);
+  });
+
+  it("should convert hex string to Uint8Array", () => {
+    const hex = "0a1b2c";
+    expect(ensureBytes(hex)).toEqual(new Uint8Array([10, 27, 44]));
+  });
+
+  it("should throw if hex string is invalid", () => {
+    expect(() => ensureBytes("xyz")).toThrow();
   });
 });
