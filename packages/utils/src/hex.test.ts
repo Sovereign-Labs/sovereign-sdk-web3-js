@@ -16,13 +16,13 @@ describe("hexToBytes", () => {
 
   it("should throw if hex string contains non-hex characters", () => {
     expect(() => hexToBytes("0x0g")).toThrow(
-      "Invalid hex string: contains non-hex characters"
+      "Invalid hex string: contains non-hex characters",
     );
   });
 
   it("should throw if hex string has odd length", () => {
     expect(() => hexToBytes("abc")).toThrow(
-      "Invalid hex string: length must be even"
+      "Invalid hex string: length must be even",
     );
   });
 });
