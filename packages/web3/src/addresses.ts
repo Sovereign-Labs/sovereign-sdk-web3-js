@@ -1,5 +1,5 @@
 import { bech32m } from "bech32";
-import { type HexString, ensureBytes } from "./utils";
+import { type HexString, ensureBytes } from "@sovereign-sdk/utils";
 
 /**
  * Encodes a public key as a bech32m address with the given human-readable part (hrp).
@@ -13,7 +13,7 @@ import { type HexString, ensureBytes } from "./utils";
 export function addressFromPublicKey(
   publicKey: HexString | Uint8Array,
   hrp: string,
-  concatPublicKey = 28,
+  concatPublicKey = 28
 ): string {
   let publicKeyBytes = ensureBytes(publicKey);
 
