@@ -15,5 +15,10 @@
     "jsx": "react",
     "noEmit": false
   },
-  "exclude": ["node_modules", "dist", "packages/integration-tests"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "packages/integration-tests",
+    "apps/indexer"
+  ]
 }
