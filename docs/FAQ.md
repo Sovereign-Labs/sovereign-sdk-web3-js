@@ -97,9 +97,6 @@ const nextConfig = {
     );
     return config;
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
 };
 
 function findWasmFiles(dir) {
