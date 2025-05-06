@@ -42,11 +42,11 @@ import { newMetaMaskSnapSigner } from "@sovereign-sdk/signers";
 // Initialize the rollup client
 const rollup = new StandardRollup({
   url: "https://your-rollup-node.com",
-  schema: yourSchema,
   defaultTxDetails: {
-    max_priority_fee_bips: 1000,
-    max_fee: "1000000",
-    chain_id: 1,
+    max_priority_fee_bips: 0,
+    max_fee: 1000000,
+    gas_limit: null,
+    chain_id: 4321,
   },
 });
 const signer = newMetaMaskSnapSigner({
@@ -55,6 +55,8 @@ const signer = newMetaMaskSnapSigner({
 });
 
 // Submit a transaction
+// Sends a `ValueSetter` call message of `SetValue` type.
+// This particular call message has `value` and `gas` fields.
 const result = await rollup.call(
   {
     value_setter: {

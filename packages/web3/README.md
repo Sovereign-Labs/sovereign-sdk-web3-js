@@ -24,32 +24,34 @@ npm install @sovereign-sdk/web3
 ### Basic Setup
 
 ```typescript
-import { StandardRollup } from '@sovereign-sdk/web3';
-import { newMetaMaskSnapSigner } from '@sovereign-sdk/signers';
+import { StandardRollup } from "@sovereign-sdk/web3";
+import { newMetaMaskSnapSigner } from "@sovereign-sdk/signers";
 
 // Initialize the rollup client
 const rollup = new StandardRollup({
-  url: 'https://your-rollup-node.com',
-  schema: yourSchema,
+  url: "https://your-rollup-node.com",
   defaultTxDetails: {
-    max_priority_fee_bips: 1000,
+    max_priority_fee_bips: 0,
     max_fee: 1000000,
-    chain_id: 1,
+    gas_limit: null,
+    chain_id: 4321,
   },
 });
 
 // Initialize a signer
 const signer = newMetaMaskSnapSigner({
-  curve: 'ed25519',
+  curve: "ed25519",
   schema: yourSchema,
-  snapId: 'npm:@sovereign-sdk/metamask-snap',
+  snapId: "npm:@sovereign-sdk/metamask-snap",
 });
 ```
 
 ### Submitting Transactions
 
 ```typescript
-// Submit a runtime call
+// Submit a transaction
+// Sends a `ValueSetter` call message of `SetValue` type.
+// This particular call message has `value` and `gas` fields.
 const result = await rollup.call(
   {
     value_setter: {
@@ -123,3 +125,4 @@ The package exports the following main components:
 - `createSerializer`: Function to create a Borsh serializer for your rollup schema
 
 For detailed API documentation, please refer to the inline TypeScript documentation in the source code.
+
