@@ -356,4 +356,46 @@ describe("Rollup", () => {
       expect(rollup.chainHash).toBe(chainHash);
     });
   });
+  describe("healthcheck", () => {
+    it("should return false if http request throws APIConnectionError", async () => {
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.get = vi
+        .fn()
+        .mockRejectedValue(new SovereignClient.APIConnectionError({}));
+      const rollup = testRollup({ client });
+
+      const result = await rollup.healthcheck();
+      expect(result).toBe(false);
+    });
+
+    it("should return true if http request throws error unrelated to connection", async () => {
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.get = vi.fn().mockRejectedValue(new Error("Some other error"));
+      const rollup = testRollup({ client });
+
+      const result = await rollup.healthcheck();
+      expect(result).toBe(true);
+    });
+
+    it("should return true if http request completes successfully", async () => {
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.get = vi.fn().mockResolvedValue({ data: { status: "ok" } });
+      const rollup = testRollup({ client });
+
+      const result = await rollup.healthcheck();
+      expect(result).toBe(true);
+    });
+
+    it("should pass timeout to the get request", async () => {
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.get = vi.fn().mockResolvedValue({ data: { status: "ok" } });
+      const rollup = testRollup({ client });
+
+      await rollup.healthcheck(1000);
+      expect(client.get).toHaveBeenCalledWith("/healthcheck", {
+        timeout: 1000,
+        maxRetries: 1,
+      });
+    });
+  });
 });

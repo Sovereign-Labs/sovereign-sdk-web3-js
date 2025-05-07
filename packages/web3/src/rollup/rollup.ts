@@ -266,7 +266,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
       await this.http.get("/healthcheck", { timeout, maxRetries: 1 });
       return true;
     } catch (e) {
-      return e instanceof SovereignClient.APIConnectionError;
+      return !(e instanceof SovereignClient.APIConnectionError);
     }
   }
 
