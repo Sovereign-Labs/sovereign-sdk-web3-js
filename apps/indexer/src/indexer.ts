@@ -1,9 +1,4 @@
-import {
-  type EventPayload,
-  type Rollup,
-  SovereignClient,
-  type Subscription,
-} from "@sovereign-sdk/web3";
+import { type Rollup, SovereignClient } from "@sovereign-sdk/web3";
 import type { Database, EventSchema } from "./db";
 import logger from "./logger";
 import { chunkArray } from "./utils";
@@ -20,8 +15,6 @@ export class Indexer {
   private readonly database: Database<unknown>;
   // biome-ignore lint/suspicious/noExplicitAny: types arent used
   private readonly rollup: Rollup<any, any>;
-  private subscription?: Subscription;
-  private lastMessageTimestampMs: number;
   private readonly backfillIntervalMs: number;
   private readonly healthcheckIntervalMs: number;
   private backfillHandle?: ReturnType<typeof setTimeout>;
@@ -29,8 +22,6 @@ export class Indexer {
   private isRollupHealthy = true;
 
   constructor(opts: IndexerOpts) {
-    // set it to now so we don't need to deal with an undefined case
-    this.lastMessageTimestampMs = Date.now();
     this.backfillIntervalMs = opts.backfillIntervalMs ?? 200;
     this.healthcheckIntervalMs = opts.healthcheckIntervalMs ?? 5000;
     this.database = opts.database;
@@ -48,9 +39,6 @@ export class Indexer {
     }
 
     this.doBackfill();
-    this.subscription = this.rollup.subscribe("events", (event) =>
-      this.onSubscriptionMessage(event)
-    );
 
     logger.info("Subscribed to rollup events and performing event backfill");
   }
@@ -62,9 +50,6 @@ export class Indexer {
     clearTimeout(this.backfillHandle);
     clearTimeout(this.healthcheckHandle);
 
-    logger.info("Closing events subscription");
-    this.subscription?.unsubscribe();
-
     logger.info("Disconnecting from database");
     await this.database.disconnect();
 
@@ -73,11 +58,6 @@ export class Indexer {
 
   private onError(err: Error): void {
     logger.error("An error occurred", err);
-  }
-
-  private async onSubscriptionMessage(event: EventPayload): Promise<void> {
-    this.lastMessageTimestampMs = Date.now();
-    return this.onNewEvent({ ...event, module: event.module.name });
   }
 
   private async onNewEvent(event: EventSchema): Promise<void> {
@@ -92,7 +72,10 @@ export class Indexer {
     }
 
     const missingEventNums = await this.getMissingEventNumbers();
-    logger.debug("Amount of events being backfilled", missingEventNums.length);
+    logger.debug(
+      "Amount of events being backfilled",
+      missingEventNums.length ?? 0,
+    );
     const events = await this.fetchEvents(missingEventNums);
 
     // TODO: batch insert
@@ -102,7 +85,7 @@ export class Indexer {
 
     this.backfillHandle = setTimeout(
       () => this.doBackfill(),
-      this.backfillIntervalMs
+      this.backfillIntervalMs,
     );
   }
 
@@ -117,7 +100,7 @@ export class Indexer {
 
         if (!eventResponse.data) {
           throw new Error(
-            "Response didnt contain data field, this shouldn't be possible"
+            "Response didnt contain data field, this shouldn't be possible",
           );
         }
 
@@ -128,10 +111,8 @@ export class Indexer {
       for (const result of await Promise.allSettled(promises)) {
         if (result.status === "fulfilled") {
           events.push(result.value);
-        } else if (
-          result.reason instanceof SovereignClient.APIConnectionError
-        ) {
-          this.isRollupHealthy = false;
+        } else if (!this.setAndCheckHealth(result.reason)) {
+          logger.info("Rollup unreachable while fetching events");
         }
       }
 
@@ -145,19 +126,18 @@ export class Indexer {
   }
 
   private async getMissingEventNumbers(): Promise<number[]> {
-    // We've received websocket events recently, no need to query the REST api for latest event
-    if (Date.now() - this.lastMessageTimestampMs < 2000) {
-      return this.database.getMissingEvents();
-    }
-
     try {
       const response = await this.rollup.ledger.events.latest();
       const event = response.data;
 
       return this.database.getMissingEvents(500, event?.number);
-    } catch {
+    } catch (e) {
+      if (!this.setAndCheckHealth(e)) {
+        return [];
+      }
+
       logger.debug(
-        "Failed to retrieve latest event, falling back to latest event number in db"
+        "Failed to retrieve latest event, falling back to latest event number in db",
       );
       return this.database.getMissingEvents();
     }
@@ -165,9 +145,8 @@ export class Indexer {
 
   private handleRollupOffline(): Promise<void> {
     logger.info(
-      "Rollup appears to be offline, entering monitoring mode until it's healthy"
+      "Rollup appears to be offline, entering monitoring mode until it's healthy",
     );
-    this.subscription?.unsubscribe();
 
     return new Promise((resolve, reject) => {
       const doHealthcheck = async () => {
@@ -177,15 +156,11 @@ export class Indexer {
           if (this.isRollupHealthy) {
             logger.info("Rollup is back online, resuming indexing");
 
-            this.subscription = this.rollup.subscribe("events", (event) =>
-              this.onSubscriptionMessage(event)
-            );
-
             return resolve();
           }
           this.healthcheckHandle = setTimeout(
             doHealthcheck,
-            this.healthcheckIntervalMs
+            this.healthcheckIntervalMs,
           );
         } catch (err) {
           console.error("Error occurred during health check", err);
@@ -195,5 +170,10 @@ export class Indexer {
 
       doHealthcheck();
     });
+  }
+
+  private setAndCheckHealth(e: unknown): boolean {
+    this.isRollupHealthy = !(e instanceof SovereignClient.APIConnectionError);
+    return this.isRollupHealthy;
   }
 }
