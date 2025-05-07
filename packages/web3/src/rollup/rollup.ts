@@ -1,4 +1,4 @@
-import type SovereignClient from "@sovereign-sdk/client";
+import SovereignClient from "@sovereign-sdk/client";
 import type { APIError } from "@sovereign-sdk/client";
 import type { Signer } from "@sovereign-sdk/signers";
 import { bytesToHex } from "@sovereign-sdk/utils";
@@ -253,6 +253,21 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
     callback: SubscriptionToCallbackMap[T],
   ): Subscription {
     return createSubscription(type, callback, this.http);
+  }
+
+  /**
+   * Performs a healthcheck against the rollup to determine if it is currently healthy.
+   *
+   * @param timeout - Request timeout in milliseconds.
+   * @returns `true` if the rollup is considered healthy otherwise `false`.
+   */
+  async healthcheck(timeout = 5000): Promise<boolean> {
+    try {
+      await this.http.get("/healthcheck", { timeout, maxRetries: 1 });
+      return true;
+    } catch (e) {
+      return !(e instanceof SovereignClient.APIConnectionError);
+    }
   }
 
   /**
