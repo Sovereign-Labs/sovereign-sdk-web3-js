@@ -113,27 +113,31 @@ describe("serialization", () => {
         117, 39, 34, 216, 127, 24, 21, 220, 112, 100, 195, 138, 80, 59, 62, 2,
       ]);
       const tx = {
-        pub_key: { pub_key: publicKey },
-        signature: { msg_sig: signature },
-        runtime_call: {
-          value_setter: {
-            set_value: {
-              value: 5,
-              gas: null,
+        versioned_tx: {
+          V0: {
+            pub_key: { pub_key: publicKey },
+            signature: { msg_sig: signature },
+            runtime_call: {
+              value_setter: {
+                set_value: {
+                  value: 5,
+                  gas: null,
+                },
+              },
+            },
+            generation: 0,
+            details: {
+              max_priority_fee_bips: 0,
+              max_fee: 10000000000,
+              gas_limit: null,
+              chain_id: 4321,
             },
           },
-        },
-        generation: 0,
-        details: {
-          max_priority_fee_bips: 0,
-          max_fee: 10000000000,
-          gas_limit: null,
-          chain_id: 4321,
         },
       };
       const actual = bytesToHex(serializer.serializeTx(tx));
       const expected =
-        "c5a11079c4fd275060d306833d203064f6d7e9840022fab66e53d512d7280169b5707aab240e030ae6e352f4387d8877752722d87f1815dc7064c38a503b3e021ea77bb8f81915816c4e985c680fa990377dc948f11d834b6eb187fb2a53cce6020005000000000000000000000000000000000000000000e40b5402000000000000000000000000e110000000000000";
+        "00c5a11079c4fd275060d306833d203064f6d7e9840022fab66e53d512d7280169b5707aab240e030ae6e352f4387d8877752722d87f1815dc7064c38a503b3e021ea77bb8f81915816c4e985c680fa990377dc948f11d834b6eb187fb2a53cce6020005000000000000000000000000000000000000000000e40b5402000000000000000000000000e110000000000000";
 
       expect(actual).toEqual(expected);
     });
