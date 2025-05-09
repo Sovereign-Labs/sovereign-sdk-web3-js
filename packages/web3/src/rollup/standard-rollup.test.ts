@@ -128,19 +128,25 @@ describe("standardTypeBuilder", () => {
       });
 
       expect(result).toEqual({
-        pub_key: {
-          pub_key: new Uint8Array([4, 5, 6]),
-        },
-        signature: {
-          msg_sig: new Uint8Array([7, 8, 9]),
-        },
-        runtime_call: { value_setter: { set_value: { value: 5, gas: null } } },
-        generation: 5,
-        details: {
-          max_priority_fee_bips: 100,
-          max_fee: "1000",
-          chain_id: 1,
-          gas_limit: null,
+        versioned_tx: {
+          V0: {
+            pub_key: {
+              pub_key: new Uint8Array([4, 5, 6]),
+            },
+            signature: {
+              msg_sig: new Uint8Array([7, 8, 9]),
+            },
+            runtime_call: {
+              value_setter: { set_value: { value: 5, gas: null } },
+            },
+            generation: 5,
+            details: {
+              max_priority_fee_bips: 100,
+              max_fee: "1000",
+              chain_id: 1,
+              gas_limit: null,
+            },
+          },
         },
       });
     });
