@@ -23,10 +23,14 @@ export type UnsignedTransaction<RuntimeCall> = {
   details: TxDetails;
 };
 
-export type Transaction<RuntimeCall> = {
+export type TransactionV0<RuntimeCall> = {
   pub_key: { pub_key: Uint8Array };
   signature: { msg_sig: Uint8Array };
 } & UnsignedTransaction<RuntimeCall>;
+
+export type Transaction<RuntimeCall> = {
+  versioned_tx: { V0: TransactionV0<RuntimeCall> };
+};
 
 export type Dedup = {
   nonce: number;
@@ -83,13 +87,17 @@ export function standardTypeBuilder<
       unsignedTx,
     }: TransactionContext<S, StandardRollupContext>) {
       return {
-        pub_key: {
-          pub_key: sender,
+        versioned_tx: {
+          V0: {
+            pub_key: {
+              pub_key: sender,
+            },
+            signature: {
+              msg_sig: signature,
+            },
+            ...unsignedTx,
+          },
         },
-        signature: {
-          msg_sig: signature,
-        },
-        ...unsignedTx,
       };
     },
   };
