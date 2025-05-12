@@ -51,6 +51,10 @@ describe("serialization", () => {
         this.data = data;
       }
 
+      slice(start?: number, end?: number): MockBuffer {
+        return new MockBuffer(this.data.slice(start, end));
+      }
+
       static isBuffer(obj: unknown): boolean {
         return obj instanceof MockBuffer;
       }
