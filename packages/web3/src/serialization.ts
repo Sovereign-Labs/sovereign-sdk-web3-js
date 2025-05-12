@@ -106,7 +106,7 @@ export function createSerializer(schemaObject: RollupSchema): RollupSerializer {
               typeof value === "object" &&
               value.constructor &&
               value.constructor.name === "Buffer" &&
-              typeof (value as any).slice === "function"
+              typeof (value as Record<string, unknown>).slice === "function"
             ) {
               return Array.from(value as unknown as Uint8Array);
             }
