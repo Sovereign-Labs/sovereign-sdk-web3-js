@@ -43,6 +43,90 @@ describe("serialization", () => {
 
     expect(() => serializer.serializeUnsignedTx(unsignedTx)).not.toThrow();
   });
+  it("should handle Buffer-like objects in json objects", () => {
+    class MockBuffer {
+      data: number[];
+      
+      constructor(data: number[]) {
+        this.data = data;
+      }
+      
+      static isBuffer(obj: any): boolean {
+        return obj instanceof MockBuffer;
+      }
+    }
+    
+    const serializer = createSerializer(demoRollupSchema);
+    const publicKey = new MockBuffer([
+      30, 167, 123, 184, 248, 25, 21, 129, 108, 78, 152, 92, 104, 15, 169,
+      144, 55, 125, 201, 72, 241, 29, 131, 75, 110, 177, 135, 251, 42, 83,
+      204, 230,
+    ]);
+    
+    const tx = {
+      versioned_tx: {
+        V0: {
+          pub_key: { pub_key: publicKey },
+          signature: { msg_sig: new Uint8Array(64).fill(1) },
+          runtime_call: {
+            value_setter: {
+              set_value: {
+                value: 5,
+                gas: null,
+              },
+            },
+          },
+          generation: 0,
+          details: {
+            max_priority_fee_bips: 0,
+            max_fee: 1000,
+            gas_limit: null,
+            chain_id: 1337,
+          },
+        },
+      },
+    };
+    
+    expect(() => serializer.serializeTx(tx)).not.toThrow();
+  });
+  
+  it("should handle Buffer JSON representation in json objects", () => {
+    const serializer = createSerializer(demoRollupSchema);
+    const bufferJson = {
+      type: "Buffer",
+      data: [
+        30, 167, 123, 184, 248, 25, 21, 129, 108, 78, 152, 92, 104, 15, 169,
+        144, 55, 125, 201, 72, 241, 29, 131, 75, 110, 177, 135, 251, 42, 83,
+        204, 230,
+      ],
+    };
+    
+    const tx = {
+      versioned_tx: {
+        V0: {
+          pub_key: { pub_key: bufferJson },
+          signature: { msg_sig: new Uint8Array(64).fill(1) },
+          runtime_call: {
+            value_setter: {
+              set_value: {
+                value: 5,
+                gas: null,
+              },
+            },
+          },
+          generation: 0,
+          details: {
+            max_priority_fee_bips: 0,
+            max_fee: 1000,
+            gas_limit: null,
+            chain_id: 1337,
+          },
+        },
+      },
+    };
+    
+    expect(() => serializer.serializeTx(tx)).not.toThrow();
+  });
   describe("serialize", () => {
     it("should throw SovereignError when serialization fails", () => {
       const serializer = createSerializer(demoRollupSchema);

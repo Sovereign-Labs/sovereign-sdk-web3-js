@@ -101,6 +101,25 @@ export function createSerializer(schemaObject: RollupSchema): RollupSerializer {
             if (value instanceof Uint8Array) {
               return Array.from(value);
             }
+            if (
+              value &&
+              typeof value === "object" &&
+              value.constructor &&
+              value.constructor.name === "Buffer" &&
+              typeof (value as any).slice === "function"
+            ) {
+              return Array.from(value as unknown as Uint8Array);
+            }
+            if (
+              value &&
+              typeof value === "object" &&
+              "type" in value &&
+              value.type === "Buffer" &&
+              "data" in value &&
+              Array.isArray(value.data)
+            ) {
+              return value.data;
+            }
             return value;
           }),
         );
