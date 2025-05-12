@@ -1,5 +1,11 @@
 # @sovereign-sdk/universal-wallet-wasm
 
+## 0.3.0
+
+### Minor Changes
+
+- bb3f8e3: "Add versioned Transaction"
+
 ## 0.2.0
 
 ### Minor Changes

@@ -1,5 +1,19 @@
 # @sovereign-sdk/indexer
 
+## 0.3.0
+
+### Minor Changes
+
+- 198d5c3: add health check functionality to web3/indexer
+
+### Patch Changes
+
+- Updated dependencies [bb3f8e3]
+- Updated dependencies [8853195]
+- Updated dependencies [3acaeea]
+- Updated dependencies [198d5c3]
+  - @sovereign-sdk/web3@0.3.0
+
 ## 0.2.0
 
 ### Minor Changes

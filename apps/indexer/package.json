@@ -1,6 +1,6 @@
 {
   "name": "@sovereign-sdk/indexer",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A simple indexer for Sovereign SDK rollups",
   "scripts": {
     "build": "bun build ./src/cli.ts --compile --outfile bin/sov-indexer",

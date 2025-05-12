@@ -1,5 +1,22 @@
 # @sovereign-sdk/web3
 
+## 0.3.0
+
+### Minor Changes
+
+- bb3f8e3: "Add versioned Transaction"
+- 8853195: add util function to get a address string from public keys
+
+### Patch Changes
+
+- 3acaeea: moves byte related util functions to `sovereign-sdk@utils` package
+- 198d5c3: add health check functionality to web3/indexer
+- Updated dependencies [bb3f8e3]
+- Updated dependencies [3acaeea]
+  - @sovereign-sdk/universal-wallet-wasm@0.3.0
+  - @sovereign-sdk/utils@0.0.3
+  - @sovereign-sdk/signers@0.0.4
+
 ## 0.2.2
 
 ### Patch Changes
