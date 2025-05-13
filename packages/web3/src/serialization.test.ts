@@ -44,24 +44,8 @@ describe("serialization", () => {
     expect(() => serializer.serializeUnsignedTx(unsignedTx)).not.toThrow();
   });
   it("should handle Buffer-like objects in json objects", () => {
-    class MockBuffer {
-      data: number[];
-
-      constructor(data: number[]) {
-        this.data = data;
-      }
-
-      slice(start?: number, end?: number): MockBuffer {
-        return new MockBuffer(this.data.slice(start, end));
-      }
-
-      static isBuffer(obj: unknown): boolean {
-        return obj instanceof MockBuffer;
-      }
-    }
-
     const serializer = createSerializer(demoRollupSchema);
-    const publicKey = new MockBuffer([
+    const publicKey = Buffer.from([
       30, 167, 123, 184, 248, 25, 21, 129, 108, 78, 152, 92, 104, 15, 169, 144,
       55, 125, 201, 72, 241, 29, 131, 75, 110, 177, 135, 251, 42, 83, 204, 230,
     ]);
