@@ -64,10 +64,8 @@ export class Indexer {
       await this.handleRollupOffline();
     }
 
-    const currentEventNum = (await this.database.getLatestEventNumber()) ?? 0;
-    logger.debug("Current index event number", currentEventNum);
-
-    const events = await this.fetchEvents(currentEventNum);
+    const eventOffset = await this.getNextEventNumber();
+    const events = await this.fetchEvents(eventOffset);
 
     logger.debug(`Insert ${events.length} events`);
     await this.database.insertEvents(events).catch((e) => this.onError(e));
@@ -78,14 +76,29 @@ export class Indexer {
     );
   }
 
+  private async getNextEventNumber(): Promise<number> {
+    const currentEventNum = (await this.database.getLatestEventNumber()) ?? -1;
+    return currentEventNum + 1;
+  }
+
   private async fetchEvents(currentEventNum: number): Promise<EventSchema[]> {
     try {
-      const response = await this.rollup.sequencer.events.list({
-        page: "next",
-        "page[cursor]": String(currentEventNum),
-        "page[size]": 50,
-      });
-      return response.data.items;
+      const response = await this.rollup.http.get(
+        "/sequencer/unstable/events",
+        {
+          query: {
+            page: "next",
+            "page[cursor]": String(currentEventNum),
+            "page[size]": 50,
+          },
+        }
+      );
+      // const response = await this.rollup.sequencer.events.list({
+      //   page: "next",
+      //   "page[cursor]": String(currentEventNum),
+      //   "page[size]": 50,
+      // });
+      return (response as any).data.items;
     } catch (err) {
       this.setAndCheckHealth(err);
       return [];
