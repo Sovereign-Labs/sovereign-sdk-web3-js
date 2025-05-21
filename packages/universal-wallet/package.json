@@ -1,0 +1,19 @@
+{
+  "name": "@sovereign-sdk/universal-wallet",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "borsh": "^0.7.0",
+    "sha.js": "^2.4.11"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^3.0.5",
+    "@types/sha.js": "^2.4.0"
+  }
+}
