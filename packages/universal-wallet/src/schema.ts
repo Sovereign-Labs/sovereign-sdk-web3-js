@@ -17,8 +17,8 @@ export class Schema {
   private rootTypeIndices: number[] = [];
   private chainData: ChainData;
   private merkleTree?: MerkleTree;
-  private metadataHash?: Uint8Array;
-  private chainHash?: Uint8Array;
+  private _metadataHash?: Uint8Array;
+  private _chainHash?: Uint8Array;
   private extraMetadataHash: Uint8Array = new Uint8Array(32);
   private templates: any[] = [];
   private serdeMetadata: any[] = [];
@@ -138,23 +138,23 @@ export class Schema {
    * Get the metadata hash from the schema.
    */
   get metadataHash(): Uint8Array {
-    if (!this.metadataHash) {
-      const hasher = shajs('sha256');
+    if (!this._metadataHash) {
+      const hasher = new shajs.sha256();
       
       hasher.update(JSON.stringify(this.templates));
       hasher.update(JSON.stringify(this.serdeMetadata));
       
-      this.metadataHash = new Uint8Array(hasher.digest());
+      this._metadataHash = new Uint8Array(hasher.digest());
     }
     
-    return this.metadataHash;
+    return this._metadataHash;
   }
 
   /**
    * Get the chain hash from the schema.
    */
   get chainHash(): Uint8Array {
-    if (!this.chainHash) {
+    if (!this._chainHash) {
       if (!this.merkleTree) {
         this.merkleTree = new MerkleTree();
         
@@ -166,20 +166,20 @@ export class Schema {
       
       const merkleRoot = this.merkleTree.root();
       
-      const hasher = shajs('sha256');
+      const hasher = new shajs.sha256();
       hasher.update(JSON.stringify(this.rootTypeIndices));
       hasher.update(JSON.stringify(this.chainData));
       const internalDataHash = new Uint8Array(hasher.digest());
       
-      const finalHasher = shajs('sha256');
+      const finalHasher = new shajs.sha256();
       finalHasher.update(merkleRoot);
       finalHasher.update(internalDataHash);
       finalHasher.update(this.extraMetadataHash);
       
-      this.chainHash = new Uint8Array(finalHasher.digest());
+      this._chainHash = new Uint8Array(finalHasher.digest());
     }
     
-    return this.chainHash;
+    return this._chainHash;
   }
 
   

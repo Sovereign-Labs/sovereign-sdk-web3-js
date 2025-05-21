@@ -14,7 +14,7 @@ export class MerkleTree {
       return new Uint8Array(32); // Empty hash (all zeros)
     }
     
-    const hasher = shajs('sha256');
+    const hasher = new shajs.sha256();
     
     for (const leaf of this.leaves) {
       hasher.update(leaf);
