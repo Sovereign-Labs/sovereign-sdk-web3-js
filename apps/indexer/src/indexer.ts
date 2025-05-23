@@ -8,6 +8,7 @@ export type IndexerOpts = {
   rollup: Rollup<any, any>;
   pollIntervalMs?: number;
   healthcheckIntervalMs?: number;
+  pollPageSize?: number;
 };
 
 export class Indexer {
@@ -15,6 +16,7 @@ export class Indexer {
   // biome-ignore lint/suspicious/noExplicitAny: types arent used
   private readonly rollup: Rollup<any, any>;
   private readonly pollIntervalMs: number;
+  private readonly pollPageSize: number;
   private readonly healthcheckIntervalMs: number;
   private indexingHandle?: ReturnType<typeof setTimeout>;
   private healthcheckHandle?: ReturnType<typeof setTimeout>;
@@ -22,6 +24,7 @@ export class Indexer {
 
   constructor(opts: IndexerOpts) {
     this.pollIntervalMs = opts.pollIntervalMs ?? 100;
+    this.pollPageSize = opts.pollPageSize ?? 75;
     this.healthcheckIntervalMs = opts.healthcheckIntervalMs ?? 5000;
     this.database = opts.database;
     this.rollup = opts.rollup;
@@ -72,7 +75,7 @@ export class Indexer {
 
     this.indexingHandle = setTimeout(
       () => this.doIndexing(),
-      this.pollIntervalMs
+      this.pollIntervalMs,
     );
   }
 
@@ -83,22 +86,15 @@ export class Indexer {
 
   private async fetchEvents(currentEventNum: number): Promise<EventSchema[]> {
     try {
-      const response = await this.rollup.http.get(
-        "/sequencer/unstable/events",
-        {
-          query: {
-            page: "next",
-            "page[cursor]": String(currentEventNum),
-            "page[size]": 50,
-          },
-        }
-      );
-      // const response = await this.rollup.sequencer.events.list({
-      //   page: "next",
-      //   "page[cursor]": String(currentEventNum),
-      //   "page[size]": 50,
-      // });
-      return (response as any).data.items;
+      const response = await this.rollup.sequencer.events.list({
+        page: "next",
+        "page[cursor]": String(currentEventNum),
+        "page[size]": this.pollPageSize,
+      });
+      return response.data.items.map((event) => ({
+        ...event,
+        module: event.module.name,
+      }));
     } catch (err) {
       this.setAndCheckHealth(err);
       return [];
@@ -107,7 +103,7 @@ export class Indexer {
 
   private handleRollupOffline(): Promise<void> {
     logger.info(
-      "Rollup appears to be offline, entering monitoring mode until it's healthy"
+      "Rollup appears to be offline, entering monitoring mode until it's healthy",
     );
 
     return new Promise((resolve, reject) => {
@@ -122,7 +118,7 @@ export class Indexer {
           }
           this.healthcheckHandle = setTimeout(
             doHealthcheck,
-            this.healthcheckIntervalMs
+            this.healthcheckIntervalMs,
           );
         } catch (err) {
           console.error("Error occurred during health check", err);
