@@ -1,6 +1,10 @@
 {
   "name": "@sovereign-sdk/universal-wallet-wasm",
   "version": "0.3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sovereign-Labs/sovereign-sdk-web3-js"
+  },
   "scripts": {
     "build": "pnpm run compile:node && pnpm run compile:esm && ./scripts/ensure_module_types.sh",
     "compile:esm": "wasm-pack build --target bundler --release --out-dir dist/esm",

@@ -2,6 +2,10 @@
   "name": "@sovereign-sdk/utils",
   "version": "0.0.3",
   "description": "Utility package providing common util functions used across sovereign packages",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sovereign-Labs/sovereign-sdk-web3-js"
+  },
   "scripts": {
     "build": "tsup",
     "ci": "biome ci",

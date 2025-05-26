@@ -2,6 +2,10 @@
   "name": "@sovereign-sdk/signers",
   "version": "0.0.4",
   "description": "Signer interface and default implementations for use with Sovereign SDK applications",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sovereign-Labs/sovereign-sdk-web3-js"
+  },
   "scripts": {
     "build": "tsup",
     "ci": "biome ci",

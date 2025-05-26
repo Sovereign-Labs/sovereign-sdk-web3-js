@@ -1,6 +1,10 @@
 {
   "name": "@sovereign-sdk/web3",
   "version": "0.3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sovereign-Labs/sovereign-sdk-web3-js"
+  },
   "scripts": {
     "build": "pnpm typecheck && tsup",
     "ci": "biome ci",
