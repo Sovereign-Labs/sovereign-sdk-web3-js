@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest"
   },
+  "repository": "github:Sovereign-Labs/sovereign-sdk-web3-js",
   "files": ["dist", "package.json"],
   "exports": {
     ".": {
