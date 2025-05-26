@@ -11,6 +11,7 @@
     "lint": "biome lint",
     "test:it": "vitest"
   },
+  "repository": "github:Sovereign-Labs/sovereign-sdk-web3-js",
   "bin": {
     "indexer": "./bin/sov-indexer"
   },
