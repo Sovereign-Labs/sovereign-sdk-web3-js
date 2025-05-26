@@ -1,5 +1,16 @@
 # @sovereign-sdk/indexer
 
+## 0.4.0
+
+### Minor Changes
+
+- 9e2bf31: update to latest JS client package, use sequencers events endpoint to index events
+
+### Patch Changes
+
+- Updated dependencies [9e2bf31]
+  - @sovereign-sdk/web3@0.4.0
+
 ## 0.3.0
 
 ### Minor Changes
