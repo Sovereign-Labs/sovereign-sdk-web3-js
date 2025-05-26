@@ -139,8 +139,8 @@ importers:
   packages/web3:
     dependencies:
       '@sovereign-sdk/client':
-        specifier: 0.1.0-alpha.30
-        version: 0.1.0-alpha.30
+        specifier: 0.1.0-alpha.32
+        version: 0.1.0-alpha.32
       '@sovereign-sdk/signers':
         specifier: workspace:^
         version: link:../signers
@@ -999,8 +999,8 @@ packages:
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
 
-  '@sovereign-sdk/client@0.1.0-alpha.30':
-    resolution: {integrity: sha512-EP/96KvUemg4lw0TE5zNmo2x4lhQ/P+ZoGhT6HXBhs1TXs0lWLCfxhCZHPxwt+WFhPBvLO8nAiSsP7vZztdmow==}
+  '@sovereign-sdk/client@0.1.0-alpha.32':
+    resolution: {integrity: sha512-oeZPhJM946s4lmn7sPEJbM4PrA6FvGpK794PbcMRPI/9fqhuOQ4mHEipirvcxUwQsSfRNc8wHpFd6IorvVbKnw==}
 
   '@swc/core-darwin-arm64@1.7.42':
     resolution: {integrity: sha512-fWhaCs2+8GDRIcjExVDEIfbptVrxDqG8oHkESnXgymmvqTWzWei5SOnPNMS8Q+MYsn/b++Y2bDxkcwmq35Bvxg==}
@@ -3542,7 +3542,7 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@sovereign-sdk/client@0.1.0-alpha.30':
+  '@sovereign-sdk/client@0.1.0-alpha.32':
     dependencies:
       '@types/node': 18.19.54
       '@types/node-fetch': 2.6.11

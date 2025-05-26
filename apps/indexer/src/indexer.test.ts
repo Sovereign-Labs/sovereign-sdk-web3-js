@@ -18,6 +18,26 @@ describe("Indexer", () => {
       expect((indexer as any).isRollupHealthy).toBe(true);
     });
   });
+  describe("getNextEventNumber", () => {
+    it("should return 0 if there's no events in database", async () => {
+      const indexer = new Indexer({
+        database: {
+          getLatestEventNumber: vi.fn().mockResolvedValueOnce(null),
+        },
+      } as any) as any;
+
+      await expect(indexer.getNextEventNumber()).resolves.toBe(0);
+    });
+    it("should return database latest event number + 1", async () => {
+      const indexer = new Indexer({
+        database: {
+          getLatestEventNumber: vi.fn().mockResolvedValueOnce(5),
+        },
+      } as any) as any;
+
+      await expect(indexer.getNextEventNumber()).resolves.toBe(6);
+    });
+  });
   describe("setAndCheckHealth", () => {
     it("should set isRollupHealthy flag to false for connection error", () => {
       const indexer = new Indexer({} as any) as any;
