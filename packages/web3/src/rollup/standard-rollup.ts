@@ -57,7 +57,7 @@ const useOrFetchGeneration = async <S extends StandardRollupSpec<unknown>>({
     return overrides.generation;
   }
 
-  return new Date().getTime();
+  return Date.now();
 };
 
 export function standardTypeBuilder<

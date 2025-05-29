@@ -59,6 +59,37 @@ importers:
         specifier: ^3.0.5
         version: 3.0.5(@types/debug@4.1.12)(@types/node@22.7.5)(yaml@2.7.1)
 
+  examples/soak-testing:
+    dependencies:
+      '@sovereign-sdk/signers':
+        specifier: workspace:^
+        version: link:../../packages/signers
+      '@sovereign-sdk/test':
+        specifier: workspace:^
+        version: link:../../packages/test
+      '@sovereign-sdk/utils':
+        specifier: workspace:^
+        version: link:../../packages/utils
+      '@sovereign-sdk/web3':
+        specifier: workspace:^
+        version: link:../../packages/web3
+      random:
+        specifier: ^5.4.0
+        version: 5.4.0
+      typescript:
+        specifier: ^5
+        version: 5.6.3
+    devDependencies:
+      '@noble/ed25519':
+        specifier: ^2.1.0
+        version: 2.1.0
+      '@types/bun':
+        specifier: latest
+        version: 1.2.15
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@swc/core@1.7.42)(@types/node@22.7.5)(typescript@5.6.3)
+
   packages/integration-tests:
     devDependencies:
       '@noble/ed25519':
@@ -104,6 +135,25 @@ importers:
       typescript:
         specifier: ^5.6.3
         version: 5.6.3
+      vitest:
+        specifier: ^3.0.5
+        version: 3.0.5(@types/debug@4.1.12)(@types/node@22.7.5)(yaml@2.7.1)
+
+  packages/test:
+    dependencies:
+      '@sovereign-sdk/client':
+        specifier: 0.1.0-alpha.32
+        version: 0.1.0-alpha.32
+      '@sovereign-sdk/signers':
+        specifier: workspace:^
+        version: link:../signers
+      '@sovereign-sdk/web3':
+        specifier: workspace:^
+        version: link:../web3
+    devDependencies:
+      tsup:
+        specifier: ^8.3.0
+        version: 8.3.0(@swc/core@1.7.42)(postcss@8.5.3)(typescript@5.6.3)(yaml@2.7.1)
       vitest:
         specifier: ^3.0.5
         version: 3.0.5(@types/debug@4.1.12)(@types/node@22.7.5)(yaml@2.7.1)
@@ -1092,6 +1142,9 @@ packages:
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
 
+  '@types/bun@1.2.15':
+    resolution: {integrity: sha512-U1ljPdBEphF0nw1MIk0hI7kPg7dFdPyM7EenHsp6W5loNHl7zqy6JQf/RKCgnUn2KDzUpkBwHPnEJEjII594bA==}
+
   '@types/debug@4.1.12':
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
 
@@ -1357,6 +1410,9 @@ packages:
   buildcheck@0.0.6:
     resolution: {integrity: sha512-8f9ZJCUXyT1M35Jx7MkBgmBMo3oHTTBIPLiY9xyL0pl3T5RwcPEY8cUHr5LBNfu/fk6c2T4DJZuVM/8ZZT2D2A==}
     engines: {node: '>=10.0.0'}
+
+  bun-types@1.2.15:
+    resolution: {integrity: sha512-NarRIaS+iOaQU1JPfyKhZm4AsUOrwUOqRNHY0XxI8GI8jYxiLXLcdjYMG9UKS+fwWasc1uw1htV9AX24dD+p4w==}
 
   bundle-require@5.0.0:
     resolution: {integrity: sha512-GuziW3fSSmopcx4KRymQEJVbZUfqlCqcq7dvs6TYwKRZiegK/2buMxQTPs6MGlNv50wms1699qYO54R8XfRX4w==}
@@ -2255,6 +2311,10 @@ packages:
 
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
+
+  random@5.4.0:
+    resolution: {integrity: sha512-Y147ufdzRqcQuBpKkoW7N3+B/SW4X6pF3ZfsNy+bF1r3i/I+j2zobnCp+9vN1nIJDjObI/174PCySTa3FECynQ==}
+    engines: {node: '>=18'}
 
   read-yaml-file@1.1.0:
     resolution: {integrity: sha512-VIMnQi/Z4HT2Fxuwg5KrY174U1VdUIASQVWXXyqtNRtxSr9IYkn1rsI6Tb6HsrHCmB7gVpNwX6JxPTHcH6IoTA==}
@@ -3624,6 +3684,10 @@ snapshots:
 
   '@tsconfig/node16@1.0.4': {}
 
+  '@types/bun@1.2.15':
+    dependencies:
+      bun-types: 1.2.15
+
   '@types/debug@4.1.12':
     dependencies:
       '@types/ms': 0.7.34
@@ -3920,6 +3984,10 @@ snapshots:
 
   buildcheck@0.0.6:
     optional: true
+
+  bun-types@1.2.15:
+    dependencies:
+      '@types/node': 22.7.5
 
   bundle-require@5.0.0(esbuild@0.23.1):
     dependencies:
@@ -4779,6 +4847,8 @@ snapshots:
   punycode@2.3.1: {}
 
   queue-microtask@1.2.3: {}
+
+  random@5.4.0: {}
 
   read-yaml-file@1.1.0:
     dependencies:

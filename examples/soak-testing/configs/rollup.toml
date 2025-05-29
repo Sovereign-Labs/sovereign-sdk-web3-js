@@ -1,0 +1,58 @@
+[da]
+# Connection string for SQL database to have stored blocks, for example"
+#  - "sqlite://demo_data/da.sqlite?mode=rwc"
+#  - "sqlite::memory:"
+#  - "postgresql://root:hunter2@aws.amazon.com/mock-da"
+connection_string = "sqlite://mock_da.sqlite?mode=rwc"
+# String representation of sequencer address.
+# For initial full node should match genesis of sequencer-registry.
+# It is going to be a DA address that blobs from this node will be associated.
+sender_address = "0000000000000000000000000000000000000000000000000000000000000000"
+finalization = 10
+# Defines how new blocks should be produced.
+[da.block_producing.periodic]
+block_time_ms = 3_000
+
+[storage]
+# The path to the rollup's data directory. Paths that do not begin with `/` are interpreted as relative paths.
+path = "./rollup-starter-data"
+
+# We define the rollup's genesis to occur at block number `start_height`. The rollup will ignore
+# any blocks before this height
+[runner]
+genesis_height = 0
+da_polling_interval_ms = 1000
+
+[runner.http_config]
+bind_host = "127.0.0.1"
+bind_port = 12346
+
+[monitoring]
+telegraf_address = "127.0.0.1:8094"
+# Defines how many measurements a rollup node will accumulate before sending it to the Telegraf.
+# It is expected from the rollup node to produce metrics all the time,
+# so measurements are buffered by size and not sent by time.
+# and below 67 KB, which is the maximal UDP packet size.
+# It also means that if a single serialized metric is larger than this value, a UDP packet will be larger.
+# The default value is 508.
+# max_datagram_size = 508
+# How many metrics are allowed to be in pending state, before new metrics will be dropped.
+# This is a number of metrics, not serialized bytes.
+# The total number of bytes to be held in memory might vary per metric + `max_datagram_size`
+# max_pending_metrics = 100
+
+
+[proof_manager]
+aggregated_proof_block_jump = 1
+prover_address = "sov1lzkjgdaz08su3yevqu6ceywufl35se9f33kztu5cu2spja5hyyf"
+max_number_of_transitions_in_db = 100
+max_number_of_transitions_in_memory = 20
+
+
+[sequencer]
+max_batch_size_bytes = 1048576
+max_concurrent_blobs = 128
+max_allowed_node_distance_behind = 10
+da_address = "0000000000000000000000000000000000000000000000000000000000000000"
+rollup_address = "sov1lzkjgdaz08su3yevqu6ceywufl35se9f33kztu5cu2spja5hyyf"
+[sequencer.preferred]

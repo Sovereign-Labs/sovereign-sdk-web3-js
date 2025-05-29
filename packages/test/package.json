@@ -1,0 +1,33 @@
+{
+  "name": "@sovereign-sdk/test",
+  "version": "0.1.0",
+  "description": "",
+  "scripts": {
+    "build": "pnpm typecheck && tsup",
+    "ci": "biome ci",
+    "fix": "biome check --write",
+    "lint": "biome lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "repository": "github:Sovereign-Labs/sovereign-sdk-web3-js",
+  "files": ["dist", "package.json"],
+  "exports": {
+    "./soak": {
+      "types": "./dist/soak.d.ts",
+      "require": "./dist/soak.js",
+      "import": "./dist/soak.mjs"
+    }
+  },
+  "dependencies": {
+    "@sovereign-sdk/client": "0.1.0-alpha.32",
+    "@sovereign-sdk/signers": "workspace:^",
+    "@sovereign-sdk/web3": "workspace:^"
+  },
+  "publishConfig": {
+    "access": "false"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0",
+    "vitest": "^3.0.5"
+  }
+}
