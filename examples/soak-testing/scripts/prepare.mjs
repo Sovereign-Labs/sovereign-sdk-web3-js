@@ -2,7 +2,7 @@ import * as ed25519 from "@noble/ed25519";
 import { addressFromPublicKey } from "@sovereign-sdk/web3";
 import { randomBytes } from "crypto";
 import { copyFileSync, writeFileSync } from "fs";
-import genesis from "../configs/genesis.json" assert { type: "json" };
+import genesis from "../templates/genesis.json" assert { type: "json" };
 
 async function generateKeypairs(count = 100) {
   const keypairs = [];
@@ -36,7 +36,7 @@ async function generateKeypairs(count = 100) {
     }
 
     writeFileSync("data/genesis.json", JSON.stringify(genesis, null, 2));
-    copyFileSync("configs/rollup.toml", "data/rollup.toml");
+    copyFileSync("templates/rollup.toml", "data/rollup.toml");
 
     console.log(
       "Genesis, rollup config & keypairs written to 'data' directory"
