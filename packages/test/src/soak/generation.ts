@@ -25,7 +25,12 @@ export type GeneratedInput<S extends BaseTypeSpec> = {
   unsignedTransaction: S["UnsignedTransaction"];
   /** The signer to use for signing the transaction */
   signer: Signer;
-  /** Optional callback to be executed after the transaction is submitted */
+  /**
+   * Optional callback to be executed after the transaction is onSubmitted
+   * This function is passed the transaction receipt along with events and
+   * other result related data - it can be used to assert the output of the provided
+   * input.
+   */
   onSubmitted?: (result: TxResult) => Promise<void>;
 };
 
