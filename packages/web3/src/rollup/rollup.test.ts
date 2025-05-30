@@ -110,10 +110,31 @@ describe("Rollup", () => {
       await rollup.submitTransaction(transaction);
 
       expect(mockSerializer.serializeTx).toHaveBeenCalledWith(transaction);
-      expect(rollup.http.sequencer.txs.create).toHaveBeenCalledWith({
-        body: "CgsM", // Base64 encoded [10,11,12]
-      });
+      expect(rollup.http.sequencer.txs.create).toHaveBeenCalledWith(
+        {
+          body: "CgsM", // Base64 encoded [10,11,12]
+        },
+        undefined,
+      );
     });
+
+    it("should pass options to the sequencer client", async () => {
+      const client = new SovereignClient({ fetch: vi.fn() });
+      client.sequencer.txs.create = vi.fn().mockResolvedValue({});
+      const rollup = testRollup({ client });
+      const transaction = { foo: "bar" };
+      const options = { timeout: 5000, maxRetries: 3 };
+
+      await rollup.submitTransaction(transaction, options);
+
+      expect(rollup.http.sequencer.txs.create).toHaveBeenCalledWith(
+        {
+          body: "CgsM", // Base64 encoded [10,11,12]
+        },
+        options,
+      );
+    });
+
     it("should identify version mismatch errors correctly", async () => {
       const nonVersionMismatchError = {
         error: {
@@ -223,6 +244,24 @@ describe("Rollup", () => {
         unsignedTx,
       );
     });
+
+    it("should pass options to submitTransaction", async () => {
+      const rollup = testRollup({}, mockTypeBuilder);
+      rollup.submitTransaction = vi.fn();
+      const options = { timeout: 5000, maxRetries: 3 };
+
+      await rollup.signAndSubmitTransaction(
+        unsignedTx,
+        { signer: mockSigner },
+        options,
+      );
+
+      expect(rollup.submitTransaction).toHaveBeenCalledWith(
+        mockTransaction,
+        options,
+      );
+    });
+
     it("should call type builder with correct parameters", async () => {
       const rollup = testRollup({}, mockTypeBuilder);
       rollup.submitTransaction = vi.fn();
@@ -236,14 +275,19 @@ describe("Rollup", () => {
         rollup,
       });
     });
+
     it("should call submitTransaction() with the result of the type builder", async () => {
       const rollup = testRollup({}, mockTypeBuilder);
       rollup.submitTransaction = vi.fn();
 
       await rollup.signAndSubmitTransaction(unsignedTx, { signer: mockSigner });
 
-      expect(rollup.submitTransaction).toHaveBeenCalledWith(mockTransaction);
+      expect(rollup.submitTransaction).toHaveBeenCalledWith(
+        mockTransaction,
+        undefined,
+      );
     });
+
     it("should return the submitted tx and response", async () => {
       const rollup = testRollup({}, mockTypeBuilder);
       rollup.submitTransaction = vi
@@ -296,6 +340,31 @@ describe("Rollup", () => {
         overrides: mockOverrides,
       });
     });
+
+    it("should pass options to signAndSubmitTransaction", async () => {
+      const rollup = testRollup({}, mockTypeBuilder);
+      const signAndSubmitSpy = vi.spyOn(rollup, "signAndSubmitTransaction");
+      rollup.submitTransaction = vi.fn();
+      const options = { timeout: 5000, maxRetries: 3 };
+
+      await rollup.call(
+        mockRuntimeCall,
+        {
+          signer: mockSigner,
+          overrides: mockOverrides,
+        },
+        options,
+      );
+
+      expect(signAndSubmitSpy).toHaveBeenCalledWith(
+        mockUnsignedTx,
+        {
+          signer: mockSigner,
+        },
+        options,
+      );
+    });
+
     it("should pass the unsigned transaction to signAndSubmitTransaction", async () => {
       const rollup = testRollup({}, mockTypeBuilder);
       const signAndSubmitSpy = vi.spyOn(rollup, "signAndSubmitTransaction");
@@ -306,10 +375,15 @@ describe("Rollup", () => {
         overrides: mockOverrides,
       });
 
-      expect(signAndSubmitSpy).toHaveBeenCalledWith(mockUnsignedTx, {
-        signer: mockSigner,
-      });
+      expect(signAndSubmitSpy).toHaveBeenCalledWith(
+        mockUnsignedTx,
+        {
+          signer: mockSigner,
+        },
+        undefined,
+      );
     });
+
     it("should return the result from signAndSubmitTransaction", async () => {
       const client = new SovereignClient({ fetch: vi.fn() });
       client.sequencer.txs.create = vi
