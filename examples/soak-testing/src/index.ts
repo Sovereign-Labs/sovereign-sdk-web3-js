@@ -4,7 +4,7 @@
  * 1. Set up a rollup connection
  * 2. Create a custom transaction generator
  * 3. Configure and run a soak test
- * 
+ *
  * The example performs bank transfer transactions between random accounts
  * and verifies the transaction events.
  */
@@ -15,7 +15,9 @@ import {
 } from "@sovereign-sdk/web3";
 import {
   BasicGeneratorStrategy,
+  Outcome,
   TestRunner,
+  type GeneratedInput,
   type TransactionGenerator,
 } from "@sovereign-sdk/test/soak";
 import { hexToBytes } from "@sovereign-sdk/utils";
@@ -50,110 +52,126 @@ const gasTokenId =
   "token_1nyl0e0yweragfsatygt24zmd8jrr2vqtvdfptzjhxkguz2xxx3vs0y07u7";
 
 /**
- * Randomly selects a sender and receiver from the available keypairs.
- * Ensures the sender and receiver are different accounts.
- * 
- * @returns An object containing the selected sender and receiver keypairs
- */
-function getSenderAndReceiver() {
-  const sender = random.int(0, keypairs.length - 1);
-  let receiver;
-
-  do {
-    receiver = random.int(0, keypairs.length - 1);
-  } while (receiver === sender);
-
-  return {
-    sender: keypairs[sender]!,
-    receiver: keypairs[receiver]!,
-  };
-}
-
-/**
- * Converts a keypair into a Signer instance that can be used to sign transactions.
- * 
- * @param keypair - The keypair to convert
- * @returns A Signer instance that can sign messages using the keypair's private key
- */
-function keypairAsSigner(keypair: Keypair): Signer {
-  const privateKey = hexToBytes(keypair.privateKey);
-  const publicKey = hexToBytes(keypair.publicKey);
-
-  return {
-    async sign(message: Uint8Array): Promise<Uint8Array> {
-      return ed25519.signAsync(
-        new Uint8Array([...message, ...chainHash!]),
-        privateKey
-      );
-    },
-    async publicKey(): Promise<Uint8Array> {
-      return publicKey;
-    },
-  };
-}
-
-/**
- * Creates a transaction generator that produces bank transfer transactions.
+ * A transaction generator that produces bank transfer transactions.
  * Each generated transaction:
  * - Transfers a random amount between 5-100 tokens
  * - Uses random sender and receiver accounts
  * - Verifies the transaction events after submission
- * 
+ *
+ * Also contains 2 util functions to randomly select a sender & receiver as well as
+ * converts a keypair into a `Signer`.
+ *
  * @returns A TransactionGenerator instance that creates bank transfer transactions
  */
-function bankTransferGenerator(): TransactionGenerator<S> {
-  return {
-    async generate() {
-      const { sender, receiver } = getSenderAndReceiver();
-      const amount = random.int(5, 100);
-      const unsignedTransaction = {
-        runtime_call: {
-          bank: {
-            transfer: {
-              coins: {
-                amount,
-                token_id: gasTokenId,
-              },
-              to: receiver.address,
+class BankTransferGenerator implements TransactionGenerator<S> {
+  private readonly keypairs: Keypair[];
+
+  constructor(keypairs: Keypair[]) {
+    this.keypairs = keypairs;
+  }
+
+  /**
+   * Performs the transaction generation.
+   * Simply selects 2 random keypairs we generated previously (and set at genesis)
+   * and transfers a randomly selected amount between them.
+   *
+   * We receive an `outcome` parameter that is meant to determine if this generator
+   * should generate a successful or a failure transaction but we just ignore it
+   * here because the `BasicGeneratorStrategy` always produces successful inputs.
+   */
+  async generate(outcome: Outcome): Promise<GeneratedInput<S>> {
+    const { sender, receiver } = this.getSenderAndReceiver();
+    const amount = random.int(5, 100);
+    const unsignedTransaction = {
+      runtime_call: {
+        bank: {
+          transfer: {
+            coins: {
+              amount,
+              token_id: gasTokenId,
             },
+            to: receiver.address,
           },
         },
-        details: defaultTxDetails,
-        generation: Date.now(),
-      };
+      },
+      details: defaultTxDetails,
+      generation: Date.now(),
+    };
 
-      return {
-        unsignedTransaction,
-        signer: keypairAsSigner(sender),
-        async onSubmitted(result) {
-          assert(
-            result.events?.length === 1,
-            "tranfer should only emit one event"
-          );
-          const event = result.events[0]?.value;
+    return {
+      unsignedTransaction,
+      signer: this.keypairAsSigner(sender),
+      async onSubmitted(result) {
+        assert(
+          result.events?.length === 1,
+          "tranfer should only emit one event"
+        );
+        const event = result.events[0]?.value;
 
-          assert.deepStrictEqual(
-            event,
-            {
-              token_transferred: {
-                from: {
-                  user: sender.address,
-                },
-                to: {
-                  user: receiver.address,
-                },
-                coins: {
-                  amount: amount.toString(),
-                  token_id: gasTokenId,
-                },
+        assert.deepStrictEqual(
+          event,
+          {
+            token_transferred: {
+              from: {
+                user: sender.address,
+              },
+              to: {
+                user: receiver.address,
+              },
+              coins: {
+                amount: amount.toString(),
+                token_id: gasTokenId,
               },
             },
-            "transfer event should include the expected fields"
-          );
-        },
-      };
-    },
-  };
+          },
+          "transfer event should include the expected fields"
+        );
+      },
+    };
+  }
+
+  /**
+   * Converts a keypair into a Signer instance that can be used to sign transactions.
+   *
+   * @param keypair - The keypair to convert
+   * @returns A Signer instance that can sign messages using the keypair's private key
+   */
+  keypairAsSigner(keypair: Keypair): Signer {
+    const privateKey = hexToBytes(keypair.privateKey);
+    const publicKey = hexToBytes(keypair.publicKey);
+
+    return {
+      async sign(message: Uint8Array): Promise<Uint8Array> {
+        return ed25519.signAsync(
+          new Uint8Array([...message, ...chainHash!]),
+          privateKey
+        );
+      },
+      async publicKey(): Promise<Uint8Array> {
+        return publicKey;
+      },
+    };
+  }
+
+  /**
+   * Randomly selects a sender and receiver from the available keypairs.
+   * Ensures the sender and receiver are different accounts.
+   *
+   * @returns An object containing the selected sender and receiver keypairs
+   */
+  getSenderAndReceiver() {
+    const sender = random.int(0, this.keypairs.length - 1);
+    let receiver;
+
+    do {
+      receiver = random.int(0, this.keypairs.length - 1);
+    } while (receiver === sender);
+
+    return {
+      sender: this.keypairs[sender]!,
+      receiver: this.keypairs[receiver]!,
+    };
+  }
 }
 
 /**
@@ -161,7 +179,7 @@ function bankTransferGenerator(): TransactionGenerator<S> {
  * 1. Creates a rollup connection
  * 2. Initializes the transaction generator
  * 3. Creates and runs the test runner
- * 
+ *
  * The test will continue running until manually stopped.
  */
 async function main(): Promise<void> {
@@ -170,7 +188,9 @@ async function main(): Promise<void> {
   });
   chainHash = rollup.chainHash;
 
-  const generator = new BasicGeneratorStrategy(bankTransferGenerator());
+  const generator = new BasicGeneratorStrategy(
+    new BankTransferGenerator(keypairs)
+  );
   const runner = new TestRunner<S>({ rollup, generator });
 
   return runner.run();
