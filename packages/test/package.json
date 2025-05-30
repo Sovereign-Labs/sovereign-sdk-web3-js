@@ -13,15 +13,16 @@
   "files": ["dist", "package.json"],
   "exports": {
     "./soak": {
-      "types": "./dist/soak.d.ts",
-      "require": "./dist/soak.js",
-      "import": "./dist/soak.mjs"
+      "types": "./dist/soak/index.d.ts",
+      "require": "./dist/soak/index.js",
+      "import": "./dist/soak/index.mjs"
     }
   },
   "dependencies": {
     "@sovereign-sdk/client": "0.1.0-alpha.32",
     "@sovereign-sdk/signers": "workspace:^",
-    "@sovereign-sdk/web3": "workspace:^"
+    "@sovereign-sdk/web3": "workspace:^",
+    "p-queue": "^8.1.0"
   },
   "publishConfig": {
     "access": "false"

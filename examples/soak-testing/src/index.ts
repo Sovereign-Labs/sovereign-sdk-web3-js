@@ -1,8 +1,20 @@
+/**
+ * Example implementation of a soak test using the @sovereign-sdk/test package.
+ * This example demonstrates how to:
+ * 1. Set up a rollup connection
+ * 2. Create a custom transaction generator
+ * 3. Configure and run a soak test
+ * 
+ * The example performs bank transfer transactions between random accounts
+ * and verifies the transaction events.
+ */
+
 import {
   createStandardRollup,
   type StandardRollupSpec,
 } from "@sovereign-sdk/web3";
 import {
+  BasicGeneratorStrategy,
   TestRunner,
   type TransactionGenerator,
 } from "@sovereign-sdk/test/soak";
@@ -18,15 +30,31 @@ type Keypair = (typeof keypairs)[0];
 type S = StandardRollupSpec<RuntimeCall>;
 
 let chainHash: Uint8Array | undefined;
+
+/**
+ * Default transaction details used for all transactions in the soak test.
+ * These values can be adjusted based on your rollup's requirements.
+ */
 const defaultTxDetails = {
   max_priority_fee_bips: 0,
   max_fee: "100000000",
   gas_limit: null,
   chain_id: 4321,
 };
+
+/**
+ * The token ID used for gas payments in the test.
+ * This should match your rollup's configuration.
+ */
 const gasTokenId =
   "token_1nyl0e0yweragfsatygt24zmd8jrr2vqtvdfptzjhxkguz2xxx3vs0y07u7";
 
+/**
+ * Randomly selects a sender and receiver from the available keypairs.
+ * Ensures the sender and receiver are different accounts.
+ * 
+ * @returns An object containing the selected sender and receiver keypairs
+ */
 function getSenderAndReceiver() {
   const sender = random.int(0, keypairs.length - 1);
   let receiver;
@@ -41,6 +69,12 @@ function getSenderAndReceiver() {
   };
 }
 
+/**
+ * Converts a keypair into a Signer instance that can be used to sign transactions.
+ * 
+ * @param keypair - The keypair to convert
+ * @returns A Signer instance that can sign messages using the keypair's private key
+ */
 function keypairAsSigner(keypair: Keypair): Signer {
   const privateKey = hexToBytes(keypair.privateKey);
   const publicKey = hexToBytes(keypair.publicKey);
@@ -58,16 +92,26 @@ function keypairAsSigner(keypair: Keypair): Signer {
   };
 }
 
+/**
+ * Creates a transaction generator that produces bank transfer transactions.
+ * Each generated transaction:
+ * - Transfers a random amount between 5-100 tokens
+ * - Uses random sender and receiver accounts
+ * - Verifies the transaction events after submission
+ * 
+ * @returns A TransactionGenerator instance that creates bank transfer transactions
+ */
 function bankTransferGenerator(): TransactionGenerator<S> {
   return {
     async generate() {
       const { sender, receiver } = getSenderAndReceiver();
+      const amount = random.int(5, 100);
       const unsignedTransaction = {
         runtime_call: {
           bank: {
             transfer: {
               coins: {
-                amount: 100,
+                amount,
                 token_id: gasTokenId,
               },
               to: receiver.address,
@@ -99,7 +143,7 @@ function bankTransferGenerator(): TransactionGenerator<S> {
                   user: receiver.address,
                 },
                 coins: {
-                  amount: "100",
+                  amount: amount.toString(),
                   token_id: gasTokenId,
                 },
               },
@@ -112,18 +156,24 @@ function bankTransferGenerator(): TransactionGenerator<S> {
   };
 }
 
+/**
+ * Main function that sets up and runs the soak test.
+ * 1. Creates a rollup connection
+ * 2. Initializes the transaction generator
+ * 3. Creates and runs the test runner
+ * 
+ * The test will continue running until manually stopped.
+ */
 async function main(): Promise<void> {
   const rollup = await createStandardRollup<RuntimeCall>({
     context: { defaultTxDetails },
   });
   chainHash = rollup.chainHash;
 
-  const generators = [bankTransferGenerator()];
-  const runner = new TestRunner<S>({ rollup, generators });
+  const generator = new BasicGeneratorStrategy(bankTransferGenerator());
+  const runner = new TestRunner<S>({ rollup, generator });
 
   return runner.run();
 }
 
-main()
-  .then(() => console.log("Run completed successfully"))
-  .catch(console.error);
+main().catch(console.error);

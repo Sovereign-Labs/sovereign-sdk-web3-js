@@ -167,14 +167,16 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    * Submits a transaction to the rollup.
    *
    * @param transaction - The transaction to submit.
+   * @param {SovereignClient.RequestOptions} options - The options for the request.
    */
   async submitTransaction(
     transaction: S["Transaction"],
+    options?: SovereignClient.RequestOptions,
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializedTx = this.serializer.serializeTx(transaction);
 
     return this.sequencer.txs
-      .create({ body: Base64.fromUint8Array(serializedTx) })
+      .create({ body: Base64.fromUint8Array(serializedTx) }, options)
       .catch(async (e) => {
         if (isVersionMismatchError(e as APIError)) {
           const oldVersion = bytesToHex(this.chainHash);
@@ -199,10 +201,12 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    *
    * @param unsignedTx - The unsigned transaction to sign and submit.
    * @param {SignerParams} params - The params for signing and submitting the transaction.
+   * @param {SovereignClient.RequestOptions} options - The options for the request.
    */
   async signAndSubmitTransaction(
     unsignedTx: S["UnsignedTransaction"],
     { signer }: SignerParams,
+    options?: SovereignClient.RequestOptions,
   ): Promise<TransactionResult<S["Transaction"]>> {
     const serializedUnsignedTx =
       this.serializer.serializeUnsignedTx(unsignedTx);
@@ -215,7 +219,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
       rollup: this,
     };
     const tx = await this._typeBuilder.transaction(context);
-    const result = await this.submitTransaction(tx);
+    const result = await this.submitTransaction(tx, options);
 
     return { transaction: tx, response: result };
   }
@@ -226,10 +230,12 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    *
    * @param runtimeCall - The runtime message to call.
    * @param {CallParams<S>} params - The params for submitting a runtime call transaction.
+   * @param {SovereignClient.RequestOptions} options - The options for the request.
    */
   async call(
     runtimeCall: S["RuntimeCall"],
     { signer, overrides }: CallParams<S>,
+    options?: SovereignClient.RequestOptions,
   ): Promise<TransactionResult<S["Transaction"]>> {
     const publicKey = await signer.publicKey();
     const context = {
@@ -240,9 +246,13 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
     };
     const unsignedTx = await this._typeBuilder.unsignedTransaction(context);
 
-    return this.signAndSubmitTransaction(unsignedTx, {
-      signer,
-    });
+    return this.signAndSubmitTransaction(
+      unsignedTx,
+      {
+        signer,
+      },
+      options,
+    );
   }
 
   /**

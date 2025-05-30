@@ -4,7 +4,7 @@ import { randomBytes } from "crypto";
 import { copyFileSync, writeFileSync } from "fs";
 import genesis from "../configs/genesis.json" assert { type: "json" };
 
-async function generateKeypairs(count = 20) {
+async function generateKeypairs(count = 100) {
   const keypairs = [];
 
   for (let i = 0; i < count; i++) {
@@ -25,7 +25,7 @@ async function generateKeypairs(count = 20) {
 
 (async () => {
   try {
-    const keypairs = await generateKeypairs(20);
+    const keypairs = await generateKeypairs(100);
     writeFileSync("data/keypairs.json", JSON.stringify(keypairs, null, 2));
 
     for (const { address } of keypairs) {
