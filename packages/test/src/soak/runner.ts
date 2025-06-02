@@ -88,7 +88,8 @@ export class TestRunner<S extends BaseTypeSpec> {
     });
 
     const inputs = await this.generator.generate(100);
-    const execution = inputs.map((input) => {
+    // TODO: check expectedOutcome with what the rollup actually returns
+    const execution = inputs.map(({ input }) => {
       return async () => {
         if (signal.aborted) return;
 

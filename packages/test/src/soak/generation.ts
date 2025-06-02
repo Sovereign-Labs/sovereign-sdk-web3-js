@@ -1,6 +1,7 @@
 import type SovereignSDK from "@sovereign-sdk/client";
 import type { Signer } from "@sovereign-sdk/signers";
 import type { BaseTypeSpec } from "@sovereign-sdk/web3";
+import { NotImplementedError } from "./errors";
 
 /** Response data type from a transaction submission */
 export type TxResult = SovereignSDK.Sequencer.TxCreateResponse.Data;
@@ -35,6 +36,18 @@ export type GeneratedInput<S extends BaseTypeSpec> = {
 };
 
 /**
+ * Represents a generated transaction with its expected outcome.
+ * This is returned by generator strategies to indicate both the transaction
+ * and whether it should succeed or fail.
+ */
+export type InputWithExpectation<S extends BaseTypeSpec> = {
+  /** The generated transaction input */
+  input: GeneratedInput<S>;
+  /** The expected outcome of the transaction */
+  expectedOutcome: Outcome;
+};
+
+/**
  * Interface for generating individual test transactions.
  * Implementations should create transactions that can either succeed or fail
  * based on the provided outcome.
@@ -44,7 +57,7 @@ export type GeneratedInput<S extends BaseTypeSpec> = {
  * @example
  * ```typescript
  * class CustomGenerator implements TransactionGenerator<YourTypeSpec> {
- *   async generate(outcome: Outcome): Promise<GeneratedInput<YourTypeSpec>> {
+ *   async successful(): Promise<GeneratedInput<YourTypeSpec>> {
  *     // Generate transaction based on outcome
  *     return {
  *       unsignedTransaction: {},
@@ -57,13 +70,22 @@ export type GeneratedInput<S extends BaseTypeSpec> = {
  * }
  * ```
  */
-export interface TransactionGenerator<S extends BaseTypeSpec> {
+export abstract class TransactionGenerator<S extends BaseTypeSpec> {
   /**
-   * Generates a single test transaction.
-   * @param outcome - Whether the transaction should be generated to succeed or fail
+   * Generate a single test transaction that should succeed.
    * @returns A promise that resolves to the generated transaction input
    */
-  generate(outcome: Outcome): Promise<GeneratedInput<S>>;
+  successful(): Promise<GeneratedInput<S>> {
+    throw new NotImplementedError("TransactionGenerator.successful");
+  }
+
+  /**
+   * Generate a single test transaction that should fail.
+   * @returns A promise that resolves to the generated transaction input
+   */
+  failure(): Promise<GeneratedInput<S>> {
+    throw new NotImplementedError("TransactionGenerator.failure");
+  }
 }
 
 /**
@@ -76,9 +98,9 @@ export interface GeneratorStrategy<S extends BaseTypeSpec> {
   /**
    * Generates a batch of test transactions.
    * @param amount - The number of transactions to generate
-   * @returns A promise that resolves to an array of generated transaction inputs
+   * @returns A promise that resolves to an array of generated transactions with their expected outcomes
    */
-  generate(amount: number): Promise<GeneratedInput<S>[]>;
+  generate(amount: number): Promise<InputWithExpectation<S>[]>;
 }
 
 /**
@@ -112,17 +134,19 @@ export class BasicGeneratorStrategy<S extends BaseTypeSpec>
    * All transactions are generated with Outcome.Success.
    *
    * @param amount - The number of transactions to generate
-   * @returns A promise that resolves to an array of generated transaction inputs
+   * @returns A promise that resolves to an array of generated transactions with their expected outcomes
    */
-  async generate(amount: number): Promise<GeneratedInput<S>[]> {
+  async generate(amount: number): Promise<InputWithExpectation<S>[]> {
     const promises = [];
 
     for (let i = 0; i <= amount; i += 1) {
-      const input = this.generator.generate(Outcome.Success);
-      promises.push(input);
+      promises.push(this.generator.successful());
     }
 
     const inputs = await Promise.all(promises);
-    return inputs;
+    return inputs.map((input) => ({
+      input,
+      expectedOutcome: Outcome.Success,
+    }));
   }
 }

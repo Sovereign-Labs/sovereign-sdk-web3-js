@@ -47,7 +47,7 @@ While we strive to keep the framework simple and minimal, we're open to adding f
 
 A transaction generator is responsible for creating individual test transactions. It implements the `TransactionGenerator` interface and should be designed to:
 
-1. Create valid transactions for your rollup
+1. Create transactions for your rollup
 2. Handle transaction signing
 3. Verify transaction results
 4. Optionally implement failure scenarios
@@ -55,10 +55,11 @@ A transaction generator is responsible for creating individual test transactions
 Here's a basic example of a transaction generator:
 
 ```typescript
-import { TransactionGenerator, Outcome } from "@sovereign-sdk/test/soak";
+import { TransactionGenerator } from "@sovereign-sdk/test/soak";
 
 class CustomGenerator implements TransactionGenerator<YourTypeSpec> {
-  async generate(outcome: Outcome): Promise<GeneratedInput<YourTypeSpec>> {
+  // Generates a transaction that should be successful
+  async successful(): Promise<GeneratedInput<YourTypeSpec>> {
     // Create your transaction
     const unsignedTransaction = {
       // Your transaction details
@@ -75,6 +76,26 @@ class CustomGenerator implements TransactionGenerator<YourTypeSpec> {
         // Verify the transaction was successful
         // Check emitted events
         // Validate state changes
+      },
+    };
+  }
+
+  // Generates a transaction that should fail
+  async failure(): Promise<GeneratedInput<YourTypeSpec>> {
+    // Create a transaction that should fail
+    const unsignedTransaction = {
+      // Your invalid transaction details
+    };
+
+    const signer = await this.getSigner();
+
+    return {
+      unsignedTransaction,
+      signer,
+      onSubmitted: async (result) => {
+        // Verify the transaction failed as expected
+        // Check error messages
+        // Validate state remains unchanged
       },
     };
   }
@@ -97,7 +118,7 @@ The strategy could also be configured to generate occasional failure transaction
 You can create custom strategies by implementing the `GeneratorStrategy` interface:
 
 ```typescript
-import { GeneratorStrategy } from "@sovereign-sdk/test/soak";
+import { GeneratorStrategy, Outcome } from "@sovereign-sdk/test/soak";
 
 class CustomStrategy implements GeneratorStrategy<YourTypeSpec> {
   private readonly generators: TransactionGenerator<YourTypeSpec>[];
@@ -106,14 +127,16 @@ class CustomStrategy implements GeneratorStrategy<YourTypeSpec> {
     this.generators = generators;
   }
 
-  async generate(amount: number): Promise<GeneratedInput<YourTypeSpec>[]> {
+  async generate(amount: number): Promise<InputWithExpectation<YourTypeSpec>[]> {
     const transactions = [];
 
     for (let i = 0; i < amount; i++) {
       // Choose a generator based on your strategy
       const generator = this.selectGenerator();
-      const transaction = await generator.generate(Outcome.Success);
-      transactions.push(transaction);
+      // Only generate successful transactions for this example
+      // But you could randomly insert transactions that should fail
+      const transaction = await generator.successful();
+      transactions.push({input: transaction, expectedOutcome: Outcome.Success});
     }
 
     return transactions;
@@ -134,36 +157,34 @@ class CustomStrategy implements GeneratorStrategy<YourTypeSpec> {
 Start by implementing a transaction generator for your specific use case:
 
 ```typescript
-function myTransactionGenerator(): TransactionGenerator<S> {
-  return {
-    async generate(outcome: Outcome) {
-      // 1. Prepare transaction data
-      const transactionData = {
-        // Your transaction details
-      };
+class MyTransactionGenerator implements TransactionGenerator<S> {
+  async successful(): Promise<GeneratedInput<S>> {
+    // 1. Prepare transaction data
+    const transactionData = {
+      // Your transaction details
+    };
 
-      // 2. Get a signer
-      const signer = await getSigner();
+    // 2. Get a signer
+    const signer = await getSigner();
 
-      // 3. Create the transaction
-      const unsignedTransaction = {
-        runtime_call: transactionData,
-        details: defaultTxDetails,
-        generation: Date.now(),
-      };
+    // 3. Create the transaction
+    const unsignedTransaction = {
+      runtime_call: transactionData,
+      details: defaultTxDetails,
+      generation: Date.now(),
+    };
 
-      // 4. Return the transaction with optional verification
-      return {
-        unsignedTransaction,
-        signer,
-        onSubmitted: async (result) => {
-          // Verify transaction results
-          // Check events
-          // Validate state changes
-        },
-      };
-    },
-  };
+    // 4. Return the transaction with optional verification
+    return {
+      unsignedTransaction,
+      signer,
+      onSubmitted: async (result) => {
+        // Verify transaction results
+        // Check events
+        // Validate state changes
+      },
+    };
+  }
 }
 ```
 
