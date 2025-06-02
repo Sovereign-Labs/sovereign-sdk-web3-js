@@ -15,10 +15,9 @@ import {
 } from "@sovereign-sdk/web3";
 import {
   BasicGeneratorStrategy,
-  Outcome,
   TestRunner,
   type GeneratedInput,
-  type TransactionGenerator,
+  TransactionGenerator,
 } from "@sovereign-sdk/test/soak";
 import { hexToBytes } from "@sovereign-sdk/utils";
 import random from "random";
@@ -63,23 +62,21 @@ const gasTokenId =
  *
  * @returns A TransactionGenerator instance that creates bank transfer transactions
  */
-class BankTransferGenerator implements TransactionGenerator<S> {
+class BankTransferGenerator extends TransactionGenerator<S> {
   private readonly keypairs: Keypair[];
 
   constructor(keypairs: Keypair[]) {
+    super();
     this.keypairs = keypairs;
   }
 
   /**
-   * Performs the transaction generation.
+   * Performs the generation of a transaction that should succeed.
+   *
    * Simply selects 2 random keypairs we generated previously (and set at genesis)
    * and transfers a randomly selected amount between them.
-   *
-   * We receive an `outcome` parameter that is meant to determine if this generator
-   * should generate a successful or a failure transaction but we just ignore it
-   * here because the `BasicGeneratorStrategy` always produces successful inputs.
    */
-  async generate(outcome: Outcome): Promise<GeneratedInput<S>> {
+  async successful(): Promise<GeneratedInput<S>> {
     const { sender, receiver } = this.getSenderAndReceiver();
     const amount = random.int(5, 100);
     const unsignedTransaction = {
