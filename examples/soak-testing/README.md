@@ -2,7 +2,44 @@
 
 This example demonstrates how to use the `@sovereign-sdk/test` package to perform soak testing on a Sovereign rollup. Soak testing helps verify the stability and performance of your rollup under sustained load by continuously submitting transactions.
 
-We generate keypairs for test users on the rollup, add those users to the rollups genesis config and use them to transfer funds to eachother.
+## Setup Process
+
+This example is set up with a specific configuration to enable testing with real accounts and transactions. Here's how it works:
+
+### Keypair Generation
+The example generates sets of keypairs that are used for signing transactions during the soak test. These keypairs are created programmatically, providing the necessary private keys for transaction signing. This ensures that we have a pool of valid accounts to work with during testing.
+
+### Genesis Configuration
+The setup uses a base genesis file as a template, which is then populated with the generated keypairs. Each generated account is given an initial bank balance in the genesis state. This ensures that all test accounts have sufficient funds to perform transactions during the soak test.
+
+### Rollup Initialization
+The rollup binary is started using:
+1. The generated `genesis.json` file that contains the initial state with funded accounts
+2. A rollup configuration file located in this directory that specifies the rollup's runtime config
+
+This setup allows the soak test to run with real accounts and transactions, providing a more accurate representation of how the rollup will perform under load in a production environment.
+
+## Design Goals
+
+The soak testing framework was designed with several key principles in mind:
+
+### Black Box Testing
+The framework treats the rollup as a black box, allowing developers to focus on their transaction generation and fuzzing logic. This separation of concerns makes it easier to write effective tests and maintain them over time.
+
+### Production-Ready Code
+We believe in using real, production-ready code for testing. The same code you use to create transactions in your production applications can be used to generate soak test transactions. This approach:
+- Reduces the learning curve for developers
+- Ensures test behavior matches production behavior
+- Makes it easier to maintain tests as your application evolves
+
+### Minimal Abstractions
+The framework aims to keep abstractions to a minimum, preferring to use familiar patterns and tools:
+- Use standard genesis configurations for initial state
+- Work with real transaction types and structures
+- Leverage existing rollup client code
+- Minimize the need for test-specific wrappers or utilities
+
+While we strive to keep the framework simple and minimal, we're open to adding features that would be genuinely useful to developers. If you find yourself needing additional functionality, please let us know - we're happy to consider adding features that would make the framework more effective for real-world use cases.
 
 ## Concepts
 
@@ -51,6 +88,8 @@ A generator strategy determines how multiple transactions are generated and exec
 1. Takes a single transaction generator
 2. Creates multiple transactions in parallel
 3. Always generates successful transactions
+
+This is a good default if you don't need more advanced generation logic.
 
 You might want to use a custom strategy to do a weighted select of many `TransactionGenerator`s to submit more of a particular type of call message for example.
 The strategy could also be configured to generate occasional failure transactions to execerise more code paths in your application.
