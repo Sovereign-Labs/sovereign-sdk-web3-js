@@ -2,7 +2,7 @@
 
 This example demonstrates how to use the `@sovereign-sdk/test` package to perform soak testing on a Sovereign rollup. Soak testing helps verify the stability and performance of your rollup under sustained load by continuously submitting transactions.
 
-We generate keypairs to use a users on the rollup, add those users to the rollups genesis config and use them to transfer funds to eachother.
+We generate keypairs for test users on the rollup, add those users to the rollups genesis config and use them to transfer funds to eachother.
 
 ## Concepts
 
