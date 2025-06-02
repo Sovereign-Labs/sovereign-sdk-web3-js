@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.4.1
+
+### Patch Changes
+
+- ddf65a7: adds a new testing package that will provide testing utilities. Adds `options` field to rollup methods to allow users to provide request options such as abort signals, timeouts, etc
+
 ## 0.4.0
 
 ### Minor Changes
