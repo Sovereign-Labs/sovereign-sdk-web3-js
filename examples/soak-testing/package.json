@@ -1,0 +1,29 @@
+{
+  "name": "soak-testing",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "init": "node --experimental-wasm-modules scripts/prepare.mjs",
+    "start": "node --experimental-wasm-modules --loader ts-node/esm src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@sovereign-sdk/signers": "workspace:^",
+    "@sovereign-sdk/test": "workspace:^",
+    "@sovereign-sdk/utils": "workspace:^",
+    "@sovereign-sdk/web3": "workspace:^",
+    "random": "^5.4.0"
+  },
+  "devDependencies": {
+    "@noble/ed25519": "^2.1.0",
+    "@types/bun": "latest",
+    "ts-node": "^10.9.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
