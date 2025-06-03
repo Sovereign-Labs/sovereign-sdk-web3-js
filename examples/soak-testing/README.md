@@ -2,6 +2,25 @@
 
 This example demonstrates how to use the `@sovereign-sdk/test` package to perform soak testing on a Sovereign rollup. Soak testing helps verify the stability and performance of your rollup under sustained load by continuously submitting transactions.
 
+## Table of Contents
+
+- [Setup Process](#setup-process)
+  - [Keypair Generation](#keypair-generation)
+  - [Genesis Configuration](#genesis-configuration)
+  - [Rollup Initialization](#rollup-initialization)
+- [Design Goals](#design-goals)
+  - [Black Box Testing](#black-box-testing)
+  - [Production-Ready Code](#production-ready-code)
+  - [Minimal Abstractions](#minimal-abstractions)
+- [Concepts](#concepts)
+  - [Transaction Generators](#transaction-generators)
+  - [Generator Strategies](#generator-strategies)
+- [Implementation Guide](#implementation-guide)
+  - [Create a Transaction Generator](#1-create-a-transaction-generator)
+  - [Choose or Create a Generator Strategy](#2-choose-or-create-a-generator-strategy)
+  - [Configure and Run the Test](#3-configure-and-run-the-test)
+- [Example Implementation](#example-implementation)
+
 ## Setup Process
 
 This example is set up with a specific configuration to enable testing with real accounts and transactions. Here's how it works:
@@ -9,8 +28,12 @@ This example is set up with a specific configuration to enable testing with real
 ### Keypair Generation
 The example generates sets of keypairs that are used for signing transactions during the soak test. These keypairs are created programmatically, providing the necessary private keys for transaction signing. This ensures that we have a pool of valid accounts to work with during testing.
 
+The keypair generation is implemented in [`scripts/prepare.mjs`](scripts/prepare.mjs), which creates a configurable number of keypairs and stores them for use in the test.
+
 ### Genesis Configuration
 The setup uses a base genesis file as a template, which is then populated with the generated keypairs. Each generated account is given an initial bank balance in the genesis state. This ensures that all test accounts have sufficient funds to perform transactions during the soak test.
+
+The base genesis configuration is defined in [`templates/genesis.json`](templates/genesis.json). The script [`scripts/prepare.mjs`](scripts/prepare.mjs) reads this template and inserts the generated keypairs with their initial balances into the genesis state. The resulting genesis file is written to `data/genesis.json`, which is then used by the rollup when it starts up.
 
 ### Rollup Initialization
 The rollup binary is started using:
