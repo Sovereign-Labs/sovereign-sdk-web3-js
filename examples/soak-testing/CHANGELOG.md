@@ -1,5 +1,12 @@
 # soak-testing
 
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies [64e718c]
+  - @sovereign-sdk/test@0.1.2
+
 ## 1.0.1
 
 ### Patch Changes
