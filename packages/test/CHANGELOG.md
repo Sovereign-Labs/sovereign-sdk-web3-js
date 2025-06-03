@@ -1,5 +1,11 @@
 # @sovereign-sdk/test
 
+## 0.1.2
+
+### Patch Changes
+
+- 64e718c: update docs & add README
+
 ## 0.1.1
 
 ### Patch Changes
