@@ -25,7 +25,7 @@
     "p-queue": "^8.1.0"
   },
   "publishConfig": {
-    "access": "false"
+    "access": "public"
   },
   "devDependencies": {
     "tsup": "^8.3.0",
