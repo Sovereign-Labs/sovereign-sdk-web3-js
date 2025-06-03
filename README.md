@@ -12,6 +12,8 @@ JavaScript/TypeScript SDK for interacting with Sovereign SDK rollups. This monor
 | [@sovereign-sdk/web3](packages/web3)                                   | [![npm version](https://img.shields.io/npm/v/@sovereign-sdk/web3.svg)](https://www.npmjs.com/package/@sovereign-sdk/web3)                                   | Primary client library for interacting with Sovereign SDK rollups                             |
 | [@sovereign-sdk/signers](packages/signers)                             | [![npm version](https://img.shields.io/npm/v/@sovereign-sdk/signers.svg)](https://www.npmjs.com/package/@sovereign-sdk/signers)                             | Signer interface and implementations (e.g. MetaMask Snap)                                     |
 | [@sovereign-sdk/universal-wallet-wasm](packages/universal-wallet-wasm) | [![npm version](https://img.shields.io/npm/v/@sovereign-sdk/universal-wallet-wasm.svg)](https://www.npmjs.com/package/@sovereign-sdk/universal-wallet-wasm) | WebAssembly bindings for human readable byte representation and serialization/deserialization |
+| [@sovereign-sdk/test](packages/test)                                   | [![npm version](https://img.shields.io/npm/v/@sovereign-sdk/test.svg)](https://www.npmjs.com/package/@sovereign-sdk/test)                                   | Testing utilities for Sovereign SDK rollups, including soak testing and transaction generation |
+| [@sovereign-sdk/utils](packages/utils)                                 | [![npm version](https://img.shields.io/npm/v/@sovereign-sdk/utils.svg)](https://www.npmjs.com/package/@sovereign-sdk/utils)                                 | Common utilities and helper functions for Sovereign SDK development                            |
 
 ## Features
 
