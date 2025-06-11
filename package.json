@@ -9,7 +9,7 @@
     "lint": "pnpm -r lint",
     "test": "vitest --project unit",
     "test:integration": "vitest --project integration",
-    "coverage": "vitest --coverage",
+    "coverage": "vitest --coverage --project unit",
     "build": "pnpm -r build",
     "pkg-version": "changeset version && pnpm install --lockfile-only && pnpm run fix",
     "release": "pnpm run build && changeset publish",
