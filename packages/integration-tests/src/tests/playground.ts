@@ -1,14 +1,13 @@
 // just a file to run and test stuff
 // run with `pnpm run playground`
-import { createStandardRollup } from "@sovereign-sdk/web3";
-import { getSigner, addressFromPublicKey } from "./signer.js";
+import {
+  createStandardRollup,
+  addressFromPublicKey,
+} from "@sovereign-sdk/web3";
+import { getSigner } from "./signer.js";
 
 let subscription;
 const run = async () => {
-  const signer = getSigner();
-  const publicKey = await signer.publicKey();
-  console.log(addressFromPublicKey(publicKey));
-
   const rollup = await createStandardRollup({
     context: {
       defaultTxDetails: {
@@ -19,6 +18,10 @@ const run = async () => {
       },
     },
   });
+
+  const signer = getSigner(rollup.chainHash);
+  const publicKey = await signer.publicKey();
+  console.log(addressFromPublicKey(publicKey, "sov"));
 
   console.log("subscribing to rollup events");
   subscription = rollup.subscribe("events", async (event) => {
