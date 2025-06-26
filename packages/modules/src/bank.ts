@@ -62,12 +62,10 @@ export class Bank {
 
       isSuccessResponse(response);
       return BigInt(response.data.amount);
-    } catch (e) {
-      const err = e as SovereignClient.APIError;
-
+    } catch (err) {
       if (this.isMissingAccountError(err)) return BigInt(0);
 
-      throw e;
+      throw err;
     }
   }
 
