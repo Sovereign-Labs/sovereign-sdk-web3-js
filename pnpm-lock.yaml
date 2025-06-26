@@ -98,9 +98,6 @@ importers:
       '@noble/hashes':
         specifier: ^1.5.0
         version: 1.5.0
-      '@sovereign-sdk/modules':
-        specifier: workspace:^
-        version: link:../modules
       '@sovereign-sdk/signers':
         specifier: workspace:^
         version: link:../signers
