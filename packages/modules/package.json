@@ -1,7 +1,7 @@
 {
   "name": "@sovereign-sdk/modules",
   "version": "0.0.1",
-  "description": "",
+  "description": "A package providing convenient helpers for interacting with core Sovereign SDK modules",
   "scripts": {
     "build": "tsup",
     "ci": "biome ci",
