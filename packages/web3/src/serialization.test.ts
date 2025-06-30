@@ -8,10 +8,17 @@ const sample_runtime_call = {
   bank: {
     create_token: {
       token_name: "token_1",
+      token_decimals: 12,
       initial_balance: "20000",
-      mint_to_address:
-        "sov1lzkjgdaz08su3yevqu6ceywufl35se9f33kztu5cu2spja5hyyf",
-      admins: ["sov1lzkjgdaz08su3yevqu6ceywufl35se9f33kztu5cu2spja5hyyf"],
+      supply_cap: "100000000000",
+      mint_to_address: {
+        Standard: "sov1lzkjgdaz08su3yevqu6ceywufl35se9f33kztu5cu2spja5hyyf",
+      },
+      admins: [
+        {
+          Standard: "sov1lzkjgdaz08su3yevqu6ceywufl35se9f33kztu5cu2spja5hyyf",
+        },
+      ],
     },
   },
 };
@@ -64,9 +71,18 @@ describe("serialization", () => {
   describe("serializeRuntimeCall", () => {
     it("should serialize a runtime call", () => {
       const serializer = createSerializer(demoRollupSchema);
-      const call = sample_runtime_call;
-      const actual = serializer.serializeRuntimeCall(call);
-      expect(actual).toEqual(new Uint8Array([2, 0, 5, 0, 0, 0, 0]));
+      const actual = serializer.serializeRuntimeCall(sample_runtime_call);
+      expect(actual).toEqual(
+        new Uint8Array([
+          0, 0, 7, 0, 0, 0, 116, 111, 107, 101, 110, 95, 49, 1, 12, 32, 78, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 248, 173, 36, 55, 162, 121,
+          225, 200, 147, 44, 7, 53, 140, 145, 220, 79, 227, 72, 100, 169, 140,
+          108, 37, 242, 152, 226, 160, 25, 1, 0, 0, 0, 0, 248, 173, 36, 55, 162,
+          121, 225, 200, 147, 44, 7, 53, 140, 145, 220, 79, 227, 72, 100, 169,
+          140, 108, 37, 242, 152, 226, 160, 25, 1, 0, 232, 118, 72, 23, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0,
+        ]),
+      );
     });
   });
   describe("serializeUnsignedTx", () => {
@@ -84,7 +100,7 @@ describe("serialization", () => {
       };
       const actual = bytesToHex(serializer.serializeUnsignedTx(unsignedTx));
       const expected =
-        "0200050000000001000000000000000000000000000000e8030000000000000000000000000000003905000000000000";
+        "000007000000746f6b656e5f31010c204e000000000000000000000000000000f8ad2437a279e1c8932c07358c91dc4fe34864a98c6c25f298e2a0190100000000f8ad2437a279e1c8932c07358c91dc4fe34864a98c6c25f298e2a0190100e8764817000000000000000000000001000000000000000000000000000000e8030000000000000000000000000000003905000000000000";
 
       expect(actual).toEqual(expected);
     });
@@ -121,7 +137,7 @@ describe("serialization", () => {
       };
       const actual = bytesToHex(serializer.serializeTx(tx));
       const expected =
-        "00c5a11079c4fd275060d306833d203064f6d7e9840022fab66e53d512d7280169b5707aab240e030ae6e352f4387d8877752722d87f1815dc7064c38a503b3e021ea77bb8f81915816c4e985c680fa990377dc948f11d834b6eb187fb2a53cce6020005000000000000000000000000000000000000000000e40b5402000000000000000000000000e110000000000000";
+        "00c5a11079c4fd275060d306833d203064f6d7e9840022fab66e53d512d7280169b5707aab240e030ae6e352f4387d8877752722d87f1815dc7064c38a503b3e021ea77bb8f81915816c4e985c680fa990377dc948f11d834b6eb187fb2a53cce6000007000000746f6b656e5f31010c204e000000000000000000000000000000f8ad2437a279e1c8932c07358c91dc4fe34864a98c6c25f298e2a0190100000000f8ad2437a279e1c8932c07358c91dc4fe34864a98c6c25f298e2a0190100e876481700000000000000000000000000000000000000000000000000000000e40b5402000000000000000000000000e110000000000000";
 
       expect(actual).toEqual(expected);
     });
@@ -140,7 +156,17 @@ describe("createSerializerFromHttp", () => {
 
     const serializer = await createSerializerFromHttp(mockClient as any);
     const actual = serializer.serializeRuntimeCall(sample_runtime_call);
-    expect(actual).toEqual(new Uint8Array([2, 0, 5, 0, 0, 0, 0]));
+    expect(actual).toEqual(
+      new Uint8Array([
+        0, 0, 7, 0, 0, 0, 116, 111, 107, 101, 110, 95, 49, 1, 12, 32, 78, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 248, 173, 36, 55, 162, 121, 225,
+        200, 147, 44, 7, 53, 140, 145, 220, 79, 227, 72, 100, 169, 140, 108, 37,
+        242, 152, 226, 160, 25, 1, 0, 0, 0, 0, 248, 173, 36, 55, 162, 121, 225,
+        200, 147, 44, 7, 53, 140, 145, 220, 79, 227, 72, 100, 169, 140, 108, 37,
+        242, 152, 226, 160, 25, 1, 0, 232, 118, 72, 23, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0,
+      ]),
+    );
   });
 
   it("should throw RollupInterfaceError when response is empty", async () => {
