@@ -47,7 +47,15 @@ describe("Schema", () => {
   });
   describe("jsonToBorsh", () => {
     it("should serialize a simple json object to borsh", () => {
-      const call = { value_setter: { set_many_values: [4, 6] } };
+      const call = {   bank: {
+              create_token: {
+                  token_name: "token_1",
+                  initial_balance: "20000",
+                  mint_to_address:
+                      "sov1lzkjgdaz08su3yevqu6ceywufl35se9f33kztu5cu2spja5hyyf",
+                  admins: ["sov1lzkjgdaz08su3yevqu6ceywufl35se9f33kztu5cu2spja5hyyf"],
+              },
+          }, };
       const actual = bytesToHex(
         schema.jsonToBorsh(
           schema.knownTypeIndex(KnownTypeId.RuntimeCall),
@@ -59,14 +67,16 @@ describe("Schema", () => {
       expect(actual).toEqual(expected);
     });
     it("should return concise and useful error messages", () => {
-      const call = { bank: { create_token: "not a number" } };
+      const call = { bank: { create_token: {
+
+          } } };
       const doConversion = () =>
         schema.jsonToBorsh(
           schema.knownTypeIndex(KnownTypeId.RuntimeCall),
           JSON.stringify(call)
         );
       expect(doConversion).toThrow(
-        'Expected __SovVirtualWallet_CallMessage_CreateToken struct, encountered invalid JSON value "not a number"'
+        "Expected type or field __SovVirtualWallet_CallMessage_CreateToken.token_name, but it was not present"
       );
     });
     it("should allow strings to serialize as u128", () => {
