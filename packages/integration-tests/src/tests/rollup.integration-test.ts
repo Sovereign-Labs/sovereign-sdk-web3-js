@@ -6,6 +6,10 @@ import { Signer } from "@sovereign-sdk/signers";
 let signer: Signer;
 let rollup: StandardRollup<any>;
 
+const testAddress = {
+  Standard: "sov1lzkjgdaz08su3yevqu6ceywufl35se9f33kztu5cu2spja5hyyf",
+};
+
 describe("rollup", async () => {
   describe.sequential("transaction submission", () => {
     it("should successfully sign and submit a transaction", async () => {
@@ -21,10 +25,14 @@ describe("rollup", async () => {
       });
       signer = getSigner(rollup.chainHash);
       const runtimeCall = {
-        value_setter: {
-          set_value: {
-            value: 5,
-            gas: null,
+        bank: {
+          create_token: {
+            token_name: "token_1",
+            initial_balance: "20000",
+            token_decimals: 12,
+            supply_cap: "100000000000",
+            mint_to_address: testAddress,
+            admins: [testAddress],
           },
         },
       };
@@ -50,9 +58,42 @@ describe("rollup", async () => {
       const startingNonce = nonce;
       const batch = [];
       const callMessages = [
-        { value_setter: { set_value: { value: 8, gas: null } } },
-        { value_setter: { set_value: { value: 10, gas: null } } },
-        { value_setter: { set_value: { value: 12, gas: null } } },
+        {
+          bank: {
+            create_token: {
+              token_name: "token_100",
+              initial_balance: "20000",
+              token_decimals: 12,
+              supply_cap: "100000000000",
+              mint_to_address: testAddress,
+              admins: [testAddress],
+            },
+          },
+        },
+        {
+          bank: {
+            create_token: {
+              token_name: "token_200",
+              initial_balance: "20000",
+              token_decimals: 12,
+              supply_cap: "100000000000",
+              mint_to_address: testAddress,
+              admins: [testAddress],
+            },
+          },
+        },
+        {
+          bank: {
+            create_token: {
+              token_name: "token_300",
+              initial_balance: "30000",
+              token_decimals: 12,
+              supply_cap: "100000000000",
+              mint_to_address: testAddress,
+              admins: [testAddress],
+            },
+          },
+        },
       ];
 
       for (const callMessage of callMessages) {

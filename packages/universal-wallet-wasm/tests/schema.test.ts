@@ -30,7 +30,7 @@ describe("Schema", () => {
   describe("chainHash", () => {
     it("should calculate the chain hash successfully", () => {
       const expected =
-        "fce1da45d2bf5edad4c82eb67776eec867cb2e0c064e56d30dcdc2caa26a1e29";
+        "672f49a623e325540b52fe25a255a584f4cdf8e2b0c5c1fca13eab8a92c610ed";
       const actual = bytesToHex(schema.chainHash);
 
       expect(actual).toEqual(expected);
@@ -39,7 +39,7 @@ describe("Schema", () => {
   describe("metadataHash", () => {
     it("should restore the metadata hash successfully", () => {
       const expected =
-        "390dbf780016f92cf26194847d906da7dacf673204af1e3912f8f75a18d6f817";
+        "57c66aa8f2935ec352980d39e4f48d6aa10faf322d96254c63ec64eed82eb5b3";
       const actual = bytesToHex(schema.metadataHash);
 
       expect(actual).toEqual(expected);
@@ -47,31 +47,55 @@ describe("Schema", () => {
   });
   describe("jsonToBorsh", () => {
     it("should serialize a simple json object to borsh", () => {
-      const call = { value_setter: { set_many_values: [4, 6] } };
+      const call = {
+        bank: {
+          create_token: {
+            token_name: "token_1",
+            initial_balance: "20000",
+            token_decimals: 12,
+            supply_cap: "100000000000",
+            mint_to_address: {
+              Standard:
+                "sov1lzkjgdaz08su3yevqu6ceywufl35se9f33kztu5cu2spja5hyyf",
+            },
+            admins: [
+              {
+                Standard:
+                  "sov1lzkjgdaz08su3yevqu6ceywufl35se9f33kztu5cu2spja5hyyf",
+              },
+            ],
+          },
+        },
+      };
       const actual = bytesToHex(
         schema.jsonToBorsh(
           schema.knownTypeIndex(KnownTypeId.RuntimeCall),
-          JSON.stringify(call)
-        )
+          JSON.stringify(call),
+        ),
       );
-      const expected = "0201020000000406";
+      const expected =
+        "000007000000746f6b656e5f31010c204e000000000000000000000000000000f8ad2437a279e1c8932c07358c91dc4fe34864a98c6c25f298e2a0190100000000f8ad2437a279e1c8932c07358c91dc4fe34864a98c6c25f298e2a0190100e87648170000000000000000000000";
 
       expect(actual).toEqual(expected);
     });
     it("should return concise and useful error messages", () => {
-      const call = { value_setter: { set_value: "not a number" } };
+      const call = {
+        bank: {
+          create_token: {},
+        },
+      };
       const doConversion = () =>
         schema.jsonToBorsh(
           schema.knownTypeIndex(KnownTypeId.RuntimeCall),
-          JSON.stringify(call)
+          JSON.stringify(call),
         );
       expect(doConversion).toThrow(
-        'Expected __SovVirtualWallet_CallMessage_SetValue struct, encountered invalid JSON value "not a number"'
+        "Expected type or field __SovVirtualWallet_CallMessage_CreateToken.token_name, but it was not present",
       );
     });
     it("should allow strings to serialize as u128", () => {
       const addr = hexToBytes(
-        "b7e23f9dc86a1547ee09d82a5c8f3610d975e2c84fb61038a719e524"
+        "b7e23f9dc86a1547ee09d82a5c8f3610d975e2c84fb61038a719e524",
       );
       const call = {
         bank: {
@@ -88,7 +112,7 @@ describe("Schema", () => {
       const doConversion = () =>
         schema.jsonToBorsh(
           schema.knownTypeIndex(KnownTypeId.RuntimeCall),
-          JSON.stringify(call)
+          JSON.stringify(call),
         );
       expect(doConversion).not.toThrow();
     });
