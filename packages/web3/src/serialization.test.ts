@@ -4,6 +4,18 @@ import demoRollupSchema from "../../__fixtures__/demo-rollup-schema.json";
 import type { SchemaError } from "./errors";
 import { createSerializer, createSerializerFromHttp } from "./serialization";
 
+const sample_runtime_call = {
+  bank: {
+    create_token: {
+      token_name: "token_1",
+      initial_balance: "20000",
+      mint_to_address:
+        "sov1lzkjgdaz08su3yevqu6ceywufl35se9f33kztu5cu2spja5hyyf",
+      admins: ["sov1lzkjgdaz08su3yevqu6ceywufl35se9f33kztu5cu2spja5hyyf"],
+    },
+  },
+};
+
 describe("serialization", () => {
   it("should throw SovereignError when schema is invalid", () => {
     const invalidSchema = {
@@ -24,14 +36,7 @@ describe("serialization", () => {
   it("should handle Uint8Array fields in json objects", () => {
     const serializer = createSerializer(demoRollupSchema);
     const unsignedTx = {
-      runtime_call: {
-        value_setter: {
-          set_value: {
-            value: 5,
-            gas: null,
-          },
-        },
-      },
+      runtime_call: sample_runtime_call,
       generation: 0,
       details: {
         max_priority_fee_bips: 0,
@@ -59,14 +64,7 @@ describe("serialization", () => {
   describe("serializeRuntimeCall", () => {
     it("should serialize a runtime call", () => {
       const serializer = createSerializer(demoRollupSchema);
-      const call = {
-        value_setter: {
-          set_value: {
-            value: 5,
-            gas: null,
-          },
-        },
-      };
+      const call = sample_runtime_call;
       const actual = serializer.serializeRuntimeCall(call);
       expect(actual).toEqual(new Uint8Array([2, 0, 5, 0, 0, 0, 0]));
     });
@@ -75,14 +73,7 @@ describe("serialization", () => {
     it("should serialize an unsigned transaction", () => {
       const serializer = createSerializer(demoRollupSchema);
       const unsignedTx = {
-        runtime_call: {
-          value_setter: {
-            set_value: {
-              value: 5,
-              gas: null,
-            },
-          },
-        },
+        runtime_call: sample_runtime_call,
         generation: 1,
         details: {
           max_priority_fee_bips: 0,
@@ -117,14 +108,7 @@ describe("serialization", () => {
           V0: {
             pub_key: { pub_key: publicKey },
             signature: { msg_sig: signature },
-            runtime_call: {
-              value_setter: {
-                set_value: {
-                  value: 5,
-                  gas: null,
-                },
-              },
-            },
+            runtime_call: sample_runtime_call,
             generation: 0,
             details: {
               max_priority_fee_bips: 0,
@@ -155,15 +139,7 @@ describe("createSerializerFromHttp", () => {
     };
 
     const serializer = await createSerializerFromHttp(mockClient as any);
-    const call = {
-      value_setter: {
-        set_value: {
-          value: 5,
-          gas: null,
-        },
-      },
-    };
-    const actual = serializer.serializeRuntimeCall(call);
+    const actual = serializer.serializeRuntimeCall(sample_runtime_call);
     expect(actual).toEqual(new Uint8Array([2, 0, 5, 0, 0, 0, 0]));
   });
 

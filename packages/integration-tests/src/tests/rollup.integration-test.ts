@@ -21,12 +21,14 @@ describe("rollup", async () => {
             });
             signer = getSigner(rollup.chainHash);
             const runtimeCall = {
-                value_setter: {
-                    set_value: {
-                        value: 5,
-                        gas: null,
-                    },
-                },
+                bank: {
+                    create_token: {
+                        token_name: "token_1",
+                        initial_balance: "20000",
+                        mint_to_address: signer,
+                        admins: [signer]
+                    }
+                }
             };
             const {response} = await rollup.call(runtimeCall, {
                 signer,
@@ -51,32 +53,35 @@ describe("rollup", async () => {
             const batch = [];
             const callMessages = [
                 {
-                    create_token: {
-                        token_name: "token_1",
-                        initial_balance: "20000",
-                        mint_to_address: signer,
-                        admins: [signer]
+                    bank: {
+                        create_token: {
+                            token_name: "token_1",
+                            initial_balance: "20000",
+                            mint_to_address: signer,
+                            admins: [signer]
+                        }
                     }
                 },
                 {
-                    create_token: {
-                        token_name: "token_2",
-                        initial_balance: "20000",
-                        mint_to_address: signer,
-                        admins: [signer]
+                    bank: {
+                        create_token: {
+                            token_name: "token_2",
+                            initial_balance: "20000",
+                            mint_to_address: signer,
+                            admins: [signer]
+                        }
                     }
                 },
                 {
-                    create_token: {
-                        token_name: "token_3",
-                        initial_balance: "30000",
-                        mint_to_address: signer,
-                        admins: [signer]
+                    bank: {
+                        create_token: {
+                            token_name: "token_3",
+                            initial_balance: "30000",
+                            mint_to_address: signer,
+                            admins: [signer]
+                        }
                     }
                 },
-                // { value_setter: { set_value: { value: 8, gas: null } } },
-                // { value_setter: { set_value: { value: 10, gas: null } } },
-                // { value_setter: { set_value: { value: 12, gas: null } } },
             ];
 
             for (const callMessage of callMessages) {

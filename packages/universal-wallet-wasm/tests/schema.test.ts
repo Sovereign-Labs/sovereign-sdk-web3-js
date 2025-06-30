@@ -30,7 +30,7 @@ describe("Schema", () => {
   describe("chainHash", () => {
     it("should calculate the chain hash successfully", () => {
       const expected =
-        "fce1da45d2bf5edad4c82eb67776eec867cb2e0c064e56d30dcdc2caa26a1e29";
+        "672f49a623e325540b52fe25a255a584f4cdf8e2b0c5c1fca13eab8a92c610ed";
       const actual = bytesToHex(schema.chainHash);
 
       expect(actual).toEqual(expected);
@@ -39,7 +39,7 @@ describe("Schema", () => {
   describe("metadataHash", () => {
     it("should restore the metadata hash successfully", () => {
       const expected =
-        "390dbf780016f92cf26194847d906da7dacf673204af1e3912f8f75a18d6f817";
+        "57c66aa8f2935ec352980d39e4f48d6aa10faf322d96254c63ec64eed82eb5b3";
       const actual = bytesToHex(schema.metadataHash);
 
       expect(actual).toEqual(expected);
@@ -59,14 +59,14 @@ describe("Schema", () => {
       expect(actual).toEqual(expected);
     });
     it("should return concise and useful error messages", () => {
-      const call = { value_setter: { set_value: "not a number" } };
+      const call = { bank: { create_token: "not a number" } };
       const doConversion = () =>
         schema.jsonToBorsh(
           schema.knownTypeIndex(KnownTypeId.RuntimeCall),
           JSON.stringify(call)
         );
       expect(doConversion).toThrow(
-        'Expected __SovVirtualWallet_CallMessage_SetValue struct, encountered invalid JSON value "not a number"'
+        'Expected __SovVirtualWallet_CallMessage_CreateToken struct, encountered invalid JSON value "not a number"'
       );
     });
     it("should allow strings to serialize as u128", () => {
