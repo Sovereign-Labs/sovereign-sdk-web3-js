@@ -61,7 +61,7 @@ describe("rollup", async () => {
         {
           bank: {
             create_token: {
-              token_name: "token_1",
+              token_name: "token_100",
               initial_balance: "20000",
               token_decimals: 12,
               supply_cap: "100000000000",
@@ -73,7 +73,7 @@ describe("rollup", async () => {
         {
           bank: {
             create_token: {
-              token_name: "token_2",
+              token_name: "token_200",
               initial_balance: "20000",
               token_decimals: 12,
               supply_cap: "100000000000",
@@ -85,7 +85,7 @@ describe("rollup", async () => {
         {
           bank: {
             create_token: {
-              token_name: "token_3",
+              token_name: "token_300",
               initial_balance: "30000",
               token_decimals: 12,
               supply_cap: "100000000000",
