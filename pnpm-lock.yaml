@@ -151,6 +151,15 @@ importers:
       '@metamask/providers':
         specifier: ^18.1.0
         version: 18.1.0(webextension-polyfill@0.12.0)
+      '@noble/ed25519':
+        specifier: ^2.2.3
+        version: 2.3.0
+      '@noble/hashes':
+        specifier: ^1.8.0
+        version: 1.8.0
+      '@noble/secp256k1':
+        specifier: ^2.3.0
+        version: 2.3.0
       tsup:
         specifier: ^8.3.0
         version: 8.3.0(@swc/core@1.7.42)(postcss@8.5.3)(typescript@5.6.3)(yaml@2.7.1)
@@ -816,6 +825,9 @@ packages:
   '@noble/ed25519@2.1.0':
     resolution: {integrity: sha512-KM4qTyXPinyCgMzeYJH/UudpdL+paJXtY3CHtHYZQtBkS8MZoPr4rOikZllIutJe0d06QDQKisyn02gxZ8TcQA==}
 
+  '@noble/ed25519@2.3.0':
+    resolution: {integrity: sha512-M7dvXL2B92/M7dw9+gzuydL8qn/jiqNHaoR3Q+cb1q1GHV7uwE17WCyFMG+Y+TZb5izcaXk5TdJRrDUxHXL78A==}
+
   '@noble/hashes@1.4.0':
     resolution: {integrity: sha512-V1JJ1WTRUqHHrOSh597hURcMqVKVGL/ea3kv0gSnEdsEZ0/+VyPghM1lMNGc00z7CIQorSvbKpuJkxvuHbvdbg==}
     engines: {node: '>= 16'}
@@ -823,6 +835,13 @@ packages:
   '@noble/hashes@1.5.0':
     resolution: {integrity: sha512-1j6kQFb7QRru7eKN3ZDvRcP13rugwdxZqCjbiAVZfIJwgj2A65UmT4TgARXGlXgnRkORLTDTrO19ZErt7+QXgA==}
     engines: {node: ^14.21.3 || >=16}
+
+  '@noble/hashes@1.8.0':
+    resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
+    engines: {node: ^14.21.3 || >=16}
+
+  '@noble/secp256k1@2.3.0':
+    resolution: {integrity: sha512-0TQed2gcBbIrh7Ccyw+y/uZQvbJwm7Ao4scBUxqpBCcsOlZG0O4KGfjtNAy/li4W8n1xt3dxrwJ0beZ2h2G6Kw==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1496,7 +1515,6 @@ packages:
 
   bun@1.2.17:
     resolution: {integrity: sha512-lrUZTWS24eVy6v+Eph8VTwqFPcG7/XQ0rLBQEMNoQs2Vd7ctVdMGAzJKKGZRUQH+rgkD8rBeHGIVoWxX4vJLCA==}
-    cpu: [arm64, x64, aarch64]
     os: [darwin, linux, win32]
     hasBin: true
 
@@ -3486,7 +3504,7 @@ snapshots:
     dependencies:
       '@ethereumjs/tx': 4.2.0
       '@metamask/superstruct': 3.1.0
-      '@noble/hashes': 1.5.0
+      '@noble/hashes': 1.8.0
       '@scure/base': 1.1.9
       '@types/debug': 4.1.12
       debug: 4.3.7
@@ -3500,7 +3518,7 @@ snapshots:
     dependencies:
       '@ethereumjs/tx': 4.2.0
       '@metamask/superstruct': 3.1.0
-      '@noble/hashes': 1.5.0
+      '@noble/hashes': 1.8.0
       '@scure/base': 1.1.9
       '@types/debug': 4.1.12
       debug: 4.3.7
@@ -3516,9 +3534,15 @@ snapshots:
 
   '@noble/ed25519@2.1.0': {}
 
+  '@noble/ed25519@2.3.0': {}
+
   '@noble/hashes@1.4.0': {}
 
   '@noble/hashes@1.5.0': {}
+
+  '@noble/hashes@1.8.0': {}
+
+  '@noble/secp256k1@2.3.0': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
