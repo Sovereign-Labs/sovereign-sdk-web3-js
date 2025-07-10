@@ -42,7 +42,6 @@ describe("standardTypeBuilder", () => {
     it("should use provided generation from overrides", async () => {
       const result = await builder.unsignedTransaction({
         runtimeCall: { foo: "bar" },
-        sender: new Uint8Array([4, 5, 6]),
         overrides: { generation: 10 },
         rollup: mockRollup as any,
       });
@@ -63,7 +62,6 @@ describe("standardTypeBuilder", () => {
 
       const result = await builder.unsignedTransaction({
         runtimeCall: { foo: "bar" },
-        sender: new Uint8Array([4, 5, 6]),
         overrides: {},
         rollup: mockRollup as any,
       });
@@ -84,7 +82,6 @@ describe("standardTypeBuilder", () => {
 
       const result = await builder.unsignedTransaction({
         runtimeCall: { foo: "bar" },
-        sender: new Uint8Array([4, 5, 6]),
         overrides: {
           details: {
             max_fee: "2000",

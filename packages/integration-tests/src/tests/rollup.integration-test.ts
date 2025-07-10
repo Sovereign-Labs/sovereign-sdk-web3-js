@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect } from "vitest";
 import { createStandardRollup, StandardRollup } from "@sovereign-sdk/web3";
 import { getSigner } from "./signer";
 import { Signer } from "@sovereign-sdk/signers";

@@ -134,7 +134,6 @@ export class StandardRollup<RuntimeCall> extends Rollup<
     const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
     const publicKey = await signer.publicKey();
     const generation = await useOrFetchGeneration({
-      sender: publicKey,
       rollup: this,
       overrides: { generation: overrideGeneration },
     });
