@@ -2,7 +2,7 @@ import SovereignClient from "@sovereign-sdk/client";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import demoRollupSchema from "../../../__fixtures__/demo-rollup-schema.json";
 import { VersionMismatchError } from "../errors";
-import { type RollupSerializer, createSerializer } from "../serialization";
+import type { RollupSerializer } from "../serialization";
 import type { BaseTypeSpec } from "../type-spec";
 import {
   type PartialRollupConfig,
@@ -335,7 +335,6 @@ describe("Rollup", () => {
 
       expect(mockTypeBuilder.unsignedTransaction).toHaveBeenCalledWith({
         runtimeCall: mockRuntimeCall,
-        sender: new Uint8Array([4, 5, 6]),
         rollup: rollup,
         overrides: mockOverrides,
       });

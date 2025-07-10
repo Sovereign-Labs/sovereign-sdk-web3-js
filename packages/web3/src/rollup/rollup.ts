@@ -21,7 +21,6 @@ export type UnsignedTransactionContext<
   C extends RollupContext,
 > = {
   runtimeCall: S["RuntimeCall"];
-  sender: Uint8Array;
   // Provides the ability to override the generation data instead of retrieving it automatically.
   overrides: DeepPartial<S["UnsignedTransaction"]>;
   rollup: Rollup<S, C>;
@@ -237,10 +236,8 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
     { signer, overrides }: CallParams<S>,
     options?: SovereignClient.RequestOptions,
   ): Promise<TransactionResult<S["Transaction"]>> {
-    const publicKey = await signer.publicKey();
     const context = {
       runtimeCall,
-      sender: publicKey,
       rollup: this,
       overrides: overrides ?? ({} as DeepPartial<S["UnsignedTransaction"]>),
     };

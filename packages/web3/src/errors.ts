@@ -41,7 +41,7 @@ export class SchemaError extends SovereignError {
   public readonly reason: string;
 
   constructor(message: string, reason: string, schema: object) {
-    super(message);
+    super(`${message}: ${reason}`);
 
     this.reason = reason;
     this.schema = schema;
