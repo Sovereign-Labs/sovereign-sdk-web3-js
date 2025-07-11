@@ -2,7 +2,8 @@ import { keccak_256 } from "@noble/hashes/sha3";
 import { bytesToHex } from "@noble/hashes/utils";
 import * as secp from "@noble/secp256k1";
 import { describe, expect, it, vi } from "vitest";
-import { type EthereumProvider, PrivySigner } from "./privy";
+import { SignerError } from "./errors";
+import { type EthereumProvider, PrivySigner, PrivySignerError } from "./privy";
 
 describe("PrivySigner", () => {
   const testChainHash = new Uint8Array([1, 2, 3]);
@@ -15,7 +16,6 @@ describe("PrivySigner", () => {
   const uncompressedPubKey = secp.getPublicKey(testPrivateKey, false);
   const pubKeyWithoutPrefix = uncompressedPubKey.slice(1);
   const addressHash = keccak_256(pubKeyWithoutPrefix);
-  const testAddress = `0x${bytesToHex(addressHash.slice(-20))}`;
 
   // Create a mock provider
   const createMockProvider = (): EthereumProvider => {
@@ -46,16 +46,36 @@ describe("PrivySigner", () => {
 
   it("should create a signer and sign a message", async () => {
     const provider = createMockProvider();
-    const signer = await PrivySigner.create(provider, testChainHash);
+    const signer = new PrivySigner(provider, testChainHash);
     const signature = await signer.sign(testMessage);
 
     expect(signature).toBeInstanceOf(Uint8Array);
     expect(signature.length).toBe(64); // Compact signature without recovery
   });
 
-  it("should make the public key available after create()", async () => {
+  it("should throw a error if public key hasnt been recovered yet", async () => {
     const provider = createMockProvider();
-    const signer = await PrivySigner.create(provider, testChainHash);
+    const signer = new PrivySigner(provider, testChainHash);
+
+    await expect(signer.publicKey()).rejects.toThrow(
+      new PrivySignerError(
+        "Public key was not available, you must call sign() first",
+      ),
+    );
+
+    await signer.sign(new Uint8Array([1]));
+
+    // Public key should now be available
+    const publicKey = await signer.publicKey();
+    expect(publicKey).toBeInstanceOf(Uint8Array);
+    expect(publicKey.length).toBe(33); // Compressed public key
+  });
+
+  it("should make the public key available after sign()", async () => {
+    const provider = createMockProvider();
+    const signer = new PrivySigner(provider, testChainHash);
+
+    await signer.sign(new Uint8Array([1]));
 
     // Public key should now be available
     const publicKey = await signer.publicKey();
@@ -65,7 +85,7 @@ describe("PrivySigner", () => {
 
   it("should sign multiple different messages correctly", async () => {
     const provider = createMockProvider();
-    const signer = await PrivySigner.create(provider, testChainHash);
+    const signer = new PrivySigner(provider, testChainHash);
 
     const message1 = new Uint8Array([1, 2, 3]);
     const message2 = new Uint8Array([4, 5, 6]);
@@ -114,7 +134,7 @@ describe("PrivySigner", () => {
 
   it("should produce consistent signatures for the same message", async () => {
     const provider = createMockProvider();
-    const signer = await PrivySigner.create(provider, testChainHash);
+    const signer = new PrivySigner(provider, testChainHash);
 
     const sig1 = await signer.sign(testMessage);
     const sig2 = await signer.sign(testMessage);
