@@ -1,5 +1,16 @@
 # @sovereign-sdk/signers
 
+## 0.1.0
+
+### Minor Changes
+
+- 119f2e6: feat: add Ed25519, Secp256k1, and Privy signers
+
+  - Added Ed25519Signer with ed25519 curve support for signing operations
+  - Added Secp256k1Signer with secp256k1 curve support
+  - Added PrivySigner for integration with Privy wallets via EIP-1193 provider interface
+  - All signers implement the common Signer interface with chain hash domain separation
+
 ## 0.0.4
 
 ### Patch Changes
