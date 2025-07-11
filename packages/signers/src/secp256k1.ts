@@ -1,5 +1,5 @@
 import { keccak_256 } from "@noble/hashes/sha3";
-import { type PrivKey, signAsync, getPublicKey } from "@noble/secp256k1";
+import { type PrivKey, getPublicKey, signAsync } from "@noble/secp256k1";
 import type { Signer } from "./signer";
 
 export class Secp256k1Signer implements Signer {
