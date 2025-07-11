@@ -1,5 +1,13 @@
 # @sovereign-sdk/test
 
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies [119f2e6]
+  - @sovereign-sdk/signers@0.1.0
+  - @sovereign-sdk/web3@0.5.1
+
 ## 0.1.3
 
 ### Patch Changes

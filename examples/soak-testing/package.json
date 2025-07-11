@@ -1,7 +1,7 @@
 {
   "name": "soak-testing",
   "private": true,
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "type": "module",
   "scripts": {
