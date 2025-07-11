@@ -1,6 +1,6 @@
 import * as ed25519 from "@noble/ed25519";
 import { describe, expect, it } from "vitest";
-import { Ed25519Signer } from "./ed25519-signer";
+import { Ed25519Signer } from "./ed25519";
 
 describe("Ed25519Signer", () => {
   const testPrivateKeyBytes = new Uint8Array(32).fill(1); // Sample 32-byte private key for testing
@@ -8,20 +8,14 @@ describe("Ed25519Signer", () => {
   const testMessage = new Uint8Array([4, 5, 6]);
 
   it("should create signer from private key bytes and compute public key", async () => {
-    const signer = await Ed25519Signer.fromPrivateKeyBytes(
-      testPrivateKeyBytes,
-      testChainHash,
-    );
+    const signer = new Ed25519Signer(testPrivateKeyBytes, testChainHash);
     const publicKey = await signer.publicKey();
     expect(publicKey).toBeInstanceOf(Uint8Array);
     expect(publicKey.length).toBe(32);
   });
 
   it("should sign a message and verify the signature", async () => {
-    const signer = await Ed25519Signer.fromPrivateKeyBytes(
-      testPrivateKeyBytes,
-      testChainHash,
-    );
+    const signer = new Ed25519Signer(testPrivateKeyBytes, testChainHash);
     const signature = await signer.sign(testMessage);
     const publicKey = await signer.publicKey();
     const fullMessage = new Uint8Array([...testMessage, ...testChainHash]);
@@ -34,10 +28,7 @@ describe("Ed25519Signer", () => {
   });
 
   it("should fail verification with tampered message", async () => {
-    const signer = await Ed25519Signer.fromPrivateKeyBytes(
-      testPrivateKeyBytes,
-      testChainHash,
-    );
+    const signer = new Ed25519Signer(testPrivateKeyBytes, testChainHash);
     const signature = await signer.sign(testMessage);
     const publicKey = await signer.publicKey();
     const tamperedMessage = new Uint8Array([
@@ -54,19 +45,13 @@ describe("Ed25519Signer", () => {
   });
 
   it("should produce 64-byte signatures", async () => {
-    const signer = await Ed25519Signer.fromPrivateKeyBytes(
-      testPrivateKeyBytes,
-      testChainHash,
-    );
+    const signer = new Ed25519Signer(testPrivateKeyBytes, testChainHash);
     const signature = await signer.sign(testMessage);
     expect(signature.length).toBe(64);
   });
 
   it("should handle empty messages", async () => {
-    const signer = await Ed25519Signer.fromPrivateKeyBytes(
-      testPrivateKeyBytes,
-      testChainHash,
-    );
+    const signer = new Ed25519Signer(testPrivateKeyBytes, testChainHash);
     const emptyMessage = new Uint8Array(0);
     const signature = await signer.sign(emptyMessage);
     const publicKey = await signer.publicKey();
@@ -85,14 +70,8 @@ describe("Ed25519Signer", () => {
     const chainHash1 = new Uint8Array([1, 2, 3]);
     const chainHash2 = new Uint8Array([4, 5, 6]);
 
-    const signer1 = await Ed25519Signer.fromPrivateKeyBytes(
-      testPrivateKeyBytes,
-      chainHash1,
-    );
-    const signer2 = await Ed25519Signer.fromPrivateKeyBytes(
-      testPrivateKeyBytes,
-      chainHash2,
-    );
+    const signer1 = new Ed25519Signer(testPrivateKeyBytes, chainHash1);
+    const signer2 = new Ed25519Signer(testPrivateKeyBytes, chainHash2);
 
     const signature1 = await signer1.sign(testMessage);
     const signature2 = await signer2.sign(testMessage);
@@ -101,10 +80,7 @@ describe("Ed25519Signer", () => {
   });
 
   it("should produce consistent public keys", async () => {
-    const signer = await Ed25519Signer.fromPrivateKeyBytes(
-      testPrivateKeyBytes,
-      testChainHash,
-    );
+    const signer = new Ed25519Signer(testPrivateKeyBytes, testChainHash);
 
     const publicKey1 = await signer.publicKey();
     const publicKey2 = await signer.publicKey();
