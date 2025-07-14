@@ -1,10 +1,10 @@
-import type SovereignSDK from "@sovereign-sdk/client";
 import type { Signer } from "@sovereign-sdk/signers";
-import type { BaseTypeSpec } from "@sovereign-sdk/web3";
+import type { BaseTypeSpec, SovereignClient } from "@sovereign-sdk/web3";
 import { NotImplementedError } from "./errors";
 
 /** Response data type from a transaction submission */
-export type TxResult = SovereignSDK.Sequencer.TxCreateResponse.Data;
+export type TxResult =
+  SovereignClient.SovereignSDK.Sequencer.TxCreateResponse.Data;
 
 /**
  * Possible outcomes for a generated transaction.

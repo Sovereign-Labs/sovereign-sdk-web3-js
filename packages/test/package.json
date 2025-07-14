@@ -19,7 +19,6 @@
     }
   },
   "dependencies": {
-    "@sovereign-sdk/client": "0.1.0-alpha.32",
     "@sovereign-sdk/signers": "workspace:^",
     "@sovereign-sdk/web3": "workspace:^",
     "p-queue": "^8.1.0"
