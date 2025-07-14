@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.5.2
+
+### Patch Changes
+
+- 2e7a0c8: bump rest client version
+
 ## 0.5.1
 
 ### Patch Changes
