@@ -173,8 +173,20 @@ describe("createStandardRollup", () => {
   };
 
   it("should create a new client if none is provided", async () => {
-    const rollup = await createStandardRollup(mockConfig);
+    const config = { ...mockConfig, client: undefined };
+    const rollup = await createStandardRollup(config);
     expect(rollup.http).toBeInstanceOf(SovereignClient);
+  });
+
+  it("should create a new client if none is provided with the specified url", async () => {
+    const config = {
+      ...mockConfig,
+      client: undefined,
+      url: "https://example.com",
+    };
+    const rollup = await createStandardRollup(config);
+    expect(rollup.http).toBeInstanceOf(SovereignClient);
+    expect(rollup.http.baseURL).toBe("https://example.com");
   });
 
   it("should create a StandardRollup instance", async () => {
@@ -203,5 +215,46 @@ describe("createStandardRollup", () => {
     expect(typeBuilder.unsignedTransaction).toBe(customUnsignedTransaction);
     expect(typeBuilder.transaction).toBeDefined();
     expect(typeof typeBuilder.transaction).toBe("function");
+  });
+
+  it("should be created using the default context", async () => {
+    mockConfig.client.rollup.constants.retrieve = vi
+      .fn()
+      .mockResolvedValue({ data: { chain_id: 55 } });
+    const rollup = await createStandardRollup({
+      ...mockConfig,
+      context: undefined,
+    });
+    expect(rollup.context).toEqual({
+      defaultTxDetails: {
+        max_priority_fee_bips: 0,
+        max_fee: "100000000",
+        gas_limit: null,
+        chain_id: 55,
+      },
+    });
+  });
+
+  it("should preserve supplied context and merge default context", async () => {
+    mockConfig.client.rollup.constants.retrieve = vi
+      .fn()
+      .mockResolvedValue({ data: { chain_id: 55 } });
+    const rollup = await createStandardRollup({
+      ...mockConfig,
+      context: {
+        defaultTxDetails: {
+          max_priority_fee_bips: 5,
+          chain_id: 1,
+        },
+      },
+    });
+    expect(rollup.context).toEqual({
+      defaultTxDetails: {
+        max_priority_fee_bips: 5,
+        max_fee: "100000000",
+        gas_limit: null,
+        chain_id: 1,
+      },
+    });
   });
 });

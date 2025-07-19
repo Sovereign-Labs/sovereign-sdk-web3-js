@@ -5,8 +5,8 @@ import { VersionMismatchError } from "../errors";
 import type { RollupSerializer } from "../serialization";
 import type { BaseTypeSpec } from "../type-spec";
 import {
-  type PartialRollupConfig,
   Rollup,
+  type RollupConfig,
   type RollupContext,
   type TypeBuilder,
 } from "./rollup";
@@ -20,7 +20,7 @@ const mockSerializer: RollupSerializer = {
 };
 
 const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
-  config?: Partial<PartialRollupConfig<C>>,
+  config?: Partial<RollupConfig<C>>,
   builder?: Partial<TypeBuilder<S, C>>,
 ) =>
   new Rollup(

@@ -13,16 +13,7 @@ const testAddress = {
 describe("rollup", async () => {
   describe.sequential("transaction submission", () => {
     it("should successfully sign and submit a transaction", async () => {
-      rollup = await createStandardRollup({
-        context: {
-          defaultTxDetails: {
-            max_priority_fee_bips: 0,
-            max_fee: "100000000",
-            gas_limit: null,
-            chain_id: 4321,
-          },
-        },
-      });
+      rollup = await createStandardRollup();
       signer = getSigner(rollup.chainHash);
       const runtimeCall = {
         bank: {
@@ -42,16 +33,7 @@ describe("rollup", async () => {
       expect(response.data!.status).toEqual("submitted");
     });
     it("should submit a batch with manually incrementing nonces successfully", async () => {
-      rollup = await createStandardRollup({
-        context: {
-          defaultTxDetails: {
-            max_priority_fee_bips: 0,
-            max_fee: "100000000",
-            gas_limit: null,
-            chain_id: 4321,
-          },
-        },
-      });
+      rollup = await createStandardRollup();
       signer = getSigner(rollup.chainHash);
       const publicKey = await signer.publicKey();
       let { nonce } = await rollup.dedup(publicKey);

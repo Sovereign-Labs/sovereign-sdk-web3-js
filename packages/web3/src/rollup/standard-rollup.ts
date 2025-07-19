@@ -1,9 +1,10 @@
 import SovereignClient from "@sovereign-sdk/client";
 import { bytesToHex } from "@sovereign-sdk/utils";
 import { createSerializerFromHttp } from "../serialization";
+import type { DeepPartial } from "../utils";
 import {
-  type PartialRollupConfig,
   Rollup,
+  type RollupConfig,
   type SignerParams,
   type TransactionContext,
   type TypeBuilder,
@@ -155,21 +156,51 @@ export class StandardRollup<RuntimeCall> extends Rollup<
   }
 }
 
+export const DEFAULT_TX_DETAILS: Omit<TxDetails, "chain_id"> = {
+  max_priority_fee_bips: 0,
+  max_fee: "100000000",
+  gas_limit: null,
+};
+
+async function buildContext<C extends StandardRollupContext>(
+  client: SovereignClient,
+  context?: DeepPartial<C>,
+): Promise<C> {
+  const defaultTxDetails = {
+    ...DEFAULT_TX_DETAILS,
+    ...context?.defaultTxDetails,
+  };
+
+  if (!defaultTxDetails.chain_id) {
+    const constants = await client.rollup.constants.retrieve();
+
+    if (!constants.data) throw new Error("data undefined");
+
+    defaultTxDetails.chain_id = constants.data.chain_id;
+  }
+
+  return {
+    defaultTxDetails,
+  } as C;
+}
+
 export async function createStandardRollup<
   RuntimeCall,
   C extends StandardRollupContext = StandardRollupContext,
 >(
-  config: PartialRollupConfig<C>,
+  rollupConfig?: Partial<RollupConfig<DeepPartial<C>>>,
   typeBuilderOverrides?: Partial<
     TypeBuilder<StandardRollupSpec<RuntimeCall>, C>
   >,
 ) {
+  const config = rollupConfig ?? {};
   const client = config.client ?? new SovereignClient({ baseURL: config.url });
   const serializer =
     config.serializer ?? (await createSerializerFromHttp(client));
+  const context = await buildContext<C>(client, config.context);
 
   return new StandardRollup<RuntimeCall>(
-    { ...config, client, serializer },
+    { ...config, client, serializer, context },
     {
       ...standardTypeBuilder(),
       ...typeBuilderOverrides,

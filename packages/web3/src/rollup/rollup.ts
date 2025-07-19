@@ -51,11 +51,8 @@ export type RollupContext = Record<string, unknown>;
 
 /**
  * The configuration for a rollup client.
- * This is a partial version of the configuration object, using a partial version
- * allows setup code to initialize fields automatically for SDK users, for example
- * fetching a `serializer` instance from the rollups endpoint.
  */
-export type PartialRollupConfig<C extends RollupContext> = {
+export type RollupConfig<C extends RollupContext> = {
   /**
    * The base URL of the rollup full node API.
    */
@@ -64,27 +61,16 @@ export type PartialRollupConfig<C extends RollupContext> = {
    * The Sovereign SDK client to use for the rollup.
    * If not provided, the default client will be used using {@link PartialRollupConfig.url}.
    */
-  client?: SovereignClient;
+  client: SovereignClient;
   /**
    * The serializer to use for the rollup.
    * If not provided, a serializer will be created using the provided client and the rollup HTTP endpoint.
    */
-  serializer?: RollupSerializer;
+  serializer: RollupSerializer;
   /**
    * Arbitrary context that is associated with the rollup.
    */
   context: C;
-};
-
-/**
- * Fully initialized rollup configuration.
- */
-export type RollupConfig<C extends RollupContext> = Omit<
-  PartialRollupConfig<C>,
-  "client" | "serializer"
-> & {
-  client: SovereignClient;
-  serializer: RollupSerializer;
 };
 
 /**
