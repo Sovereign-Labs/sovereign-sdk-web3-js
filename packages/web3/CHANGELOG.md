@@ -1,5 +1,15 @@
 # @sovereign-sdk/web3
 
+## 0.6.0
+
+### Minor Changes
+
+- 35986fa: Removes the PartialRollupConfig type, just use Partial<RollupConfig<>>, made creating standard rollup easier by providing defaults for all params for creation func
+
+### Patch Changes
+
+- 2e7a0c8: bump rest client version
+
 ## 0.5.1
 
 ### Patch Changes
