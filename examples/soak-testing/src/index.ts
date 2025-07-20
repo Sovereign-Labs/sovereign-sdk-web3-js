@@ -19,18 +19,14 @@ import {
   type GeneratedInput,
   TransactionGenerator,
 } from "@sovereign-sdk/test/soak";
-import { hexToBytes } from "@sovereign-sdk/utils";
 import random from "random";
 import keypairs from "../data/keypairs.json" assert { type: "json" };
-import type { Signer } from "@sovereign-sdk/signers";
-import * as ed25519 from "@noble/ed25519";
+import { Ed25519Signer } from "@sovereign-sdk/signers";
 import { type RuntimeCall } from "./types";
 import assert from "node:assert";
 
 type Keypair = (typeof keypairs)[0];
 type S = StandardRollupSpec<RuntimeCall>;
-
-let chainHash: Uint8Array | undefined;
 
 /**
  * Default transaction details used for all transactions in the soak test.
@@ -97,7 +93,7 @@ class BankTransferGenerator extends TransactionGenerator<S> {
 
     return {
       unsignedTransaction,
-      signer: this.keypairAsSigner(sender),
+      signer: new Ed25519Signer(sender.privateKey),
       async onSubmitted(result) {
         assert(
           result.events?.length === 1,
@@ -123,29 +119,6 @@ class BankTransferGenerator extends TransactionGenerator<S> {
           },
           "transfer event should include the expected fields"
         );
-      },
-    };
-  }
-
-  /**
-   * Converts a keypair into a Signer instance that can be used to sign transactions.
-   *
-   * @param keypair - The keypair to convert
-   * @returns A Signer instance that can sign messages using the keypair's private key
-   */
-  keypairAsSigner(keypair: Keypair): Signer {
-    const privateKey = hexToBytes(keypair.privateKey);
-    const publicKey = hexToBytes(keypair.publicKey);
-
-    return {
-      async sign(message: Uint8Array): Promise<Uint8Array> {
-        return ed25519.signAsync(
-          new Uint8Array([...message, ...chainHash!]),
-          privateKey
-        );
-      },
-      async publicKey(): Promise<Uint8Array> {
-        return publicKey;
       },
     };
   }
@@ -180,10 +153,7 @@ class BankTransferGenerator extends TransactionGenerator<S> {
  * The test will continue running until manually stopped.
  */
 async function main(): Promise<void> {
-  const rollup = await createStandardRollup<RuntimeCall>({
-    context: { defaultTxDetails },
-  });
-  chainHash = rollup.chainHash;
+  const rollup = await createStandardRollup<RuntimeCall>();
 
   const generator = new BasicGeneratorStrategy(
     new BankTransferGenerator(keypairs)

@@ -1,9 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { createStandardRollup, StandardRollup } from "@sovereign-sdk/web3";
-import { getSigner } from "./signer";
-import { Signer } from "@sovereign-sdk/signers";
+import { Ed25519Signer } from "@sovereign-sdk/signers";
 
-let signer: Signer;
+const privateKey = new Uint8Array([
+  117, 251, 248, 217, 135, 70, 194, 105, 46, 80, 41, 66, 185, 56, 200, 35, 121,
+  253, 9, 234, 159, 91, 96, 212, 211, 158, 135, 225, 180, 36, 104, 253,
+]);
+let signer = new Ed25519Signer(privateKey);
 let rollup: StandardRollup<any>;
 
 const testAddress = {
@@ -14,7 +17,6 @@ describe("rollup", async () => {
   describe.sequential("transaction submission", () => {
     it("should successfully sign and submit a transaction", async () => {
       rollup = await createStandardRollup();
-      signer = getSigner(rollup.chainHash);
       const runtimeCall = {
         bank: {
           create_token: {
@@ -34,7 +36,6 @@ describe("rollup", async () => {
     });
     it("should submit a batch with manually incrementing nonces successfully", async () => {
       rollup = await createStandardRollup();
-      signer = getSigner(rollup.chainHash);
       const publicKey = await signer.publicKey();
       let { nonce } = await rollup.dedup(publicKey);
       const startingNonce = nonce;

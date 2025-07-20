@@ -14,12 +14,10 @@
   "dependencies": {
     "@sovereign-sdk/signers": "workspace:^",
     "@sovereign-sdk/test": "workspace:^",
-    "@sovereign-sdk/utils": "workspace:^",
     "@sovereign-sdk/web3": "workspace:^",
     "random": "^5.4.0"
   },
   "devDependencies": {
-    "@noble/ed25519": "^2.1.0",
     "@types/bun": "latest",
     "ts-node": "^10.9.2"
   },
