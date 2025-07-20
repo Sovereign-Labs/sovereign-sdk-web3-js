@@ -16,12 +16,10 @@ export class PrivySignerError extends SignerError {
 
 export class PrivySigner implements Signer {
   private readonly provider: EthereumProvider;
-  private readonly chainHash: Uint8Array;
   private cachedPublicKey?: Uint8Array;
 
-  constructor(provider: EthereumProvider, chainHash: Uint8Array) {
+  constructor(provider: EthereumProvider) {
     this.provider = provider;
-    this.chainHash = chainHash;
   }
 
   private async signProvider(messageHash: string): Promise<string> {
@@ -33,8 +31,7 @@ export class PrivySigner implements Signer {
   }
 
   async sign(message: Uint8Array): Promise<Uint8Array> {
-    const data = new Uint8Array([...message, ...this.chainHash]);
-    const digest = ethers.keccak256(data);
+    const digest = ethers.keccak256(message);
     const signatureBytes = await this.signProvider(digest);
     const signature = Signature.from(signatureBytes);
     this.cachePublicKey(digest, signature);

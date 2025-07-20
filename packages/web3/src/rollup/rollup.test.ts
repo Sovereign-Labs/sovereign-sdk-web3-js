@@ -239,7 +239,10 @@ describe("Rollup", () => {
 
       await rollup.signAndSubmitTransaction(unsignedTx, { signer: mockSigner });
 
-      expect(mockSigner.sign).toHaveBeenCalledWith(new Uint8Array([7, 8, 9]));
+      // should be called with (serialized tx ++ chain hash)
+      expect(mockSigner.sign).toHaveBeenCalledWith(
+        new Uint8Array([7, 8, 9, 1, 2, 3, 4]),
+      );
       expect(mockSerializer.serializeUnsignedTx).toHaveBeenCalledWith(
         unsignedTx,
       );

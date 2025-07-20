@@ -4,15 +4,13 @@ import type { Signer } from "./signer";
 
 export class Secp256k1Signer implements Signer {
   private readonly privateKey: PrivKey;
-  private readonly chainHash: Uint8Array;
 
-  constructor(privateKey: PrivKey, chainHash: Uint8Array) {
+  constructor(privateKey: PrivKey) {
     this.privateKey = privateKey;
-    this.chainHash = chainHash;
   }
 
   public async sign(message: Uint8Array): Promise<Uint8Array> {
-    const msgHash = keccak_256(new Uint8Array([...message, ...this.chainHash]));
+    const msgHash = keccak_256(message);
     const signature = await signAsync(msgHash, this.privateKey);
 
     return signature.toCompactRawBytes();

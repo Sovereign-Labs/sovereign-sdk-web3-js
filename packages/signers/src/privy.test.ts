@@ -2,20 +2,13 @@ import { keccak_256 } from "@noble/hashes/sha3";
 import { bytesToHex } from "@noble/hashes/utils";
 import * as secp from "@noble/secp256k1";
 import { describe, expect, it, vi } from "vitest";
-import { SignerError } from "./errors";
 import { type EthereumProvider, PrivySigner, PrivySignerError } from "./privy";
 
 describe("PrivySigner", () => {
-  const testChainHash = new Uint8Array([1, 2, 3]);
   const testMessage = new Uint8Array([4, 5, 6]);
 
   // Mock private key for testing (32 bytes)
   const testPrivateKey = new Uint8Array(32).fill(1);
-
-  // Calculate the correct address from the private key
-  const uncompressedPubKey = secp.getPublicKey(testPrivateKey, false);
-  const pubKeyWithoutPrefix = uncompressedPubKey.slice(1);
-  const addressHash = keccak_256(pubKeyWithoutPrefix);
 
   // Create a mock provider
   const createMockProvider = (): EthereumProvider => {
@@ -23,11 +16,7 @@ describe("PrivySigner", () => {
       request: vi.fn(async ({ method }) => {
         if (method === "secp256k1_sign") {
           // Create a signature with the test private key
-          const fullMessage = new Uint8Array([
-            ...testMessage,
-            ...testChainHash,
-          ]);
-          const msgHash = keccak_256(fullMessage);
+          const msgHash = keccak_256(testMessage);
           const sig = await secp.signAsync(msgHash, testPrivateKey);
           const sigBytes = sig.toCompactRawBytes();
           const recovery = sig.recovery || 0;
@@ -46,7 +35,7 @@ describe("PrivySigner", () => {
 
   it("should create a signer and sign a message", async () => {
     const provider = createMockProvider();
-    const signer = new PrivySigner(provider, testChainHash);
+    const signer = new PrivySigner(provider);
     const signature = await signer.sign(testMessage);
 
     expect(signature).toBeInstanceOf(Uint8Array);
@@ -55,7 +44,7 @@ describe("PrivySigner", () => {
 
   it("should throw a error if public key hasnt been recovered yet", async () => {
     const provider = createMockProvider();
-    const signer = new PrivySigner(provider, testChainHash);
+    const signer = new PrivySigner(provider);
 
     await expect(signer.publicKey()).rejects.toThrow(
       new PrivySignerError(
@@ -73,7 +62,7 @@ describe("PrivySigner", () => {
 
   it("should make the public key available after sign()", async () => {
     const provider = createMockProvider();
-    const signer = new PrivySigner(provider, testChainHash);
+    const signer = new PrivySigner(provider);
 
     await signer.sign(new Uint8Array([1]));
 
@@ -85,7 +74,7 @@ describe("PrivySigner", () => {
 
   it("should sign multiple different messages correctly", async () => {
     const provider = createMockProvider();
-    const signer = new PrivySigner(provider, testChainHash);
+    const signer = new PrivySigner(provider);
 
     const message1 = new Uint8Array([1, 2, 3]);
     const message2 = new Uint8Array([4, 5, 6]);
@@ -97,11 +86,7 @@ describe("PrivySigner", () => {
       if (method === "secp256k1_sign") {
         const messages = [message1, message2, message3];
         const currentMessage = messages[callCount % 3];
-        const fullMessage = new Uint8Array([
-          ...currentMessage,
-          ...testChainHash,
-        ]);
-        const msgHash = keccak_256(fullMessage);
+        const msgHash = keccak_256(currentMessage);
         const sig = await secp.signAsync(msgHash, testPrivateKey);
         const sigBytes = sig.toCompactRawBytes();
         const recovery = sig.recovery || 0;
@@ -134,7 +119,7 @@ describe("PrivySigner", () => {
 
   it("should produce consistent signatures for the same message", async () => {
     const provider = createMockProvider();
-    const signer = new PrivySigner(provider, testChainHash);
+    const signer = new PrivySigner(provider);
 
     const sig1 = await signer.sign(testMessage);
     const sig2 = await signer.sign(testMessage);
