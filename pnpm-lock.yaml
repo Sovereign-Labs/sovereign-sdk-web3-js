@@ -70,9 +70,6 @@ importers:
       '@sovereign-sdk/test':
         specifier: workspace:^
         version: link:../../packages/test
-      '@sovereign-sdk/utils':
-        specifier: workspace:^
-        version: link:../../packages/utils
       '@sovereign-sdk/web3':
         specifier: workspace:^
         version: link:../../packages/web3
@@ -83,9 +80,6 @@ importers:
         specifier: ^5
         version: 5.6.3
     devDependencies:
-      '@noble/ed25519':
-        specifier: ^2.1.0
-        version: 2.1.0
       '@types/bun':
         specifier: latest
         version: 1.2.18(@types/react@19.1.8)
@@ -1533,7 +1527,6 @@ packages:
 
   bun@1.2.17:
     resolution: {integrity: sha512-lrUZTWS24eVy6v+Eph8VTwqFPcG7/XQ0rLBQEMNoQs2Vd7ctVdMGAzJKKGZRUQH+rgkD8rBeHGIVoWxX4vJLCA==}
-    cpu: [arm64, x64, aarch64]
     os: [darwin, linux, win32]
     hasBin: true
 
