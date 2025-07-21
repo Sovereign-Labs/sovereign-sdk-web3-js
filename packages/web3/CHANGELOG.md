@@ -1,5 +1,16 @@
 # @sovereign-sdk/web3
 
+## 0.7.0
+
+### Minor Changes
+
+- 9271f20: Remove `chainHash` parameter from signers, the chain hash is now automatically included by the rollup client. To upgrade to this version simply remove the parameter when creating your signer
+
+### Patch Changes
+
+- Updated dependencies [9271f20]
+  - @sovereign-sdk/signers@0.2.0
+
 ## 0.6.0
 
 ### Minor Changes

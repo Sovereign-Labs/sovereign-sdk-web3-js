@@ -1,5 +1,14 @@
 # soak-testing
 
+## 1.0.6
+
+### Patch Changes
+
+- Updated dependencies [9271f20]
+  - @sovereign-sdk/signers@0.2.0
+  - @sovereign-sdk/web3@0.7.0
+  - @sovereign-sdk/test@0.1.6
+
 ## 1.0.5
 
 ### Patch Changes
