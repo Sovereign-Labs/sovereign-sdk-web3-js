@@ -18,7 +18,7 @@ import type { DeepPartial } from "../utils";
 
 export type UnsignedTransactionContext<
   S extends BaseTypeSpec,
-  C extends RollupContext
+  C extends RollupContext,
 > = {
   runtimeCall: S["RuntimeCall"];
   // Provides the ability to override the generation data instead of retrieving it automatically.
@@ -28,7 +28,7 @@ export type UnsignedTransactionContext<
 
 export type TransactionContext<
   S extends BaseTypeSpec,
-  C extends RollupContext
+  C extends RollupContext,
 > = {
   unsignedTx: S["UnsignedTransaction"];
   sender: Uint8Array;
@@ -38,7 +38,7 @@ export type TransactionContext<
 
 export type TypeBuilder<S extends BaseTypeSpec, C extends RollupContext> = {
   unsignedTransaction: (
-    context: UnsignedTransactionContext<S, C>
+    context: UnsignedTransactionContext<S, C>,
   ) => Promise<S["UnsignedTransaction"]>;
 
   transaction: (context: TransactionContext<S, C>) => Promise<S["Transaction"]>;
@@ -146,7 +146,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    */
   async submitTransaction(
     transaction: S["Transaction"],
-    options?: SovereignClient.RequestOptions
+    options?: SovereignClient.RequestOptions,
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializedTx = this.serializer.serializeTx(transaction);
 
@@ -162,7 +162,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
             throw new VersionMismatchError(
               "Schema version mismatch when submitting transaction",
               newVersion,
-              oldVersion
+              oldVersion,
             );
           }
         }
@@ -181,12 +181,12 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   async signAndSubmitTransaction(
     unsignedTx: S["UnsignedTransaction"],
     { signer }: SignerParams,
-    options?: SovereignClient.RequestOptions
+    options?: SovereignClient.RequestOptions,
   ): Promise<TransactionResult<S["Transaction"]>> {
     const serializedUnsignedTx =
       this.serializer.serializeUnsignedTx(unsignedTx);
     const signature = await signer.sign(
-      new Uint8Array([...serializedUnsignedTx, ...this.chainHash])
+      new Uint8Array([...serializedUnsignedTx, ...this.chainHash]),
     );
     const publicKey = await signer.publicKey();
     const context = {
@@ -212,7 +212,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   async call(
     runtimeCall: S["RuntimeCall"],
     { signer, overrides }: CallParams<S>,
-    options?: SovereignClient.RequestOptions
+    options?: SovereignClient.RequestOptions,
   ): Promise<TransactionResult<S["Transaction"]>> {
     const context = {
       runtimeCall,
@@ -226,7 +226,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
       {
         signer,
       },
-      options
+      options,
     );
   }
 
@@ -235,7 +235,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    */
   subscribe<T extends keyof SubscriptionToCallbackMap>(
     type: T,
-    callback: SubscriptionToCallbackMap[T]
+    callback: SubscriptionToCallbackMap[T],
   ): Subscription {
     return createSubscription(type, callback, this.http);
   }

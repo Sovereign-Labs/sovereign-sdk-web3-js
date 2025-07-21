@@ -21,7 +21,7 @@ const mockSerializer: RollupSerializer = {
 
 const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
   config?: Partial<RollupConfig<C>>,
-  builder?: Partial<TypeBuilder<S, C>>
+  builder?: Partial<TypeBuilder<S, C>>,
 ) =>
   new Rollup(
     {
@@ -34,7 +34,7 @@ const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
       unsignedTransaction: vi.fn(),
       transaction: vi.fn(),
       ...builder,
-    }
+    },
   );
 
 describe("Rollup", () => {
@@ -96,7 +96,7 @@ describe("Rollup", () => {
         {
           body: "CgsM", // Base64 encoded [10,11,12]
         },
-        undefined
+        undefined,
       );
     });
 
@@ -113,7 +113,7 @@ describe("Rollup", () => {
         {
           body: "CgsM", // Base64 encoded [10,11,12]
         },
-        options
+        options,
       );
     });
 
@@ -135,7 +135,7 @@ describe("Rollup", () => {
       const transaction = { foo: "bar" };
 
       await expect(rollup.submitTransaction(transaction)).rejects.toEqual(
-        nonVersionMismatchError
+        nonVersionMismatchError,
       );
     });
 
@@ -156,7 +156,7 @@ describe("Rollup", () => {
       const transaction = { foo: "bar" };
 
       await expect(rollup.submitTransaction(transaction)).rejects.toThrow(
-        VersionMismatchError
+        VersionMismatchError,
       );
     });
 
@@ -177,7 +177,7 @@ describe("Rollup", () => {
       const transaction = { foo: "bar" };
 
       await expect(rollup.submitTransaction(transaction)).rejects.toEqual(
-        versionMismatchError
+        versionMismatchError,
       );
     });
 
@@ -190,7 +190,7 @@ describe("Rollup", () => {
       const transaction = { foo: "bar" };
 
       await expect(rollup.submitTransaction(transaction)).rejects.toThrow(
-        error
+        error,
       );
     });
   });
@@ -219,10 +219,10 @@ describe("Rollup", () => {
 
       // should be called with (serialized tx ++ chain hash)
       expect(mockSigner.sign).toHaveBeenCalledWith(
-        new Uint8Array([7, 8, 9, 1, 2, 3, 4])
+        new Uint8Array([7, 8, 9, 1, 2, 3, 4]),
       );
       expect(mockSerializer.serializeUnsignedTx).toHaveBeenCalledWith(
-        unsignedTx
+        unsignedTx,
       );
     });
 
@@ -234,12 +234,12 @@ describe("Rollup", () => {
       await rollup.signAndSubmitTransaction(
         unsignedTx,
         { signer: mockSigner },
-        options
+        options,
       );
 
       expect(rollup.submitTransaction).toHaveBeenCalledWith(
         mockTransaction,
-        options
+        options,
       );
     });
 
@@ -265,7 +265,7 @@ describe("Rollup", () => {
 
       expect(rollup.submitTransaction).toHaveBeenCalledWith(
         mockTransaction,
-        undefined
+        undefined,
       );
     });
 
@@ -333,7 +333,7 @@ describe("Rollup", () => {
           signer: mockSigner,
           overrides: mockOverrides,
         },
-        options
+        options,
       );
 
       expect(signAndSubmitSpy).toHaveBeenCalledWith(
@@ -341,7 +341,7 @@ describe("Rollup", () => {
         {
           signer: mockSigner,
         },
-        options
+        options,
       );
     });
 
@@ -360,7 +360,7 @@ describe("Rollup", () => {
         {
           signer: mockSigner,
         },
-        undefined
+        undefined,
       );
     });
 
