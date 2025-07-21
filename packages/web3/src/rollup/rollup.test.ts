@@ -21,7 +21,7 @@ const mockSerializer: RollupSerializer = {
 
 const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
   config?: Partial<RollupConfig<C>>,
-  builder?: Partial<TypeBuilder<S, C>>,
+  builder?: Partial<TypeBuilder<S, C>>
 ) =>
   new Rollup(
     {
@@ -34,7 +34,7 @@ const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
       unsignedTransaction: vi.fn(),
       transaction: vi.fn(),
       ...builder,
-    },
+    }
   );
 
 describe("Rollup", () => {
@@ -66,38 +66,20 @@ describe("Rollup", () => {
     it("should return the dedup data from the response", async () => {
       const expectedDedup = { nonce: 42 };
       const client = new SovereignClient({ fetch: vi.fn() });
-      client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
-        data: expectedDedup,
-      });
+      client.rollup.addresses.dedup = vi.fn().mockResolvedValue(expectedDedup);
       const rollup = testRollup({ client });
 
       const result = await rollup.dedup(new Uint8Array([1, 2, 3]));
 
       expect(result).toEqual(expectedDedup);
     });
-
-    it("should throw RollupInterfaceError when endpoint returns undefined data", async () => {
-      const client = new SovereignClient({ fetch: vi.fn() });
-      client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
-        data: undefined,
-      });
-      const rollup = testRollup({ client });
-
-      await expect(rollup.dedup(new Uint8Array([1, 2, 3]))).rejects.toThrow(
-        "Endpoint returned empty response",
-      );
-    });
   });
   describe("submitTransaction", () => {
     const versionMismatchError = {
       error: {
-        errors: [
-          {
-            details: {
-              message: "Signature verification failed",
-            },
-          },
-        ],
+        details: {
+          error: "Signature verification failed",
+        },
       },
     };
 
@@ -114,7 +96,7 @@ describe("Rollup", () => {
         {
           body: "CgsM", // Base64 encoded [10,11,12]
         },
-        undefined,
+        undefined
       );
     });
 
@@ -131,20 +113,16 @@ describe("Rollup", () => {
         {
           body: "CgsM", // Base64 encoded [10,11,12]
         },
-        options,
+        options
       );
     });
 
     it("should identify version mismatch errors correctly", async () => {
       const nonVersionMismatchError = {
         error: {
-          errors: [
-            {
-              details: {
-                message: "Some other error",
-              },
-            },
-          ],
+          details: {
+            error: "Some other error",
+          },
         },
       };
 
@@ -157,7 +135,7 @@ describe("Rollup", () => {
       const transaction = { foo: "bar" };
 
       await expect(rollup.submitTransaction(transaction)).rejects.toEqual(
-        nonVersionMismatchError,
+        nonVersionMismatchError
       );
     });
 
@@ -168,7 +146,7 @@ describe("Rollup", () => {
         .mockRejectedValue(versionMismatchError);
       client.rollup.schema.retrieve = vi
         .fn()
-        .mockResolvedValue({ data: demoRollupSchema });
+        .mockResolvedValue(demoRollupSchema);
 
       const rollup = testRollup({ client });
 
@@ -178,7 +156,7 @@ describe("Rollup", () => {
       const transaction = { foo: "bar" };
 
       await expect(rollup.submitTransaction(transaction)).rejects.toThrow(
-        VersionMismatchError,
+        VersionMismatchError
       );
     });
 
@@ -189,7 +167,7 @@ describe("Rollup", () => {
         .mockRejectedValue(versionMismatchError);
       client.rollup.schema.retrieve = vi
         .fn()
-        .mockResolvedValue({ data: demoRollupSchema });
+        .mockResolvedValue(demoRollupSchema);
 
       const rollup = testRollup({ client });
 
@@ -199,7 +177,7 @@ describe("Rollup", () => {
       const transaction = { foo: "bar" };
 
       await expect(rollup.submitTransaction(transaction)).rejects.toEqual(
-        versionMismatchError,
+        versionMismatchError
       );
     });
 
@@ -212,7 +190,7 @@ describe("Rollup", () => {
       const transaction = { foo: "bar" };
 
       await expect(rollup.submitTransaction(transaction)).rejects.toThrow(
-        error,
+        error
       );
     });
   });
@@ -241,10 +219,10 @@ describe("Rollup", () => {
 
       // should be called with (serialized tx ++ chain hash)
       expect(mockSigner.sign).toHaveBeenCalledWith(
-        new Uint8Array([7, 8, 9, 1, 2, 3, 4]),
+        new Uint8Array([7, 8, 9, 1, 2, 3, 4])
       );
       expect(mockSerializer.serializeUnsignedTx).toHaveBeenCalledWith(
-        unsignedTx,
+        unsignedTx
       );
     });
 
@@ -256,12 +234,12 @@ describe("Rollup", () => {
       await rollup.signAndSubmitTransaction(
         unsignedTx,
         { signer: mockSigner },
-        options,
+        options
       );
 
       expect(rollup.submitTransaction).toHaveBeenCalledWith(
         mockTransaction,
-        options,
+        options
       );
     });
 
@@ -287,7 +265,7 @@ describe("Rollup", () => {
 
       expect(rollup.submitTransaction).toHaveBeenCalledWith(
         mockTransaction,
-        undefined,
+        undefined
       );
     });
 
@@ -355,7 +333,7 @@ describe("Rollup", () => {
           signer: mockSigner,
           overrides: mockOverrides,
         },
-        options,
+        options
       );
 
       expect(signAndSubmitSpy).toHaveBeenCalledWith(
@@ -363,7 +341,7 @@ describe("Rollup", () => {
         {
           signer: mockSigner,
         },
-        options,
+        options
       );
     });
 
@@ -382,7 +360,7 @@ describe("Rollup", () => {
         {
           signer: mockSigner,
         },
-        undefined,
+        undefined
       );
     });
 

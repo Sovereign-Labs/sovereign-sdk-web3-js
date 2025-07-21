@@ -103,7 +103,7 @@ export class TestRunner<S extends BaseTypeSpec> {
 
         if (onSubmitted) {
           // TODO: handle errors
-          await onSubmitted(response.data);
+          await onSubmitted(response);
         }
       };
     });

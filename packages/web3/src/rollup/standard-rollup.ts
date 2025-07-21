@@ -152,7 +152,7 @@ export class StandardRollup<RuntimeCall> extends Rollup<
     });
 
     // biome-ignore lint/style/noNonNullAssertion: fix later
-    return response.data!;
+    return response!;
   }
 }
 
@@ -172,11 +172,9 @@ async function buildContext<C extends StandardRollupContext>(
   };
 
   if (!defaultTxDetails.chain_id) {
-    const constants = await client.rollup.constants.retrieve();
+    const { chain_id } = await client.rollup.constants.retrieve();
 
-    if (!constants.data) throw new Error("data undefined");
-
-    defaultTxDetails.chain_id = constants.data.chain_id;
+    defaultTxDetails.chain_id = chain_id;
   }
 
   return {

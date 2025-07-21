@@ -32,7 +32,7 @@ describe("rollup", async () => {
       const { response } = await rollup.call(runtimeCall, {
         signer,
       });
-      expect(response.data!.status).toEqual("submitted");
+      expect(response.status).toEqual("submitted");
     });
     it("should submit a batch with manually incrementing nonces successfully", async () => {
       rollup = await createStandardRollup();

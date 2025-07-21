@@ -3,8 +3,7 @@ import type { BaseTypeSpec, SovereignClient } from "@sovereign-sdk/web3";
 import { NotImplementedError } from "./errors";
 
 /** Response data type from a transaction submission */
-export type TxResult =
-  SovereignClient.SovereignSDK.Sequencer.TxCreateResponse.Data;
+export type TxResult = SovereignClient.SovereignSDK.Sequencer.TxCreateResponse;
 
 /**
  * Possible outcomes for a generated transaction.
