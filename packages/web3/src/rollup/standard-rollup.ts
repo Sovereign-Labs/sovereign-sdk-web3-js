@@ -151,8 +151,7 @@ export class StandardRollup<RuntimeCall> extends Rollup<
       },
     });
 
-    // biome-ignore lint/style/noNonNullAssertion: fix later
-    return response!;
+    return response;
   }
 }
 
