@@ -16,7 +16,14 @@ root/
 ├── packages/
 │   ├── signers/                    # Signers interface & default implementations
 │   ├── universal-wallet-wasm/      # Universal wallet schema WASM bindings
+│   ├── modules/                    # Helpers for interacting with core Sovereign SDK modules
+│   ├── test/                       # Testing utilities and soak testing
+│   ├── utils/                      # Common utilities and helper functions
 │   └── web3/                       # Primary web3 package
+├── apps/
+│   └── indexer/                    # Standalone indexer application for Sovereign SDK rollups
+├── examples/
+│   └── soak-testing/               # Example soak testing implementation
 ├── docs/                           # Documentation
 └── package.json                    # Root package.json
 ```
@@ -26,12 +33,18 @@ root/
 Our packages follow this dependency hierarchy:
 
 ```
-web3 -> signers, universal-wallet-wasm
+web3 -> signers, universal-wallet-wasm, utils
+modules -> web3, utils
+test -> (no dependencies within workspace)
+utils -> (no dependencies within workspace)
+signers -> (no dependencies within workspace)
+universal-wallet-wasm -> (no dependencies within workspace)
 ```
 
 - No circular dependencies are allowed
-- web3 will generally depend on other packages, but not the other way around
-- web3 will generally be the main package consumed by the outside world
+- web3 is generally the main package consumed by the outside world
+- modules provides convenient helpers that build on top of web3
+- utils, signers, and universal-wallet-wasm are foundational packages
 
 ### Working with Packages
 
