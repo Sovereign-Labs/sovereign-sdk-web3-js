@@ -3,7 +3,7 @@ import type { APIError } from "@sovereign-sdk/client";
 import type { Signer } from "@sovereign-sdk/signers";
 import { bytesToHex } from "@sovereign-sdk/utils";
 import { Base64 } from "js-base64";
-import { RollupInterfaceError, VersionMismatchError } from "../errors";
+import { VersionMismatchError } from "../errors";
 import {
   type RollupSerializer,
   createSerializerFromHttp,
@@ -134,18 +134,8 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    * @param address - The public key to dedup.
    */
   async dedup(address: Uint8Array): Promise<S["Dedup"]> {
-    const { data: dedup } = await this.rollup.addresses.dedup(
-      bytesToHex(address),
-    );
-
-    if (dedup === undefined) {
-      throw new RollupInterfaceError(
-        "Endpoint returned empty response",
-        "dedup",
-      );
-    }
-
-    return dedup as S["Dedup"];
+    const response = await this.rollup.addresses.dedup(bytesToHex(address));
+    return response as S["Dedup"];
   }
 
   /**
@@ -322,9 +312,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
 function isVersionMismatchError(e: APIError): boolean {
   if (
     // biome-ignore lint/suspicious/noExplicitAny: yolo
-    (e.error as any)?.errors[0]?.details?.message?.includes(
-      "Signature verification failed",
-    )
+    (e.error as any)?.details?.error?.includes("Signature verification failed")
   ) {
     return true;
   }

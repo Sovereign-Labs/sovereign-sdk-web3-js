@@ -149,7 +149,7 @@ describe("createSerializerFromHttp", () => {
     const mockClient = {
       rollup: {
         schema: {
-          retrieve: async () => ({ data: demoRollupSchema }),
+          retrieve: async () => demoRollupSchema,
         },
       },
     };
@@ -166,20 +166,6 @@ describe("createSerializerFromHttp", () => {
         242, 152, 226, 160, 25, 1, 0, 232, 118, 72, 23, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0,
       ]),
-    );
-  });
-
-  it("should throw RollupInterfaceError when response is empty", async () => {
-    const mockClient = {
-      rollup: {
-        schema: {
-          retrieve: async () => ({ data: null }),
-        },
-      },
-    };
-
-    await expect(createSerializerFromHttp(mockClient as any)).rejects.toThrow(
-      "Endpoint returned empty response",
     );
   });
 });

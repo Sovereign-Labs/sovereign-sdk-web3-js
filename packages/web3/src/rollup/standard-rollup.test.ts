@@ -220,7 +220,7 @@ describe("createStandardRollup", () => {
   it("should be created using the default context", async () => {
     mockConfig.client.rollup.constants.retrieve = vi
       .fn()
-      .mockResolvedValue({ data: { chain_id: 55 } });
+      .mockResolvedValue({ chain_id: 55 });
     const rollup = await createStandardRollup({
       ...mockConfig,
       context: undefined,

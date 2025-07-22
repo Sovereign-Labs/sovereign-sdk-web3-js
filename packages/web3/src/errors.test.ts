@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   InvalidRollupConfigError,
-  RollupInterfaceError,
   SovereignError,
   VersionMismatchError,
 } from "./errors";
@@ -21,15 +20,6 @@ describe("errors", () => {
       const error = new InvalidRollupConfigError("invalid config");
       expect(error.name).toBe("InvalidRollupConfigError");
       expect(error.message).toBe("invalid config");
-    });
-  });
-
-  describe("RollupInterfaceError", () => {
-    it("should create error with correct name, message and method", () => {
-      const error = new RollupInterfaceError("interface error", "testMethod");
-      expect(error.name).toBe("RollupInterfaceError");
-      expect(error.message).toBe("interface error");
-      expect(error.method).toBe("testMethod");
     });
   });
 

@@ -66,38 +66,20 @@ describe("Rollup", () => {
     it("should return the dedup data from the response", async () => {
       const expectedDedup = { nonce: 42 };
       const client = new SovereignClient({ fetch: vi.fn() });
-      client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
-        data: expectedDedup,
-      });
+      client.rollup.addresses.dedup = vi.fn().mockResolvedValue(expectedDedup);
       const rollup = testRollup({ client });
 
       const result = await rollup.dedup(new Uint8Array([1, 2, 3]));
 
       expect(result).toEqual(expectedDedup);
     });
-
-    it("should throw RollupInterfaceError when endpoint returns undefined data", async () => {
-      const client = new SovereignClient({ fetch: vi.fn() });
-      client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
-        data: undefined,
-      });
-      const rollup = testRollup({ client });
-
-      await expect(rollup.dedup(new Uint8Array([1, 2, 3]))).rejects.toThrow(
-        "Endpoint returned empty response",
-      );
-    });
   });
   describe("submitTransaction", () => {
     const versionMismatchError = {
       error: {
-        errors: [
-          {
-            details: {
-              message: "Signature verification failed",
-            },
-          },
-        ],
+        details: {
+          error: "Signature verification failed",
+        },
       },
     };
 
@@ -138,13 +120,9 @@ describe("Rollup", () => {
     it("should identify version mismatch errors correctly", async () => {
       const nonVersionMismatchError = {
         error: {
-          errors: [
-            {
-              details: {
-                message: "Some other error",
-              },
-            },
-          ],
+          details: {
+            error: "Some other error",
+          },
         },
       };
 
@@ -168,7 +146,7 @@ describe("Rollup", () => {
         .mockRejectedValue(versionMismatchError);
       client.rollup.schema.retrieve = vi
         .fn()
-        .mockResolvedValue({ data: demoRollupSchema });
+        .mockResolvedValue(demoRollupSchema);
 
       const rollup = testRollup({ client });
 
@@ -189,7 +167,7 @@ describe("Rollup", () => {
         .mockRejectedValue(versionMismatchError);
       client.rollup.schema.retrieve = vi
         .fn()
-        .mockResolvedValue({ data: demoRollupSchema });
+        .mockResolvedValue(demoRollupSchema);
 
       const rollup = testRollup({ client });
 
