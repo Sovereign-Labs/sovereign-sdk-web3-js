@@ -1,5 +1,13 @@
 # @sovereign-sdk/test
 
+## 0.1.7
+
+### Patch Changes
+
+- e76149b: Updates web3 SDK to the latest API response structure used by the rollup REST API
+- Updated dependencies [e76149b]
+  - @sovereign-sdk/web3@0.8.0
+
 ## 0.1.6
 
 ### Patch Changes
