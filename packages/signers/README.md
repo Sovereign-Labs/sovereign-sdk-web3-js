@@ -42,7 +42,7 @@ const message = new Uint8Array([/* your message */]);
 const signature = await signer.sign(message);
 ```
 
-### Customer Signer Implementation
+### Custom Signer Implementation
 
 You can implement your own signer by implementing the `Signer` interface if your wallet is not currently supported.
 
@@ -51,7 +51,7 @@ import { Signer } from '@sovereign-sdk/signers';
 
 class MySigner implements Signer {
   publicKey() {
-    // retireve the public key from your wallet
+    // retrieve the public key from your wallet
     return new Uint8Array([/* your public key */]);
   }
 
