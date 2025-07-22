@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { createStandardRollup, StandardRollup } from "@sovereign-sdk/web3";
+import {
+  createStandardRollup,
+  StandardRollup,
+  VersionMismatchError,
+} from "@sovereign-sdk/web3";
 import { Ed25519Signer } from "@sovereign-sdk/signers";
 
 const privateKey = new Uint8Array([
@@ -15,6 +19,40 @@ const testAddress = {
 
 describe("rollup", async () => {
   describe.sequential("transaction submission", () => {
+    it("should throw a version mismatch error if chain hash is wrong", async () => {
+      rollup = await createStandardRollup();
+      const chainHash = rollup.chainHash;
+      Object.defineProperty(rollup.serializer.schema, "chainHash", {
+        get: () => new Uint8Array([1]),
+        configurable: true,
+      });
+      const runtimeCall = {
+        bank: {
+          create_token: {
+            token_name: "token_2",
+            initial_balance: "20000",
+            token_decimals: 12,
+            supply_cap: "100000000000",
+            mint_to_address: testAddress,
+            admins: [testAddress],
+          },
+        },
+      };
+      await expect(rollup.call(runtimeCall, { signer })).rejects.toThrow(
+        VersionMismatchError
+      );
+
+      // restore correct chainhash
+      Object.defineProperty(rollup.serializer.schema, "chainHash", {
+        get: () => chainHash,
+        configurable: true,
+      });
+
+      // if we succeed now then the chain hash was the issue
+      // and we correctly threw a version mismatch error the first time
+      const result = await rollup.call(runtimeCall, { signer });
+      expect(result.response.status).toEqual("submitted");
+    });
     it("should successfully sign and submit a transaction", async () => {
       rollup = await createStandardRollup();
       const runtimeCall = {
