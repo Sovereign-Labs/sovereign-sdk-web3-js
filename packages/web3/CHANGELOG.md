@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.8.0
+
+### Minor Changes
+
+- e76149b: Updates web3 SDK to the latest API response structure used by the rollup REST API
+
 ## 0.7.0
 
 ### Minor Changes
