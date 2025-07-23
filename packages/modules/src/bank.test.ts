@@ -33,10 +33,8 @@ describe("Bank", () => {
 
     it("should return balance for a specific token", async () => {
       const mockResponse = {
-        data: {
-          amount: "1000000000000000000",
-          token_id: mockTokenId,
-        },
+        amount: "1000000000000000000",
+        token_id: mockTokenId,
       };
 
       mockClient.get.mockResolvedValue(mockResponse);
@@ -51,10 +49,8 @@ describe("Bank", () => {
 
     it("should return balance for gas token when no tokenId provided", async () => {
       const mockResponse = {
-        data: {
-          amount: "500000000000000000",
-          token_id: mockGasTokenId,
-        },
+        amount: "500000000000000000",
+        token_id: mockGasTokenId,
       };
 
       mockClient.get.mockResolvedValue(mockResponse);
@@ -71,11 +67,7 @@ describe("Bank", () => {
       const apiError = new SovereignClient.APIError(
         404,
         {
-          errors: [
-            {
-              title: "Balance 'sov1lkjo2jiojoj' not found",
-            },
-          ],
+          message: "Balance 'sov1lkjo2jiojoj' not found",
         },
         undefined,
         undefined,
@@ -92,11 +84,7 @@ describe("Bank", () => {
       const apiError = {
         status: 500,
         error: {
-          errors: [
-            {
-              title: "Internal server error",
-            },
-          ],
+          message: "Internal server error",
         },
       };
 
@@ -162,10 +150,8 @@ describe("Bank", () => {
 
     it("should return total supply for a specific token", async () => {
       const mockResponse = {
-        data: {
-          amount: "1000000000000000000000000",
-          token_id: mockTokenId,
-        },
+        amount: "1000000000000000000000000",
+        token_id: mockTokenId,
       };
 
       mockClient.get.mockResolvedValue(mockResponse);
@@ -180,10 +166,8 @@ describe("Bank", () => {
 
     it("should return total supply for gas token when no tokenId provided", async () => {
       const mockResponse = {
-        data: {
-          amount: "500000000000000000000000",
-          token_id: mockGasTokenId,
-        },
+        amount: "500000000000000000000000",
+        token_id: mockGasTokenId,
       };
 
       mockClient.get.mockResolvedValue(mockResponse);
@@ -217,9 +201,7 @@ describe("Bank", () => {
   describe("gasTokenId", () => {
     it("should return cached gas token ID on subsequent calls", async () => {
       const mockResponse = {
-        data: {
-          token_id: "gas_token_123",
-        },
+        token_id: "gas_token_123",
       };
 
       mockClient.get.mockResolvedValue(mockResponse);
@@ -237,9 +219,7 @@ describe("Bank", () => {
 
     it("should make API call to get gas token ID on first call", async () => {
       const mockResponse = {
-        data: {
-          token_id: "gas_token_456",
-        },
+        token_id: "gas_token_456",
       };
 
       mockClient.get.mockResolvedValue(mockResponse);
@@ -256,27 +236,13 @@ describe("Bank", () => {
       const apiError = {
         status: 500,
         error: {
-          errors: [
-            {
-              title: "Internal server error",
-            },
-          ],
+          message: "Internal server error",
         },
       };
 
       mockClient.get.mockRejectedValue(apiError);
 
       await expect(bank.gasTokenId()).rejects.toEqual(apiError);
-    });
-
-    it("should throw error when response data is missing", async () => {
-      const mockResponse = {};
-
-      mockClient.get.mockResolvedValue(mockResponse);
-
-      await expect(bank.gasTokenId()).rejects.toThrow(
-        "data field missing from response",
-      );
     });
   });
 });

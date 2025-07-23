@@ -1,5 +1,5 @@
 import { type Rollup, SovereignClient } from "@sovereign-sdk/web3";
-import { type ErrorResponse, type Response, isSuccessResponse } from "./types";
+import type { ErrorResponse } from "./types";
 
 type GasTokenIdPayload = {
   token_id: string;
@@ -56,12 +56,11 @@ export class Bank {
     const token = await this.tokenIdOrElseGasTokenId(tokenId);
 
     try {
-      const response: Response<BalancePayload> = await this.rollup.http.get(
+      const response: BalancePayload = await this.rollup.http.get(
         `/modules/bank/tokens/${token}/balances/${address}`,
       );
 
-      isSuccessResponse(response);
-      return BigInt(response.data.amount);
+      return BigInt(response.amount);
     } catch (err) {
       if (this.isMissingAccountError(err)) return BigInt(0);
 
@@ -89,11 +88,10 @@ export class Bank {
    */
   async totalSupply(tokenId?: string): Promise<bigint> {
     const token = await this.tokenIdOrElseGasTokenId(tokenId);
-    const response: Response<TotalSupplyPayload> = await this.rollup.http.get(
+    const response: TotalSupplyPayload = await this.rollup.http.get(
       `/modules/bank/tokens/${token}/total-supply`,
     );
-    isSuccessResponse(response);
-    return BigInt(response.data.amount);
+    return BigInt(response.amount);
   }
 
   /**
@@ -112,11 +110,10 @@ export class Bank {
    */
   async gasTokenId(): Promise<string> {
     if (this._gasTokenId) return this._gasTokenId;
-    const response: Response<GasTokenIdPayload> = await this.rollup.http.get(
+    const response: GasTokenIdPayload = await this.rollup.http.get(
       "/modules/bank/tokens/gas_token",
     );
-    isSuccessResponse(response);
-    this._gasTokenId = response.data.token_id;
+    this._gasTokenId = response.token_id;
     return this._gasTokenId;
   }
 
@@ -128,10 +125,8 @@ export class Bank {
     if (!(anyError instanceof SovereignClient.APIError)) return false;
     if (anyError.status !== 404) return false;
     const body = anyError.error as ErrorResponse;
-    const error = body.errors[0];
-    if (!error) return false;
     return (
-      error.title.startsWith("Balance") && error.title.endsWith("not found")
+      body.message.startsWith("Balance") && body.message.endsWith("not found")
     );
   }
 }
