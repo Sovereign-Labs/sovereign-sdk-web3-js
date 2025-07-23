@@ -7,7 +7,8 @@
     "ci": "biome ci",
     "fix": "biome check --write",
     "lint": "biome lint",
-    "test": "vitest"
+    "test": "vitest **/*.test.ts",
+    "test:integration": "vitest **/*.integration-test.ts"
   },
   "repository": "github:Sovereign-Labs/sovereign-sdk-web3-js",
   "files": ["dist", "README.md", "package.json"],
