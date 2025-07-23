@@ -1,5 +1,11 @@
 # @sovereign-sdk/modules
 
+## 0.1.0
+
+### Minor Changes
+
+- 72c7dbe: update `modules` package to use new response format
+
 ## 0.0.7
 
 ### Patch Changes
