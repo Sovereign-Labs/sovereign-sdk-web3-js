@@ -40,7 +40,6 @@ describe("bank", async () => {
     );
     createdTokenId = (response.events![0].value.token_created as any)!.coins!
       .token_id;
-    console.log(createdTokenId);
   });
 
   describe("balance()", async () => {
