@@ -18,9 +18,8 @@ function getSerializers(schema: RollupSchema) {
 
 describe("differential", () => {
   describe("universal wallet", (context) => {
-    if (skipUniversalWallet) {
-      context.skip();
-    }
+    if (skipUniversalWallet) context.skip();
+
     test.each(universalWalletTests)("$name", ({ name, ...vector }) => {
       const js = new JsSerializer(JSON.parse(vector.schema));
       const actual = bytesToHex(js.serialize(vector.input, 0));
