@@ -40,7 +40,7 @@ export abstract class Serializer {
 
   protected abstract jsonToBorsh(input: string, index: number): Uint8Array;
 
-  protected lookupKnownTypeIndex(id: KnownTypeId): number {
+  private lookupKnownTypeIndex(id: KnownTypeId): number {
     return this._schema.root_type_indices[id];
   }
 
@@ -74,7 +74,7 @@ export abstract class Serializer {
   serializeRuntimeCall(input: unknown): Uint8Array {
     return this.serialize(
       input,
-      this.lookupKnownTypeIndex(KnownTypeId.RuntimeCall)
+      this.lookupKnownTypeIndex(KnownTypeId.RuntimeCall),
     );
   }
 
@@ -87,7 +87,7 @@ export abstract class Serializer {
   serializeUnsignedTx(input: unknown): Uint8Array {
     return this.serialize(
       input,
-      this.lookupKnownTypeIndex(KnownTypeId.UnsignedTransaction)
+      this.lookupKnownTypeIndex(KnownTypeId.UnsignedTransaction),
     );
   }
 
@@ -100,13 +100,11 @@ export abstract class Serializer {
   serializeTx(input: unknown): Uint8Array {
     return this.serialize(
       input,
-      this.lookupKnownTypeIndex(KnownTypeId.Transaction)
+      this.lookupKnownTypeIndex(KnownTypeId.Transaction),
     );
   }
 
-  /**
-   * Returns the Schema JSON used by the serializer.
-   */
+  /** Returns the Schema JSON used by the serializer. */
   get schema(): RollupSchema {
     return { ...this._schema };
   }

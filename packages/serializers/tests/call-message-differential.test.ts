@@ -1,12 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import rollupSchema from "../../__fixtures__/demo-rollup-schema.json";
-import { JsSerializer, Serializer, RollupSchema } from "../src";
+import { JsSerializer, type RollupSchema } from "../src";
 import { WasmSerializer } from "../src/wasm";
 
-function getSerializers(schema: RollupSchema): {
-  js: Serializer;
-  wasm: Serializer;
-} {
+function getSerializers(schema: RollupSchema) {
   return { js: new JsSerializer(schema), wasm: new WasmSerializer(schema) };
 }
 
@@ -35,7 +32,7 @@ describe("differential", () => {
         },
       };
       expect(js.serializeRuntimeCall(call)).toEqual(
-        wasm.serializeRuntimeCall(call)
+        wasm.serializeRuntimeCall(call),
       );
     });
   });

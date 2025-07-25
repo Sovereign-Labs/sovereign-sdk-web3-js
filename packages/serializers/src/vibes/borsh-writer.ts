@@ -62,11 +62,17 @@ export class BorshWriter {
 
   writeI64(value: bigint | number): void {
     const bigValue = typeof value === "number" ? BigInt(value) : value;
-    if (bigValue < BigInt("-0x8000000000000000") || bigValue > BigInt("0x7fffffffffffffff")) {
+    if (
+      bigValue < BigInt("-0x8000000000000000") ||
+      bigValue > BigInt("0x7fffffffffffffff")
+    ) {
       throw new Error(`Invalid i64 value: ${bigValue}`);
     }
 
-    const unsigned = bigValue < BigInt(0) ? bigValue + BigInt("0x10000000000000000") : bigValue;
+    const unsigned =
+      bigValue < BigInt(0)
+        ? bigValue + BigInt("0x10000000000000000")
+        : bigValue;
     this.writeU64(unsigned);
   }
 
@@ -83,11 +89,15 @@ export class BorshWriter {
 
   writeI128(value: bigint | number): void {
     const bigValue = typeof value === "number" ? BigInt(value) : value;
-    if (bigValue < -(BigInt(1) << BigInt(127)) || bigValue >= BigInt(1) << BigInt(127)) {
+    if (
+      bigValue < -(BigInt(1) << BigInt(127)) ||
+      bigValue >= BigInt(1) << BigInt(127)
+    ) {
       throw new Error(`Invalid i128 value: ${bigValue}`);
     }
 
-    const unsigned = bigValue < BigInt(0) ? bigValue + (BigInt(1) << BigInt(128)) : bigValue;
+    const unsigned =
+      bigValue < BigInt(0) ? bigValue + (BigInt(1) << BigInt(128)) : bigValue;
     this.writeU128(unsigned);
   }
 
