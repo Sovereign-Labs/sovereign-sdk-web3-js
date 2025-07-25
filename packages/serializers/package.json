@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "bech32": "^2.0.0",
+    "@sovereign-sdk/utils": "workspace:^",
     "@sovereign-sdk/universal-wallet-wasm": "workspace:^"
   },
   "devDependencies": {

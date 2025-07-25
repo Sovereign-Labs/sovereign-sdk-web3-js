@@ -144,6 +144,9 @@ importers:
       '@sovereign-sdk/universal-wallet-wasm':
         specifier: workspace:^
         version: link:../universal-wallet-wasm
+      '@sovereign-sdk/utils':
+        specifier: workspace:^
+        version: link:../utils
       bech32:
         specifier: ^2.0.0
         version: 2.0.0

@@ -63,7 +63,7 @@ export class BorshWriter {
   writeI64(value: bigint | number): void {
     const bigValue = typeof value === "number" ? BigInt(value) : value;
     if (
-      bigValue < BigInt("-0x8000000000000000") ||
+      bigValue < -BigInt("0x8000000000000000") ||
       bigValue > BigInt("0x7fffffffffffffff")
     ) {
       throw new Error(`Invalid i64 value: ${bigValue}`);
