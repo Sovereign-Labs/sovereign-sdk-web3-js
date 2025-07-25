@@ -1,16 +1,17 @@
+import { bytesToHex } from "@sovereign-sdk/utils";
 import { describe, expect, it, test } from "vitest";
 import demoRollupSchema from "../../__fixtures__/demo-rollup-schema.json";
-import demoRollupVectors from "./vectors/demo-rollup";
-import { loadUniversalWalletVectors } from "./vectors/universal-wallet";
 import { JsSerializer, type RollupSchema } from "../src";
 import { WasmSerializer } from "../src/wasm";
-import { bytesToHex } from "@sovereign-sdk/utils";
+import demoRollupVectors from "./vectors/demo-rollup";
+import { loadUniversalWalletVectors } from "./vectors/universal-wallet";
 
 const universalWalletTests = loadUniversalWalletVectors();
-// Sometimes we might not have the test vectors locally
-// in this case just let the test pass
+// Sometimes we might not have the test vectors locally or in web3 repo
+// in this case just let the test pass. These tests are mostly for running
+// in the main SDK repo.
 const skipUniversalWallet =
-  universalWalletTests.length === 0 && process.env.CI !== "true";
+  universalWalletTests.length === 0 && process.env.SOV_TESTING_CI !== "true";
 
 function getSerializers(schema: RollupSchema) {
   return { js: new JsSerializer(schema), wasm: new WasmSerializer(schema) };
@@ -32,9 +33,9 @@ describe("differential", () => {
       ({ call }) => {
         const { js, wasm } = getSerializers(demoRollupSchema);
         expect(js.serializeRuntimeCall(call)).toEqual(
-          wasm.serializeRuntimeCall(call)
+          wasm.serializeRuntimeCall(call),
         );
-      }
+      },
     );
   });
 });
