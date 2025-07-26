@@ -10,7 +10,13 @@ export default defineConfig({
   test: {
     coverage: {
       provider: "v8",
-      include: includePackages("web3", "signers", "utils", "modules"),
+      include: includePackages(
+        "web3",
+        "signers",
+        "utils",
+        "modules",
+        "serializers"
+      ),
     },
   },
 });
