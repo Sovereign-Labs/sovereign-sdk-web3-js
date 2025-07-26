@@ -1,5 +1,8 @@
+import { describe, expect, test } from "vitest";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { bytesToHex } from "@sovereign-sdk/utils";
+import { JsSerializer } from "../src";
 
 interface TestVector {
   name: string;
@@ -8,9 +11,9 @@ interface TestVector {
   schema: string;
 }
 
-const vectorDir = path.join(import.meta.dirname, "universal-wallet-outputs");
+const vectorDir = path.join(import.meta.dirname, "vectors", "universal-wallet");
 
-export function loadUniversalWalletVectors(): TestVector[] {
+function loadUniversalWalletVectors(): TestVector[] {
   const result = [];
   const files = fs.readdirSync(vectorDir);
 
@@ -30,3 +33,11 @@ export function loadUniversalWalletVectors(): TestVector[] {
 
   return result;
 }
+
+describe("universal wallet", () => {
+  test.each(loadUniversalWalletVectors())("$name", ({ name, ...vector }) => {
+    const js = new JsSerializer(JSON.parse(vector.schema));
+    const actual = bytesToHex(js.serialize(vector.input, 0));
+    expect(actual).toEqual(vector.output);
+  });
+});

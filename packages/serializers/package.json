@@ -5,6 +5,7 @@
   "scripts": {
     "build": "tsup",
     "test": "vitest",
+    "test:universal-wallet": "vitest run --config ./vitest.universal-wallet.config.ts",
     "ci": "biome ci",
     "fix": "biome check --write",
     "lint": "biome lint"
