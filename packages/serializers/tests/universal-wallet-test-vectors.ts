@@ -18,8 +18,6 @@ function loadUniversalWalletVectors(): TestVector[] {
   const files = fs.readdirSync(vectorDir);
 
   for (const file of files) {
-    if (file === ".gitkeep") continue;
-
     const content = fs.readFileSync(path.join(vectorDir, file), "utf8");
     const test = JSON.parse(content);
 
