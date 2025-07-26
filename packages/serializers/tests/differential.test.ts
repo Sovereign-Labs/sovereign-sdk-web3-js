@@ -12,9 +12,9 @@ describe("differential", () => {
         const js = new JsSerializer(demoRollupSchema);
         const wasm = new WasmSerializer(demoRollupSchema);
         expect(js.serializeRuntimeCall(call)).toEqual(
-          wasm.serializeRuntimeCall(call)
+          wasm.serializeRuntimeCall(call),
         );
-      }
+      },
     );
   });
 });

@@ -3,6 +3,7 @@
  * It is used to serialize and deserialize the types.
  * As well as display them in a human-readable way that is verified by the rollup.
  */
+// biome-ignore lint/suspicious/noExplicitAny: types arent used
 export type RollupSchema = Record<string, any>;
 
 export enum KnownTypeId {

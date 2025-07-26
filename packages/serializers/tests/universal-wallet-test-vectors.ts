@@ -1,7 +1,7 @@
-import { describe, expect, test } from "vitest";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { bytesToHex } from "@sovereign-sdk/utils";
+import { describe, expect, test } from "vitest";
 import { JsSerializer } from "../src";
 
 interface TestVector {
