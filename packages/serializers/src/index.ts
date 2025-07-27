@@ -1,2 +1,2 @@
-export * from "./vibes";
+export * from "./js";
 export * from "./serializer";
