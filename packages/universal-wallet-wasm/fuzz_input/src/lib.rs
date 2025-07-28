@@ -1,13 +1,14 @@
 use sov_modules_api::macros::UniversalWallet;
 use sov_modules_api::prelude::serde::{Deserialize, Serialize};
+use sov_modules_api::SafeString;
 use sov_universal_wallet::schema::Schema;
 use wasm_bindgen::prelude::*;
 
 #[derive(Serialize, Deserialize, UniversalWallet)]
 pub enum StringInput {
-    Hex(String),
-    Base58(String),
-    Any(String),
+    Hex(SafeString),
+    Base58(SafeString),
+    Any(SafeString),
 }
 
 #[derive(Serialize, Deserialize, UniversalWallet)]
