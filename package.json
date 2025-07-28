@@ -19,7 +19,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@changesets/cli": "^2.27.9"
+    "@changesets/cli": "^2.27.9",
+    "@turnkey/api-key-stamper": "^0.4.7",
+    "@turnkey/http": "^3.5.1",
+    "ethers": "^6.15.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.2",
