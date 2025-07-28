@@ -1,6 +1,8 @@
 use sov_modules_api::macros::UniversalWallet;
-use sov_modules_api::prelude::serde::{Serialize, Deserialize}
+use sov_modules_api::prelude::serde::{Deserialize, Serialize};
+use sov_modules_api::prelude::*;
 use sov_universal_wallet::schema::Schema;
+use sov_universal_wallet::
 use wasm_bindgen::prelude::*;
 
 #[derive(Serialize, Deserialize, UniversalWallet)]
