@@ -6,6 +6,7 @@
     "build": "tsup",
     "test": "vitest",
     "test:universal-wallet": "vitest run --config ./vitest.universal-wallet.config.ts",
+    "test:fuzz": "tsx tests/fuzz.ts",
     "ci": "biome ci",
     "fix": "biome check --write",
     "lint": "biome lint"
@@ -35,6 +36,7 @@
   "devDependencies": {
     "tsup": "^8.3.0",
     "typescript": "^5.6.3",
+    "tsx": "^4.0.0",
     "vitest": "^3.0.5"
   },
   "publishConfig": {

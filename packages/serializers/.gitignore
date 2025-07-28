@@ -1,1 +1,3 @@
 tests/vectors/universal-wallet
+fuzz-report.json
+fuzz-failures/

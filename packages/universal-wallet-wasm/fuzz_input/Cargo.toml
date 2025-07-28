@@ -3,18 +3,18 @@ name = "fuzz_input"
 version = "0.1.0"
 edition = "2021"
 
-[lib]
-crate-type = ["cdylib"]
+[[bin]]
+name = "fuzz_input"
+path = "src/main.rs"
 
 [dependencies]
 arbitrary = { version = "1.3.2", features = ["derive"] }
-wasm-bindgen = "0.2.93"
-js-sys = "0.3.77"
 serde = { version = "1.0.208", default-features = false, features = [
   "alloc",
   "derive",
 ] }
-serde-wasm-bindgen = "0.6.5"
+serde_json = "1.0"
+rand = "0.8"
 sov-universal-wallet = { git = "ssh://git@github.com/Sovereign-Labs/sovereign-sdk-wip.git", rev = "44e5da4b2986978e4eae50ad0a18e57dbceb4000", package = "sov-universal-wallet", features = [
   "serde",
 ] }
