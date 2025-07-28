@@ -50,9 +50,19 @@ enum ByteInput {
 }
 
 #[derive(Serialize, Deserialize, UniversalWallet, Arbitrary)]
+enum NumberInput {
+    U8(u8),
+    U16(u16),
+    U32(u32),
+    U64(u64),
+    U128(u128),
+}
+
+#[derive(Serialize, Deserialize, UniversalWallet, Arbitrary)]
 enum FuzzInput {
     String(ArbitrarySafeString),
     Byte(ByteInput),
+    Number(NumberInput),
 }
 
 fn generate_schema() -> Result<String, Box<dyn std::error::Error>> {

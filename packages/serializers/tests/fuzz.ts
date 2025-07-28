@@ -7,6 +7,20 @@ import { WasmSerializer } from "../src/wasm.js";
 
 const execAsync = promisify(exec);
 
+function isEqualBytes(bytes1: Uint8Array, bytes2: Uint8Array): boolean {
+  if (bytes1.length !== bytes2.length) {
+    return false;
+  }
+
+  for (let i = 0; i < bytes1.length; i++) {
+    if (bytes1[i] !== bytes2[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 const FUZZ_INPUT_BINARY_PATH = path.join(
   __dirname,
   "..",
@@ -21,7 +35,7 @@ const FUZZ_INPUT_BINARY_PATH = path.join(
 interface Failure {
   iteration: number;
   timestamp: string;
-  input?: object;
+  input?: string;
   error?: string;
   stack?: string;
 }
@@ -80,20 +94,22 @@ class FuzzTester {
 
   async generateInput() {
     const { stdout } = await execAsync(`${FUZZ_INPUT_BINARY_PATH}`);
-    return JSON.parse(stdout);
+    return stdout;
   }
 
   async runSingleTest() {
     try {
       const input = await this.generateInput();
-      const jsResult = this.js!.serialize(input, 0);
-      const wasmResult = this.wasm!.serialize(input, 0);
+      const jsResult = (this.js! as any).jsonToBorsh(input, 0);
+      const wasmResult = (this.wasm! as any).jsonToBorsh(input, 0);
 
-      if (JSON.stringify(jsResult) !== JSON.stringify(wasmResult)) {
+      if (!isEqualBytes(jsResult, wasmResult)) {
         const failure = {
           iteration: this.stats.iterations,
           timestamp: new Date().toISOString(),
           input,
+          js: jsResult,
+          wasmResult: wasmResult,
         };
 
         this.stats.failures.push(failure);
@@ -208,11 +224,6 @@ class FuzzTester {
 
     console.log("\n=== FUZZ TEST REPORT ===");
     console.table(report.summary);
-    // console.log(`Total iterations: ${report.summary.totalIterations}`);
-    // console.log(`Total time: ${report.summary.totalTime}`);
-    // console.log(`Rate: ${report.summary.rate}`);
-    // console.log(`Failures: ${report.summary.failures}`);
-    // console.log(`Success rate: ${report.summary.successRate}`);
 
     if (this.options.saveFailures && report.summary.failures > 0) {
       await fs.writeFile("fuzz-report.json", JSON.stringify(report, null, 2));
