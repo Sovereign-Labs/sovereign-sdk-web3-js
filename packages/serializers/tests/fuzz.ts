@@ -15,7 +15,7 @@ const FUZZ_INPUT_BINARY_PATH = path.join(
   "fuzz_input",
   "target",
   "release",
-  "fuzz_input",
+  "fuzz_input"
 );
 
 interface Failure {
@@ -154,7 +154,7 @@ class FuzzTester {
       const rate = ((this.stats.iterations / elapsed) * 1000).toFixed(2);
 
       console.log(
-        `Progress: ${this.stats.iterations} iterations, ${rate} iter/sec, ${this.stats.failures.length} failures`,
+        `Progress: ${this.stats.iterations} iterations, ${rate} iter/sec, ${this.stats.failures.length} failures`
       );
       this.stats.lastReportTime = now;
     }
@@ -168,14 +168,14 @@ class FuzzTester {
     console.log(
       `Max iterations: ${
         maxIterations === Number.POSITIVE_INFINITY ? "unlimited" : maxIterations
-      }`,
+      }`
     );
     console.log(
       `Max duration: ${
         maxDuration === Number.POSITIVE_INFINITY
           ? "unlimited"
           : `${maxDuration / 1000}s`
-      }`,
+      }`
     );
 
     while (this.shouldContinue()) {
@@ -200,20 +200,21 @@ class FuzzTester {
         successRate: `${(
           ((this.stats.iterations - this.stats.failures.length) /
             this.stats.iterations) *
-            100
+          100
         ).toFixed(2)}%`,
       },
       failures: this.stats.failures,
     };
 
     console.log("\n=== FUZZ TEST REPORT ===");
-    console.log(`Total iterations: ${report.summary.totalIterations}`);
-    console.log(`Total time: ${report.summary.totalTime}`);
-    console.log(`Rate: ${report.summary.rate}`);
-    console.log(`Failures: ${report.summary.failures}`);
-    console.log(`Success rate: ${report.summary.successRate}`);
+    console.table(report.summary);
+    // console.log(`Total iterations: ${report.summary.totalIterations}`);
+    // console.log(`Total time: ${report.summary.totalTime}`);
+    // console.log(`Rate: ${report.summary.rate}`);
+    // console.log(`Failures: ${report.summary.failures}`);
+    // console.log(`Success rate: ${report.summary.successRate}`);
 
-    if (this.options.saveFailures) {
+    if (this.options.saveFailures && report.summary.failures > 0) {
       await fs.writeFile("fuzz-report.json", JSON.stringify(report, null, 2));
       console.log("Report saved to: fuzz-report.json");
     }
