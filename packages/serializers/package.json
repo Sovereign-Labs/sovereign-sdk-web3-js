@@ -1,0 +1,43 @@
+{
+  "name": "@sovereign-sdk/serializers",
+  "version": "0.0.0",
+  "description": "A package providing serialization for types used by Sovereign SDK apps",
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest",
+    "test:universal-wallet": "vitest run --config ./vitest.universal-wallet.config.ts",
+    "ci": "biome ci",
+    "fix": "biome check --write",
+    "lint": "biome lint"
+  },
+  "repository": "github:Sovereign-Labs/sovereign-sdk-web3-js",
+  "files": ["dist", "README.md", "package.json"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    },
+    "./wasm": {
+      "types": "./dist/wasm.d.ts",
+      "require": "./dist/wasm.js",
+      "import": "./dist/wasm.mjs"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "bech32": "^2.0.0",
+    "@sovereign-sdk/utils": "workspace:^",
+    "@sovereign-sdk/universal-wallet-wasm": "workspace:^"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3",
+    "vitest": "^3.0.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
