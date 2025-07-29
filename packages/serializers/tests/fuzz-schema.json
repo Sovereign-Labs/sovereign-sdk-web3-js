@@ -1,0 +1,452 @@
+{
+  "types": [
+    {
+      "Enum": {
+        "type_name": "FuzzInput",
+        "variants": [
+          {
+            "name": "String",
+            "discriminant": 0,
+            "template": null,
+            "value": {
+              "ByIndex": 1
+            }
+          },
+          {
+            "name": "Byte",
+            "discriminant": 1,
+            "template": null,
+            "value": {
+              "ByIndex": 3
+            }
+          },
+          {
+            "name": "Number",
+            "discriminant": 2,
+            "template": null,
+            "value": {
+              "ByIndex": 9
+            }
+          }
+        ],
+        "hide_tag": false
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 2
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "Immediate": "String"
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 4
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Enum": {
+        "type_name": "ByteInput",
+        "variants": [
+          {
+            "name": "Hex",
+            "discriminant": 0,
+            "template": null,
+            "value": {
+              "ByIndex": 5
+            }
+          },
+          {
+            "name": "Base58",
+            "discriminant": 1,
+            "template": null,
+            "value": {
+              "ByIndex": 7
+            }
+          },
+          {
+            "name": "Decimal",
+            "discriminant": 2,
+            "template": null,
+            "value": {
+              "ByIndex": 8
+            }
+          }
+        ],
+        "hide_tag": false
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 6
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "ByteVec": {
+                  "display": "Hex"
+                }
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 6
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 6
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 10
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Enum": {
+        "type_name": "NumberInput",
+        "variants": [
+          {
+            "name": "U8",
+            "discriminant": 0,
+            "template": null,
+            "value": {
+              "ByIndex": 11
+            }
+          },
+          {
+            "name": "U16",
+            "discriminant": 1,
+            "template": null,
+            "value": {
+              "ByIndex": 12
+            }
+          },
+          {
+            "name": "U32",
+            "discriminant": 2,
+            "template": null,
+            "value": {
+              "ByIndex": 13
+            }
+          },
+          {
+            "name": "U64",
+            "discriminant": 3,
+            "template": null,
+            "value": {
+              "ByIndex": 14
+            }
+          },
+          {
+            "name": "U128",
+            "discriminant": 4,
+            "template": null,
+            "value": {
+              "ByIndex": 15
+            }
+          }
+        ],
+        "hide_tag": false
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": [
+                  "u8",
+                  "Decimal"
+                ]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": [
+                  "u16",
+                  "Decimal"
+                ]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": [
+                  "u32",
+                  "Decimal"
+                ]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": [
+                  "u128",
+                  "Decimal"
+                ]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    }
+  ],
+  "root_type_indices": [
+    0
+  ],
+  "chain_data": {
+    "chain_id": 0,
+    "chain_name": ""
+  },
+  "templates": [
+    {}
+  ],
+  "serde_metadata": [
+    {
+      "name": "FuzzInput",
+      "fields_or_variants": [
+        {
+          "name": "String"
+        },
+        {
+          "name": "Byte"
+        },
+        {
+          "name": "Number"
+        }
+      ]
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "ByteInput",
+      "fields_or_variants": [
+        {
+          "name": "Hex"
+        },
+        {
+          "name": "Base58"
+        },
+        {
+          "name": "Decimal"
+        }
+      ]
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "NumberInput",
+      "fields_or_variants": [
+        {
+          "name": "U8"
+        },
+        {
+          "name": "U16"
+        },
+        {
+          "name": "U32"
+        },
+        {
+          "name": "U64"
+        },
+        {
+          "name": "U128"
+        }
+      ]
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    }
+  ]
+}
