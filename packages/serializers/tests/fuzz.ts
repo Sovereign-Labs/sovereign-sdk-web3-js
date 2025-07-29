@@ -98,8 +98,9 @@ class FuzzTester {
   }
 
   async runSingleTest() {
+    const input = await this.generateInput();
+
     try {
-      const input = await this.generateInput();
       const jsResult = (this.js! as any).jsonToBorsh(input, 0);
       const wasmResult = (this.wasm! as any).jsonToBorsh(input, 0);
 
@@ -130,6 +131,7 @@ class FuzzTester {
         timestamp: new Date().toISOString(),
         error: (error as Error).message,
         stack: (error as Error).stack,
+        input,
       };
 
       this.stats.failures.push(failure);

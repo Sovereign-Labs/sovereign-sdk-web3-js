@@ -5,7 +5,7 @@
         "type_name": "FuzzInput",
         "variants": [
           {
-            "name": "String",
+            "name": "Bool",
             "discriminant": 0,
             "template": null,
             "value": {
@@ -13,19 +13,27 @@
             }
           },
           {
-            "name": "Byte",
+            "name": "String",
             "discriminant": 1,
             "template": null,
             "value": {
-              "ByIndex": 3
+              "ByIndex": 2
+            }
+          },
+          {
+            "name": "Byte",
+            "discriminant": 2,
+            "template": null,
+            "value": {
+              "ByIndex": 4
             }
           },
           {
             "name": "Number",
-            "discriminant": 2,
+            "discriminant": 3,
             "template": null,
             "value": {
-              "ByIndex": 9
+              "ByIndex": 10
             }
           }
         ],
@@ -39,7 +47,22 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 2
+              "Immediate": "Boolean"
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 3
             },
             "silent": false,
             "doc": ""
@@ -69,7 +92,7 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 4
+              "ByIndex": 5
             },
             "silent": false,
             "doc": ""
@@ -86,7 +109,7 @@
             "discriminant": 0,
             "template": null,
             "value": {
-              "ByIndex": 5
+              "ByIndex": 6
             }
           },
           {
@@ -94,7 +117,7 @@
             "discriminant": 1,
             "template": null,
             "value": {
-              "ByIndex": 7
+              "ByIndex": 8
             }
           },
           {
@@ -102,7 +125,7 @@
             "discriminant": 2,
             "template": null,
             "value": {
-              "ByIndex": 8
+              "ByIndex": 9
             }
           }
         ],
@@ -116,7 +139,7 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 6
+              "ByIndex": 7
             },
             "silent": false,
             "doc": ""
@@ -150,7 +173,7 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 6
+              "ByIndex": 7
             },
             "silent": false,
             "doc": ""
@@ -165,7 +188,7 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 6
+              "ByIndex": 7
             },
             "silent": false,
             "doc": ""
@@ -180,7 +203,7 @@
         "fields": [
           {
             "value": {
-              "ByIndex": 10
+              "ByIndex": 11
             },
             "silent": false,
             "doc": ""
@@ -197,7 +220,7 @@
             "discriminant": 0,
             "template": null,
             "value": {
-              "ByIndex": 11
+              "ByIndex": 12
             }
           },
           {
@@ -205,7 +228,7 @@
             "discriminant": 1,
             "template": null,
             "value": {
-              "ByIndex": 12
+              "ByIndex": 13
             }
           },
           {
@@ -213,7 +236,7 @@
             "discriminant": 2,
             "template": null,
             "value": {
-              "ByIndex": 13
+              "ByIndex": 14
             }
           },
           {
@@ -221,7 +244,7 @@
             "discriminant": 3,
             "template": null,
             "value": {
-              "ByIndex": 14
+              "ByIndex": 15
             }
           },
           {
@@ -229,7 +252,55 @@
             "discriminant": 4,
             "template": null,
             "value": {
-              "ByIndex": 15
+              "ByIndex": 16
+            }
+          },
+          {
+            "name": "I8",
+            "discriminant": 5,
+            "template": null,
+            "value": {
+              "ByIndex": 21
+            }
+          },
+          {
+            "name": "I16",
+            "discriminant": 6,
+            "template": null,
+            "value": {
+              "ByIndex": 22
+            }
+          },
+          {
+            "name": "I32",
+            "discriminant": 7,
+            "template": null,
+            "value": {
+              "ByIndex": 23
+            }
+          },
+          {
+            "name": "I64",
+            "discriminant": 8,
+            "template": null,
+            "value": {
+              "ByIndex": 24
+            }
+          },
+          {
+            "name": "I128",
+            "discriminant": 9,
+            "template": null,
+            "value": {
+              "ByIndex": 25
+            }
+          },
+          {
+            "name": "F32",
+            "discriminant": 10,
+            "template": null,
+            "value": {
+              "ByIndex": 30
             }
           }
         ],
@@ -244,10 +315,7 @@
           {
             "value": {
               "Immediate": {
-                "Integer": [
-                  "u8",
-                  "Decimal"
-                ]
+                "Integer": ["u8", "Decimal"]
               }
             },
             "silent": false,
@@ -264,10 +332,7 @@
           {
             "value": {
               "Immediate": {
-                "Integer": [
-                  "u16",
-                  "Decimal"
-                ]
+                "Integer": ["u16", "Decimal"]
               }
             },
             "silent": false,
@@ -284,10 +349,7 @@
           {
             "value": {
               "Immediate": {
-                "Integer": [
-                  "u32",
-                  "Decimal"
-                ]
+                "Integer": ["u32", "Decimal"]
               }
             },
             "silent": false,
@@ -304,10 +366,110 @@
           {
             "value": {
               "Immediate": {
-                "Integer": [
-                  "u64",
-                  "Decimal"
-                ]
+                "Integer": ["u64", "Decimal"]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 17
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Enum": {
+        "type_name": "SizedU128",
+        "variants": [
+          {
+            "name": "Small",
+            "discriminant": 0,
+            "template": null,
+            "value": {
+              "ByIndex": 18
+            }
+          },
+          {
+            "name": "Large",
+            "discriminant": 1,
+            "template": null,
+            "value": {
+              "ByIndex": 19
+            }
+          }
+        ],
+        "hide_tag": false
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": ["u128", "Decimal"]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 20
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "Immediate": "String"
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": ["i8", "Decimal"]
               }
             },
             "silent": false,
@@ -324,11 +486,143 @@
           {
             "value": {
               "Immediate": {
-                "Integer": [
-                  "u128",
-                  "Decimal"
-                ]
+                "Integer": ["i16", "Decimal"]
               }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": ["i32", "Decimal"]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": ["i64", "Decimal"]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 26
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Enum": {
+        "type_name": "SizedI128",
+        "variants": [
+          {
+            "name": "Small",
+            "discriminant": 0,
+            "template": null,
+            "value": {
+              "ByIndex": 27
+            }
+          },
+          {
+            "name": "Large",
+            "discriminant": 1,
+            "template": null,
+            "value": {
+              "ByIndex": 28
+            }
+          }
+        ],
+        "hide_tag": false
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": ["i128", "Decimal"]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "ByIndex": 29
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "Immediate": "String"
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "Immediate": "Float32"
             },
             "silent": false,
             "doc": ""
@@ -337,20 +631,19 @@
       }
     }
   ],
-  "root_type_indices": [
-    0
-  ],
+  "root_type_indices": [0],
   "chain_data": {
     "chain_id": 0,
     "chain_name": ""
   },
-  "templates": [
-    {}
-  ],
+  "templates": [{}],
   "serde_metadata": [
     {
       "name": "FuzzInput",
       "fields_or_variants": [
+        {
+          "name": "Bool"
+        },
         {
           "name": "String"
         },
@@ -361,6 +654,10 @@
           "name": "Number"
         }
       ]
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
     },
     {
       "name": "",
@@ -425,6 +722,24 @@
         },
         {
           "name": "U128"
+        },
+        {
+          "name": "I8"
+        },
+        {
+          "name": "I16"
+        },
+        {
+          "name": "I32"
+        },
+        {
+          "name": "I64"
+        },
+        {
+          "name": "I128"
+        },
+        {
+          "name": "F32"
         }
       ]
     },
@@ -447,6 +762,77 @@
     {
       "name": "",
       "fields_or_variants": []
+    },
+    {
+      "name": "SizedU128",
+      "fields_or_variants": [
+        {
+          "name": "Small"
+        },
+        {
+          "name": "Large"
+        }
+      ]
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "SizedI128",
+      "fields_or_variants": [
+        {
+          "name": "Small"
+        },
+        {
+          "name": "Large"
+        }
+      ]
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
     }
   ]
 }
+

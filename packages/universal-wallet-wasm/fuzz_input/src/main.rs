@@ -6,6 +6,9 @@ use sov_modules_api::SafeString;
 use sov_universal_wallet::schema::safe_string::DEFAULT_MAX_STRING_LENGTH;
 use sov_universal_wallet::schema::Schema;
 
+const JS_MAX_SAFE_INTEGER: u128 = 9_007_199_254_740_991;
+const JS_MIN_SAFE_INTEGER: i128 = -9_007_199_254_740_991;
+
 // arbitrary isn't implemented for safe string
 #[derive(Serialize, Deserialize, UniversalWallet)]
 struct ArbitrarySafeString(SafeString);
@@ -49,17 +52,71 @@ enum ByteInput {
     Decimal(#[sov_wallet(display(decimal))] LargeVec),
 }
 
+#[derive(Serialize, Deserialize, UniversalWallet)]
+struct U128String(SafeString);
+
+#[derive(Serialize, Deserialize, UniversalWallet)]
+enum SizedU128 {
+    Small(u128),
+    Large(U128String),
+}
+
+impl Arbitrary<'_> for SizedU128 {
+    fn arbitrary(u: &mut Unstructured<'_>) -> arbitrary::Result<Self> {
+        let value: u128 = u.arbitrary()?;
+
+        if value > JS_MAX_SAFE_INTEGER {
+            Ok(Self::Large(U128String(
+                value.to_string().try_into().unwrap(),
+            )))
+        } else {
+            Ok(Self::Small(value))
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, UniversalWallet)]
+struct I128String(SafeString);
+
+#[derive(Serialize, Deserialize, UniversalWallet)]
+enum SizedI128 {
+    Small(i128),
+    Large(I128String),
+}
+
+impl Arbitrary<'_> for SizedI128 {
+    fn arbitrary(u: &mut Unstructured<'_>) -> arbitrary::Result<Self> {
+        let value: i128 = u.arbitrary()?;
+
+        if value < JS_MIN_SAFE_INTEGER || (value > 0 && value as u128 > JS_MAX_SAFE_INTEGER) {
+            Ok(Self::Large(I128String(
+                value.to_string().try_into().unwrap(),
+            )))
+        } else {
+            Ok(Self::Small(value))
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, UniversalWallet, Arbitrary)]
 enum NumberInput {
     U8(u8),
     U16(u16),
     U32(u32),
     U64(u64),
-    U128(u128),
+    U128(SizedU128),
+    I8(i8),
+    I16(i16),
+    I32(i32),
+    I64(i64),
+    I128(SizedI128),
+    F32(f32),
+    //floats
 }
 
 #[derive(Serialize, Deserialize, UniversalWallet, Arbitrary)]
 enum FuzzInput {
+    Bool(bool),
     String(ArbitrarySafeString),
     Byte(ByteInput),
     Number(NumberInput),
