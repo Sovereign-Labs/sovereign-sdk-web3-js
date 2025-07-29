@@ -230,6 +230,11 @@ class FuzzTester {
       console.log("Report saved to: fuzz-report.json");
     }
 
+    await fs.writeFile(
+      "tests/fuzz-schema.json",
+      JSON.stringify(this.schema, null, 2)
+    );
+
     return report;
   }
 }
