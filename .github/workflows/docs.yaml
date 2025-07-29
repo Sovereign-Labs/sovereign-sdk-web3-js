@@ -29,8 +29,6 @@ jobs:
         run: pnpm install
       - name: Build
         run: pnpm build
-        env:
-          CARGO_NET_GIT_FETCH_WITH_CLI: true
       - name: Build docs
         run: pnpm run docs
       - name: Upload static files as artifact
