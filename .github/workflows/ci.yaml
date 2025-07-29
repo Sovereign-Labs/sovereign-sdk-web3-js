@@ -30,6 +30,8 @@ jobs:
         # Need to build wasm package first
       - name: Build
         run: pnpm build
+        env:
+          CARGO_NET_GIT_FETCH_WITH_CLI: true
       - name: Test
         run: pnpm coverage
         env:

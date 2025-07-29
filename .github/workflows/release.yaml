@@ -34,6 +34,8 @@ jobs:
         run: pnpm install
       - name: Build
         run: pnpm build
+        env:
+          CARGO_NET_GIT_FETCH_WITH_CLI: true
       - name: Run Tests
         run: pnpm test
       - name: Create Release Pull Request or Publish to npm
