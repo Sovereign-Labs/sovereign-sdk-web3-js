@@ -4,6 +4,7 @@ import fuzzSchema from "./fuzz-schema.json";
 import { JsSerializer } from "../src";
 import { WasmSerializer } from "../src/wasm";
 import demoRollupVectors from "./vectors/demo-rollup";
+import { BorshWriter } from "../src/js/borsh-writer";
 
 function compare(
   input: string,
@@ -32,9 +33,19 @@ describe("differential", () => {
     );
   });
   describe("edge cases", () => {
-    it("f32", () => {
-      const input = '{\n  "Number": {\n    "F32": null\n  }\n}\n';
-      compare(input);
+    // when converting f64 to and from JSON we _can_ lose precision, particularly with serde_json
+    // this is a hardcoded test to ensure we match pretty well with other borsh JS implementations
+    // and some Rust implementations. I say _some_ because I could get this test to match in the
+    // rust playground but locally the serde json would lose precision. We do match other JS borsh impls.
+    //
+    // Without the JSON conversion the f64 serialization matches local serde json.
+    it("f64 precision loss", () => {
+      const input = -1.6957752620278725e-254;
+      const writer = new BorshWriter();
+      writer.writeF64(input);
+      expect(writer.toUint8Array()).toEqual(
+        new Uint8Array([204, 144, 21, 22, 225, 211, 63, 139])
+      );
     });
     it("u64", () => {
       const input = '{\n  "Number": {\n    "U64": 559839644179607271\n  }\n}\n';

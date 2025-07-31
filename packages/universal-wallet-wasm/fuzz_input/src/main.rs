@@ -31,25 +31,27 @@ impl Arbitrary<'_> for ArbitrarySafeString {
 }
 
 #[derive(Serialize, Deserialize, UniversalWallet)]
-struct LargeVec(Vec<u8>);
+struct LargeVec<T>(Vec<T>);
 
-impl Arbitrary<'_> for LargeVec {
+impl<T> Arbitrary<'_> for LargeVec<T>
+where
+    T: for<'a> Arbitrary<'a>,
+{
     fn arbitrary(u: &mut Unstructured<'_>) -> arbitrary::Result<Self> {
-        // Generate vectors with 10-100 elements
         let len = u.int_in_range(5..=100)?;
         let mut vec = Vec::with_capacity(len);
         for _ in 0..len {
-            vec.push(u8::arbitrary(u)?);
+            vec.push(T::arbitrary(u)?);
         }
         Ok(LargeVec(vec))
     }
 }
 
 #[derive(Serialize, Deserialize, UniversalWallet, Arbitrary)]
-enum ByteInput {
-    Hex(#[sov_wallet(display(hex))] LargeVec),
-    Base58(#[sov_wallet(display(base58))] LargeVec),
-    Decimal(#[sov_wallet(display(decimal))] LargeVec),
+enum ByteVecInput {
+    Hex(#[sov_wallet(display(hex))] LargeVec<u8>),
+    Base58(#[sov_wallet(display(base58))] LargeVec<u8>),
+    Decimal(#[sov_wallet(display(decimal))] LargeVec<u8>),
 }
 
 #[derive(Serialize, Deserialize, UniversalWallet)]
@@ -98,6 +100,29 @@ impl Arbitrary<'_> for SizedI128 {
     }
 }
 
+#[derive(Serialize, Deserialize, UniversalWallet)]
+struct FiniteF32(f32);
+
+impl Arbitrary<'_> for FiniteF32 {
+    fn arbitrary(u: &mut Unstructured<'_>) -> arbitrary::Result<Self> {
+        let val: f32 = u.arbitrary()?;
+
+        let finite_val = if val.is_infinite() {
+            if val.is_sign_positive() {
+                f32::MAX
+            } else {
+                f32::MIN
+            }
+        } else if val.is_nan() {
+            0.0
+        } else {
+            val
+        };
+
+        Ok(FiniteF32(finite_val))
+    }
+}
+
 #[derive(Serialize, Deserialize, UniversalWallet, Arbitrary)]
 enum NumberInput {
     U8(u8),
@@ -110,16 +135,32 @@ enum NumberInput {
     I32(i32),
     I64(i64),
     I128(SizedI128),
-    F32(f32),
-    //floats
+    F32(FiniteF32),
+    // theres precision loss when converting the value from JSON string to f64 in rust
+    // without the JSON conversion the serializations matches
+    // F64(f64),
 }
 
 #[derive(Serialize, Deserialize, UniversalWallet, Arbitrary)]
 enum FuzzInput {
     Bool(bool),
     String(ArbitrarySafeString),
-    Byte(ByteInput),
+    ByteVec(ByteVecInput),
+    // Vec
+    // Array
+    // ByteArray
+    // Map
     Number(NumberInput),
+    InlineStruct {
+        field: u32,
+        name: ArbitrarySafeString,
+    },
+    MultiTuple(i8, Option<u8>),
+    SkippedField {
+        #[sov_wallet(skip)]
+        skipper: u8,
+        not_skipped: u8,
+    },
 }
 
 fn generate_schema() -> Result<String, Box<dyn std::error::Error>> {

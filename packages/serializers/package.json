@@ -36,11 +36,9 @@
   "dependencies": {
     "@sovereign-sdk/universal-wallet-wasm": "workspace:^",
     "@sovereign-sdk/utils": "workspace:^",
-    "bech32": "^2.0.0",
-    "json-bigint": "^1.0.0"
+    "bech32": "^2.0.0"
   },
   "devDependencies": {
-    "@types/json-bigint": "^1.0.4",
     "tsup": "^8.3.0",
     "tsx": "^4.0.0",
     "typescript": "^5.6.3",

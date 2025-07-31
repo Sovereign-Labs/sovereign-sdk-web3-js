@@ -12,9 +12,7 @@ import {
   type TupleType,
   type Ty,
 } from "./types";
-import jsonb from "json-bigint";
-
-const JSONB = jsonb({ useNativeBigInt: true });
+import { JSONParse } from "./bigjson.js";
 
 interface Context {
   value: any;
@@ -57,12 +55,7 @@ export class JsonToBorshConverter {
   private convert(typeIndex: number, jsonInput: string): Uint8Array {
     let parsedInput: any;
     try {
-      parsedInput = JSONB.parse(jsonInput, (_key, value) => {
-        if (typeof value === "number" && !Number.isInteger(value)) {
-          return value.toString();
-        }
-        return value;
-      });
+      parsedInput = JSONParse(jsonInput);
     } catch (error) {
       throw new SerializationError(`Invalid JSON: ${error}`, "Json");
     }
@@ -197,14 +190,12 @@ export class JsonToBorshConverter {
 
     // Handle variant value
     if (variant.value) {
-      console.log(variant);
-      // Ross: handle f32 being null
-      // if (innerValue === null || innerValue === undefined) {
-      //   throw new SerializationError(
-      //     `Expected type or field ${enumType.type_name}.${variant.name} data, but it was not present`,
-      //     "MissingType"
-      //   );
-      // }
+      if (innerValue === null || innerValue === undefined) {
+        throw new SerializationError(
+          `Expected type or field ${enumType.type_name}.${variant.name} data, but it was not present`,
+          "MissingType"
+        );
+      }
       const innerType = this.resolveLink(variant.value);
       const innerContext: Context = {
         value: innerValue,

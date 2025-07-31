@@ -35,6 +35,30 @@
             "value": {
               "ByIndex": 10
             }
+          },
+          {
+            "name": "InlineStruct",
+            "discriminant": 4,
+            "template": null,
+            "value": {
+              "ByIndex": 32
+            }
+          },
+          {
+            "name": "MultiTuple",
+            "discriminant": 5,
+            "template": null,
+            "value": {
+              "ByIndex": 33
+            }
+          },
+          {
+            "name": "SkippedField",
+            "discriminant": 6,
+            "template": null,
+            "value": {
+              "ByIndex": 35
+            }
           }
         ],
         "hide_tag": false
@@ -315,7 +339,10 @@
           {
             "value": {
               "Immediate": {
-                "Integer": ["u8", "Decimal"]
+                "Integer": [
+                  "u8",
+                  "Decimal"
+                ]
               }
             },
             "silent": false,
@@ -332,7 +359,10 @@
           {
             "value": {
               "Immediate": {
-                "Integer": ["u16", "Decimal"]
+                "Integer": [
+                  "u16",
+                  "Decimal"
+                ]
               }
             },
             "silent": false,
@@ -349,7 +379,10 @@
           {
             "value": {
               "Immediate": {
-                "Integer": ["u32", "Decimal"]
+                "Integer": [
+                  "u32",
+                  "Decimal"
+                ]
               }
             },
             "silent": false,
@@ -366,7 +399,10 @@
           {
             "value": {
               "Immediate": {
-                "Integer": ["u64", "Decimal"]
+                "Integer": [
+                  "u64",
+                  "Decimal"
+                ]
               }
             },
             "silent": false,
@@ -422,7 +458,10 @@
           {
             "value": {
               "Immediate": {
-                "Integer": ["u128", "Decimal"]
+                "Integer": [
+                  "u128",
+                  "Decimal"
+                ]
               }
             },
             "silent": false,
@@ -469,7 +508,10 @@
           {
             "value": {
               "Immediate": {
-                "Integer": ["i8", "Decimal"]
+                "Integer": [
+                  "i8",
+                  "Decimal"
+                ]
               }
             },
             "silent": false,
@@ -486,7 +528,10 @@
           {
             "value": {
               "Immediate": {
-                "Integer": ["i16", "Decimal"]
+                "Integer": [
+                  "i16",
+                  "Decimal"
+                ]
               }
             },
             "silent": false,
@@ -503,7 +548,10 @@
           {
             "value": {
               "Immediate": {
-                "Integer": ["i32", "Decimal"]
+                "Integer": [
+                  "i32",
+                  "Decimal"
+                ]
               }
             },
             "silent": false,
@@ -520,7 +568,10 @@
           {
             "value": {
               "Immediate": {
-                "Integer": ["i64", "Decimal"]
+                "Integer": [
+                  "i64",
+                  "Decimal"
+                ]
               }
             },
             "silent": false,
@@ -576,7 +627,10 @@
           {
             "value": {
               "Immediate": {
-                "Integer": ["i128", "Decimal"]
+                "Integer": [
+                  "i128",
+                  "Decimal"
+                ]
               }
             },
             "silent": false,
@@ -622,6 +676,21 @@
         "fields": [
           {
             "value": {
+              "ByIndex": 31
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
               "Immediate": "Float32"
             },
             "silent": false,
@@ -629,14 +698,122 @@
           }
         ]
       }
+    },
+    {
+      "Struct": {
+        "type_name": "__SovVirtualWallet_FuzzInput_InlineStruct",
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "display_name": "field",
+            "silent": false,
+            "value": {
+              "Immediate": {
+                "Integer": [
+                  "u32",
+                  "Decimal"
+                ]
+              }
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "name",
+            "silent": false,
+            "value": {
+              "ByIndex": 3
+            },
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Tuple": {
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "value": {
+              "Immediate": {
+                "Integer": [
+                  "i8",
+                  "Decimal"
+                ]
+              }
+            },
+            "silent": false,
+            "doc": ""
+          },
+          {
+            "value": {
+              "ByIndex": 34
+            },
+            "silent": false,
+            "doc": ""
+          }
+        ]
+      }
+    },
+    {
+      "Option": {
+        "value": {
+          "Immediate": {
+            "Integer": [
+              "u8",
+              "Decimal"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "Struct": {
+        "type_name": "__SovVirtualWallet_FuzzInput_SkippedField",
+        "template": null,
+        "peekable": false,
+        "fields": [
+          {
+            "display_name": "skipper",
+            "silent": false,
+            "value": {
+              "Immediate": {
+                "Integer": [
+                  "u8",
+                  "Decimal"
+                ]
+              }
+            },
+            "doc": ""
+          },
+          {
+            "display_name": "not_skipped",
+            "silent": false,
+            "value": {
+              "Immediate": {
+                "Integer": [
+                  "u8",
+                  "Decimal"
+                ]
+              }
+            },
+            "doc": ""
+          }
+        ]
+      }
     }
   ],
-  "root_type_indices": [0],
+  "root_type_indices": [
+    0
+  ],
   "chain_data": {
     "chain_id": 0,
     "chain_name": ""
   },
-  "templates": [{}],
+  "templates": [
+    {}
+  ],
   "serde_metadata": [
     {
       "name": "FuzzInput",
@@ -652,6 +829,15 @@
         },
         {
           "name": "Number"
+        },
+        {
+          "name": "InlineStruct"
+        },
+        {
+          "name": "MultiTuple"
+        },
+        {
+          "name": "SkippedField"
         }
       ]
     },
@@ -832,7 +1018,40 @@
     {
       "name": "",
       "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "__SovVirtualWallet_FuzzInput_InlineStruct",
+      "fields_or_variants": [
+        {
+          "name": "field"
+        },
+        {
+          "name": "name"
+        }
+      ]
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "",
+      "fields_or_variants": []
+    },
+    {
+      "name": "__SovVirtualWallet_FuzzInput_SkippedField",
+      "fields_or_variants": [
+        {
+          "name": "skipper"
+        },
+        {
+          "name": "not_skipped"
+        }
+      ]
     }
   ]
 }
-

@@ -90,6 +90,11 @@ class FuzzTester {
     this.js = new JsSerializer(this.schema!);
     this.wasm = new WasmSerializer(this.schema!);
     console.log("Schema loaded successfully");
+
+    await fs.writeFile(
+      "tests/fuzz-schema.json",
+      JSON.stringify(this.schema, null, 2)
+    );
   }
 
   async generateInput() {
@@ -231,11 +236,6 @@ class FuzzTester {
       await fs.writeFile("fuzz-report.json", JSON.stringify(report, null, 2));
       console.log("Report saved to: fuzz-report.json");
     }
-
-    await fs.writeFile(
-      "tests/fuzz-schema.json",
-      JSON.stringify(this.schema, null, 2)
-    );
 
     return report;
   }
