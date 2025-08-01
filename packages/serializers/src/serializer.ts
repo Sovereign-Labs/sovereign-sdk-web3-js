@@ -70,7 +70,7 @@ export abstract class Serializer {
   serializeRuntimeCall(input: unknown): Uint8Array {
     return this.serialize(
       input,
-      this.lookupKnownTypeIndex(KnownTypeId.RuntimeCall)
+      this.lookupKnownTypeIndex(KnownTypeId.RuntimeCall),
     );
   }
 
@@ -83,7 +83,7 @@ export abstract class Serializer {
   serializeUnsignedTx(input: unknown): Uint8Array {
     return this.serialize(
       input,
-      this.lookupKnownTypeIndex(KnownTypeId.UnsignedTransaction)
+      this.lookupKnownTypeIndex(KnownTypeId.UnsignedTransaction),
     );
   }
 
@@ -96,7 +96,7 @@ export abstract class Serializer {
   serializeTx(input: unknown): Uint8Array {
     return this.serialize(
       input,
-      this.lookupKnownTypeIndex(KnownTypeId.Transaction)
+      this.lookupKnownTypeIndex(KnownTypeId.Transaction),
     );
   }
 
