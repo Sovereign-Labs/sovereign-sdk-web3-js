@@ -1,5 +1,12 @@
 # @sovereign-sdk/signers
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [55729b5]
+  - @sovereign-sdk/utils@0.0.4
+
 ## 0.2.0
 
 ### Minor Changes
