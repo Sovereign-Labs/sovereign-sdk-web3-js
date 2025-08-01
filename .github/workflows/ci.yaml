@@ -23,9 +23,6 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.2.5
-      - uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_SOV_SDK_WIP }}
       - name: Install dependencies
         run: pnpm install
       - name: Lint and Format
@@ -35,8 +32,6 @@ jobs:
         run: pnpm build
       - name: Test
         run: pnpm coverage
-        env:
-          CARGO_NET_GIT_FETCH_WITH_CLI: true
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v4
         with:
