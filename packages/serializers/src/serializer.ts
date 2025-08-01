@@ -56,7 +56,9 @@ export abstract class Serializer {
    * @returns The serialized Borsh bytes.
    */
   serialize(input: unknown, index: number): Uint8Array {
-    return this.jsonToBorsh(input, index);
+    // Allows supplying `Uint8Array` for byte array fields in the schema
+    const obj = convertUint8ArraysToArrays(input);
+    return this.jsonToBorsh(obj, index);
   }
 
   /**
@@ -68,7 +70,7 @@ export abstract class Serializer {
   serializeRuntimeCall(input: unknown): Uint8Array {
     return this.serialize(
       input,
-      this.lookupKnownTypeIndex(KnownTypeId.RuntimeCall),
+      this.lookupKnownTypeIndex(KnownTypeId.RuntimeCall)
     );
   }
 
@@ -81,7 +83,7 @@ export abstract class Serializer {
   serializeUnsignedTx(input: unknown): Uint8Array {
     return this.serialize(
       input,
-      this.lookupKnownTypeIndex(KnownTypeId.UnsignedTransaction),
+      this.lookupKnownTypeIndex(KnownTypeId.UnsignedTransaction)
     );
   }
 
@@ -94,7 +96,7 @@ export abstract class Serializer {
   serializeTx(input: unknown): Uint8Array {
     return this.serialize(
       input,
-      this.lookupKnownTypeIndex(KnownTypeId.Transaction),
+      this.lookupKnownTypeIndex(KnownTypeId.Transaction)
     );
   }
 
@@ -104,4 +106,38 @@ export abstract class Serializer {
   }
 
   // TODO: create from http
+}
+
+/**
+ * Performs deep traversal of the provided object and replaces all
+ * `Uint8Array` instances with `Array`s to make them compatible
+ * with `universal-wallet` serialization schemas.
+ *
+ * We do this for `Uint8Array` so it can be passed for `ByteVec` / `ByteArray` fields.
+ */
+export function convertUint8ArraysToArrays<T>(obj: T): T {
+  if (obj === null || obj === undefined) {
+    return obj;
+  }
+
+  if (obj instanceof Uint8Array) {
+    return Array.from(obj) as unknown as T;
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => convertUint8ArraysToArrays(item)) as unknown as T;
+  }
+
+  if (typeof obj === "object" && obj.constructor === Object) {
+    const result: Record<string, unknown> = {};
+    for (const key in obj) {
+      // biome-ignore lint/suspicious/noPrototypeBuiltins: hasOwn not available
+      if (obj.hasOwnProperty(key)) {
+        result[key] = convertUint8ArraysToArrays(obj[key]);
+      }
+    }
+    return result as T;
+  }
+
+  return obj;
 }
