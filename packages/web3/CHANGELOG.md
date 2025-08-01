@@ -1,5 +1,14 @@
 # @sovereign-sdk/web3
 
+## 0.8.1
+
+### Patch Changes
+
+- Updated dependencies [55729b5]
+  - @sovereign-sdk/universal-wallet-wasm@0.4.0
+  - @sovereign-sdk/utils@0.0.4
+  - @sovereign-sdk/signers@0.2.1
+
 ## 0.8.0
 
 ### Minor Changes

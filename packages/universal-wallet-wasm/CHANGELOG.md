@@ -1,5 +1,11 @@
 # @sovereign-sdk/universal-wallet-wasm
 
+## 0.4.0
+
+### Minor Changes
+
+- 55729b5: Fixes various serialization edge-cases in both the WASM and pure JS serializer implementations
+
 ## 0.3.0
 
 ### Minor Changes
