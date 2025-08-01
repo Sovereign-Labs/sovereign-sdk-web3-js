@@ -39,7 +39,7 @@ export abstract class Serializer {
     this._schema = schema;
   }
 
-  protected abstract jsonToBorsh(input: string, index: number): Uint8Array;
+  protected abstract jsonToBorsh(input: unknown, index: number): Uint8Array;
 
   private lookupKnownTypeIndex(id: KnownTypeId): number {
     return this._schema.root_type_indices[id];
@@ -56,14 +56,7 @@ export abstract class Serializer {
    * @returns The serialized Borsh bytes.
    */
   serialize(input: unknown, index: number): Uint8Array {
-    const inputJson = JSON.stringify(input, (_, value) => {
-      if (value instanceof Uint8Array) {
-        return Array.from(value);
-      }
-      return value;
-    });
-
-    return this.jsonToBorsh(inputJson, index);
+    return this.jsonToBorsh(input, index);
   }
 
   /**

@@ -12,7 +12,6 @@ import {
   type TupleType,
   type Ty,
 } from "./types";
-import { JSONParse } from "./bigjson.js";
 
 interface Context {
   value: any;
@@ -31,35 +30,24 @@ export class JsonToBorshConverter {
   static convertToBytes(
     schema: Schema,
     typeIndex: number,
-    jsonInput: string
+    input: unknown
   ): Uint8Array {
     const converter = new JsonToBorshConverter(schema);
-    return converter.convert(typeIndex, jsonInput);
+    return converter.convert(typeIndex, input);
   }
 
   static convertToHex(
     schema: Schema,
     typeIndex: number,
-    jsonInput: string
+    input: unknown
   ): string {
-    const bytes = JsonToBorshConverter.convertToBytes(
-      schema,
-      typeIndex,
-      jsonInput
-    );
+    const bytes = JsonToBorshConverter.convertToBytes(schema, typeIndex, input);
     return Array.from(bytes)
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
   }
 
-  private convert(typeIndex: number, jsonInput: string): Uint8Array {
-    let parsedInput: any;
-    try {
-      parsedInput = JSONParse(jsonInput);
-    } catch (error) {
-      throw new SerializationError(`Invalid JSON: ${error}`, "Json");
-    }
-
+  private convert(typeIndex: number, input: unknown): Uint8Array {
     const ty = this.schema.types[typeIndex];
     if (!ty) {
       throw new SerializationError(
@@ -69,7 +57,7 @@ export class JsonToBorshConverter {
     }
 
     const context: Context = {
-      value: parsedInput,
+      value: input,
       currentLink: { ByIndex: typeIndex },
     };
 
@@ -190,12 +178,6 @@ export class JsonToBorshConverter {
 
     // Handle variant value
     if (variant.value) {
-      if (innerValue === null || innerValue === undefined) {
-        throw new SerializationError(
-          `Expected type or field ${enumType.type_name}.${variant.name} data, but it was not present`,
-          "MissingType"
-        );
-      }
       const innerType = this.resolveLink(variant.value);
       const innerContext: Context = {
         value: innerValue,
@@ -403,14 +385,18 @@ export class JsonToBorshConverter {
     if (typeof context.value === "number") {
       value = context.value;
     } else if (typeof context.value === "string") {
-      value = Number.parseFloat(context.value);
-      if (isNaN(value)) {
-        throw new SerializationError(
-          `Expected f32, encountered invalid JSON value ${JSON.stringify(
-            context.value
-          )}`,
-          "InvalidType"
-        );
+      if (context.value.startsWith("0x")) {
+        value = this.hexToFloat(context.value, 32);
+      } else {
+        value = Number.parseFloat(context.value);
+        if (isNaN(value)) {
+          throw new SerializationError(
+            `Expected f32, encountered invalid JSON value ${JSON.stringify(
+              context.value
+            )}`,
+            "InvalidType"
+          );
+        }
       }
     } else {
       throw new SerializationError(
@@ -440,14 +426,18 @@ export class JsonToBorshConverter {
     if (typeof context.value === "number") {
       value = context.value;
     } else if (typeof context.value === "string") {
-      value = Number.parseFloat(context.value);
-      if (isNaN(value)) {
-        throw new SerializationError(
-          `Expected f64, encountered invalid JSON value ${JSON.stringify(
-            context.value
-          )}`,
-          "InvalidType"
-        );
+      if (context.value.startsWith("0x")) {
+        value = this.hexToFloat(context.value, 64);
+      } else {
+        value = Number.parseFloat(context.value);
+        if (isNaN(value)) {
+          throw new SerializationError(
+            `Expected f64, encountered invalid JSON value ${JSON.stringify(
+              context.value
+            )}`,
+            "InvalidType"
+          );
+        }
       }
     } else {
       throw new SerializationError(
@@ -695,6 +685,15 @@ export class JsonToBorshConverter {
     return "Integer" in ty;
   }
 
+  private hexToFloat(hexString: string, precision = 32): number {
+    const hex = hexString.replace(/^0x/, "");
+    const bytes = hex.match(/.{2}/g)!.map((b) => parseInt(b, 16));
+    const view = new DataView(new Uint8Array(bytes).buffer);
+    return precision === 64
+      ? view.getFloat64(0, true)
+      : view.getFloat32(0, true);
+  }
+
   private resolveLink(link: Link): Ty {
     if (typeof link === "string") {
       throw new SerializationError(
@@ -761,7 +760,7 @@ export class JsonToBorshConverter {
 export function jsonToBorsh(
   schema: Schema,
   typeIndex: number,
-  jsonInput: string
+  input: unknown
 ): Uint8Array {
-  return JsonToBorshConverter.convertToBytes(schema, typeIndex, jsonInput);
+  return JsonToBorshConverter.convertToBytes(schema, typeIndex, input);
 }

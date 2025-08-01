@@ -4,8 +4,10 @@ import { Serializer } from "./serializer";
 export * from "./serializer";
 
 export class WasmSerializer extends Serializer {
-  protected jsonToBorsh(input: string, index: number): Uint8Array {
+  protected jsonToBorsh(input: unknown, index: number): Uint8Array {
+    const jsonString =
+      typeof input === "string" ? input : JSON.stringify(input);
     const schema = Schema.fromJSON(JSON.stringify(this._schema));
-    return schema.jsonToBorsh(index, input);
+    return schema.jsonToBorsh(index, jsonString);
   }
 }

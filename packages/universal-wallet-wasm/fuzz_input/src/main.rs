@@ -83,7 +83,8 @@ struct I128String(SafeString);
 #[derive(Serialize, Deserialize, UniversalWallet)]
 enum SizedI128 {
     Small(i128),
-    Large(I128String),
+    Large(I128String), // This is ineffective we're actually just using a string schema not i128 as
+                       // string
 }
 
 impl Arbitrary<'_> for SizedI128 {
@@ -157,6 +158,7 @@ enum FuzzInput {
     },
     MultiTuple(i8, Option<u8>),
     SkippedField {
+        // borsh(skip)
         #[sov_wallet(skip)]
         skipper: u8,
         not_skipped: u8,
@@ -169,7 +171,7 @@ fn generate_schema() -> Result<String, Box<dyn std::error::Error>> {
     Ok(serde_json::to_string_pretty(&schema)?)
 }
 
-fn generate_input() -> Result<String, Box<dyn std::error::Error>> {
+fn generate_test_case() -> Result<String, Box<dyn std::error::Error>> {
     let mut rng = rand::thread_rng();
     let mut data = vec![0u8; 4096];
     rng.fill(&mut data[..]);
@@ -193,7 +195,7 @@ fn main() {
             }
         }
     } else {
-        match generate_input() {
+        match generate_test_case() {
             Ok(input) => println!("{}", input),
             Err(e) => {
                 eprintln!("Error generating input: {}", e);

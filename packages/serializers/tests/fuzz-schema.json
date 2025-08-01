@@ -339,10 +339,7 @@
           {
             "value": {
               "Immediate": {
-                "Integer": [
-                  "u8",
-                  "Decimal"
-                ]
+                "Integer": ["u8", "Decimal"]
               }
             },
             "silent": false,
@@ -359,10 +356,7 @@
           {
             "value": {
               "Immediate": {
-                "Integer": [
-                  "u16",
-                  "Decimal"
-                ]
+                "Integer": ["u16", "Decimal"]
               }
             },
             "silent": false,
@@ -379,10 +373,7 @@
           {
             "value": {
               "Immediate": {
-                "Integer": [
-                  "u32",
-                  "Decimal"
-                ]
+                "Integer": ["u32", "Decimal"]
               }
             },
             "silent": false,
@@ -399,10 +390,7 @@
           {
             "value": {
               "Immediate": {
-                "Integer": [
-                  "u64",
-                  "Decimal"
-                ]
+                "Integer": ["u64", "Decimal"]
               }
             },
             "silent": false,
@@ -458,10 +446,7 @@
           {
             "value": {
               "Immediate": {
-                "Integer": [
-                  "u128",
-                  "Decimal"
-                ]
+                "Integer": ["u128", "Decimal"]
               }
             },
             "silent": false,
@@ -508,10 +493,7 @@
           {
             "value": {
               "Immediate": {
-                "Integer": [
-                  "i8",
-                  "Decimal"
-                ]
+                "Integer": ["i8", "Decimal"]
               }
             },
             "silent": false,
@@ -528,10 +510,7 @@
           {
             "value": {
               "Immediate": {
-                "Integer": [
-                  "i16",
-                  "Decimal"
-                ]
+                "Integer": ["i16", "Decimal"]
               }
             },
             "silent": false,
@@ -548,10 +527,7 @@
           {
             "value": {
               "Immediate": {
-                "Integer": [
-                  "i32",
-                  "Decimal"
-                ]
+                "Integer": ["i32", "Decimal"]
               }
             },
             "silent": false,
@@ -568,10 +544,7 @@
           {
             "value": {
               "Immediate": {
-                "Integer": [
-                  "i64",
-                  "Decimal"
-                ]
+                "Integer": ["i64", "Decimal"]
               }
             },
             "silent": false,
@@ -627,10 +600,7 @@
           {
             "value": {
               "Immediate": {
-                "Integer": [
-                  "i128",
-                  "Decimal"
-                ]
+                "Integer": ["i128", "Decimal"]
               }
             },
             "silent": false,
@@ -710,10 +680,7 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": [
-                  "u32",
-                  "Decimal"
-                ]
+                "Integer": ["u32", "Decimal"]
               }
             },
             "doc": ""
@@ -737,10 +704,7 @@
           {
             "value": {
               "Immediate": {
-                "Integer": [
-                  "i8",
-                  "Decimal"
-                ]
+                "Integer": ["i8", "Decimal"]
               }
             },
             "silent": false,
@@ -760,10 +724,7 @@
       "Option": {
         "value": {
           "Immediate": {
-            "Integer": [
-              "u8",
-              "Decimal"
-            ]
+            "Integer": ["u8", "Decimal"]
           }
         }
       }
@@ -779,10 +740,7 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": [
-                  "u8",
-                  "Decimal"
-                ]
+                "Integer": ["u8", "Decimal"]
               }
             },
             "doc": ""
@@ -792,10 +750,7 @@
             "silent": false,
             "value": {
               "Immediate": {
-                "Integer": [
-                  "u8",
-                  "Decimal"
-                ]
+                "Integer": ["u8", "Decimal"]
               }
             },
             "doc": ""
@@ -804,16 +759,12 @@
       }
     }
   ],
-  "root_type_indices": [
-    0
-  ],
+  "root_type_indices": [0],
   "chain_data": {
     "chain_id": 0,
     "chain_name": ""
   },
-  "templates": [
-    {}
-  ],
+  "templates": [{}],
   "serde_metadata": [
     {
       "name": "FuzzInput",
