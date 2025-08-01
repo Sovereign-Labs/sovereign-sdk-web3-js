@@ -314,7 +314,7 @@ export class JsonToBorshConverter {
       value = context.value;
     } else if (typeof context.value === "string") {
       try {
-        if (integerType.includes("128")) {
+        if (integerType.includes("128") || integerType.includes("64")) {
           value = BigInt(context.value);
         } else {
           const parsed = Number.parseInt(context.value, 10);
