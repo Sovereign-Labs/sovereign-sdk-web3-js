@@ -30,45 +30,34 @@ export class JsonToBorshConverter {
   static convertToBytes(
     schema: Schema,
     typeIndex: number,
-    jsonInput: string,
+    input: unknown
   ): Uint8Array {
     const converter = new JsonToBorshConverter(schema);
-    return converter.convert(typeIndex, jsonInput);
+    return converter.convert(typeIndex, input);
   }
 
   static convertToHex(
     schema: Schema,
     typeIndex: number,
-    jsonInput: string,
+    input: unknown
   ): string {
-    const bytes = JsonToBorshConverter.convertToBytes(
-      schema,
-      typeIndex,
-      jsonInput,
-    );
+    const bytes = JsonToBorshConverter.convertToBytes(schema, typeIndex, input);
     return Array.from(bytes)
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
   }
 
-  private convert(typeIndex: number, jsonInput: string): Uint8Array {
-    let parsedInput: any;
-    try {
-      parsedInput = JSON.parse(jsonInput);
-    } catch (error) {
-      throw new SerializationError(`Invalid JSON: ${error}`, "Json");
-    }
-
+  private convert(typeIndex: number, input: unknown): Uint8Array {
     const ty = this.schema.types[typeIndex];
     if (!ty) {
       throw new SerializationError(
         `Invalid type index: ${typeIndex}`,
-        "InvalidIndex",
+        "InvalidIndex"
       );
     }
 
     const context: Context = {
-      value: parsedInput,
+      value: input,
       currentLink: { ByIndex: typeIndex },
     };
 
@@ -104,7 +93,7 @@ export class JsonToBorshConverter {
     } else {
       throw new SerializationError(
         `Unknown type: ${JSON.stringify(ty)}`,
-        "InvalidType",
+        "InvalidType"
       );
     }
   }
@@ -126,7 +115,7 @@ export class JsonToBorshConverter {
       default:
         throw new SerializationError(
           `Unknown primitive type: ${ty}`,
-          "InvalidType",
+          "InvalidType"
         );
     }
   }
@@ -142,7 +131,7 @@ export class JsonToBorshConverter {
       if (keys.length !== 1) {
         throw new SerializationError(
           `Invalid enum encoding: expected single variant, found object with ${keys.length} JSON properties`,
-          "MalformedEnum",
+          "MalformedEnum"
         );
       }
       discriminant = keys[0];
@@ -152,7 +141,7 @@ export class JsonToBorshConverter {
         `Expected enum ${
           enumType.type_name
         }, encountered invalid JSON value ${JSON.stringify(context.value)}`,
-        "InvalidType",
+        "InvalidType"
       );
     }
 
@@ -161,18 +150,18 @@ export class JsonToBorshConverter {
     if (!metadata) {
       throw new SerializationError(
         `Type ${enumType.type_name} did not have serde metadata present in the schema`,
-        "MissingMetadata",
+        "MissingMetadata"
       );
     }
 
     // Find the variant
     const variantIndex = metadata.fields_or_variants.findIndex(
-      (v) => v.name === discriminant,
+      (v) => v.name === discriminant
     );
     if (variantIndex === -1) {
       throw new SerializationError(
         `Invalid discriminant \`${discriminant}\` for ${enumType.type_name}`,
-        "InvalidDiscriminant",
+        "InvalidDiscriminant"
       );
     }
 
@@ -180,7 +169,7 @@ export class JsonToBorshConverter {
     if (!variant) {
       throw new SerializationError(
         `Invalid discriminant \`${discriminant}\` for ${enumType.type_name}`,
-        "InvalidDiscriminant",
+        "InvalidDiscriminant"
       );
     }
 
@@ -189,12 +178,6 @@ export class JsonToBorshConverter {
 
     // Handle variant value
     if (variant.value) {
-      if (innerValue === null || innerValue === undefined) {
-        throw new SerializationError(
-          `Expected type or field ${enumType.type_name}.${variant.name} data, but it was not present`,
-          "MissingType",
-        );
-      }
       const innerType = this.resolveLink(variant.value);
       const innerContext: Context = {
         value: innerValue,
@@ -204,9 +187,9 @@ export class JsonToBorshConverter {
     } else if (innerValue !== null && innerValue !== undefined) {
       throw new SerializationError(
         `The JSON contained an unexpected extra value: ${JSON.stringify(
-          innerValue,
+          innerValue
         )}`,
-        "UnusedInput",
+        "UnusedInput"
       );
     }
   }
@@ -217,9 +200,9 @@ export class JsonToBorshConverter {
         `Expected ${
           structType.type_name
         } struct, encountered invalid JSON value ${JSON.stringify(
-          context.value,
+          context.value
         )}`,
-        "InvalidType",
+        "InvalidType"
       );
     }
 
@@ -228,7 +211,7 @@ export class JsonToBorshConverter {
     if (!metadata) {
       throw new SerializationError(
         `Type ${structType.type_name} did not have serde metadata present in the schema`,
-        "MissingMetadata",
+        "MissingMetadata"
       );
     }
 
@@ -239,7 +222,7 @@ export class JsonToBorshConverter {
       if (!(fieldSerde.name in jsonFields)) {
         throw new SerializationError(
           `Expected type or field ${structType.type_name}.${field.display_name}, but it was not present`,
-          "MissingType",
+          "MissingType"
         );
       }
 
@@ -258,9 +241,9 @@ export class JsonToBorshConverter {
     if (remainingKeys.length > 0) {
       throw new SerializationError(
         `The JSON contained an unexpected extra value: ${JSON.stringify(
-          jsonFields,
+          jsonFields
         )}`,
-        "UnusedInput",
+        "UnusedInput"
       );
     }
   }
@@ -279,16 +262,16 @@ export class JsonToBorshConverter {
       if (!Array.isArray(context.value)) {
         throw new SerializationError(
           `Expected array, encountered invalid JSON value ${JSON.stringify(
-            context.value,
+            context.value
           )}`,
-          "InvalidType",
+          "InvalidType"
         );
       }
 
       if (context.value.length !== tupleType.fields.length) {
         throw new SerializationError(
           `Expected an array of size ${tupleType.fields.length}, but only found ${context.value.length} elements in the JSON`,
-          "WrongArrayLength",
+          "WrongArrayLength"
         );
       }
 
@@ -321,15 +304,17 @@ export class JsonToBorshConverter {
   private visitInteger(
     integerType: IntegerType,
     _display: any,
-    context: Context,
+    context: Context
   ): void {
     let value: number | bigint;
 
     if (typeof context.value === "number") {
       value = context.value;
+    } else if (typeof context.value === "bigint") {
+      value = context.value;
     } else if (typeof context.value === "string") {
       try {
-        if (integerType.includes("128")) {
+        if (integerType.includes("128") || integerType.includes("64")) {
           value = BigInt(context.value);
         } else {
           const parsed = Number.parseInt(context.value, 10);
@@ -341,17 +326,17 @@ export class JsonToBorshConverter {
       } catch {
         throw new SerializationError(
           `Expected ${integerType}, encountered invalid JSON value ${JSON.stringify(
-            context.value,
+            context.value
           )}`,
-          "InvalidType",
+          "InvalidType"
         );
       }
     } else {
       throw new SerializationError(
         `Expected ${integerType}, encountered invalid JSON value ${JSON.stringify(
-          context.value,
+          context.value
         )}`,
-        "InvalidType",
+        "InvalidType"
       );
     }
 
@@ -389,7 +374,7 @@ export class JsonToBorshConverter {
       default:
         throw new SerializationError(
           `Unknown integer type: ${integerType}`,
-          "InvalidType",
+          "InvalidType"
         );
     }
   }
@@ -400,21 +385,25 @@ export class JsonToBorshConverter {
     if (typeof context.value === "number") {
       value = context.value;
     } else if (typeof context.value === "string") {
-      value = Number.parseFloat(context.value);
-      if (isNaN(value)) {
-        throw new SerializationError(
-          `Expected f32, encountered invalid JSON value ${JSON.stringify(
-            context.value,
-          )}`,
-          "InvalidType",
-        );
+      if (context.value.startsWith("0x")) {
+        value = this.hexToFloat(context.value, 32);
+      } else {
+        value = Number.parseFloat(context.value);
+        if (isNaN(value)) {
+          throw new SerializationError(
+            `Expected f32, encountered invalid JSON value ${JSON.stringify(
+              context.value
+            )}`,
+            "InvalidType"
+          );
+        }
       }
     } else {
       throw new SerializationError(
         `Expected f32, encountered invalid JSON value ${JSON.stringify(
-          context.value,
+          context.value
         )}`,
-        "InvalidType",
+        "InvalidType"
       );
     }
 
@@ -422,9 +411,9 @@ export class JsonToBorshConverter {
     if (!Number.isFinite(value)) {
       throw new SerializationError(
         `Expected f32, encountered invalid JSON value ${JSON.stringify(
-          context.value,
+          context.value
         )}`,
-        "InvalidType",
+        "InvalidType"
       );
     }
 
@@ -437,21 +426,25 @@ export class JsonToBorshConverter {
     if (typeof context.value === "number") {
       value = context.value;
     } else if (typeof context.value === "string") {
-      value = Number.parseFloat(context.value);
-      if (isNaN(value)) {
-        throw new SerializationError(
-          `Expected f64, encountered invalid JSON value ${JSON.stringify(
-            context.value,
-          )}`,
-          "InvalidType",
-        );
+      if (context.value.startsWith("0x")) {
+        value = this.hexToFloat(context.value, 64);
+      } else {
+        value = Number.parseFloat(context.value);
+        if (isNaN(value)) {
+          throw new SerializationError(
+            `Expected f64, encountered invalid JSON value ${JSON.stringify(
+              context.value
+            )}`,
+            "InvalidType"
+          );
+        }
       }
     } else {
       throw new SerializationError(
         `Expected f64, encountered invalid JSON value ${JSON.stringify(
-          context.value,
+          context.value
         )}`,
-        "InvalidType",
+        "InvalidType"
       );
     }
 
@@ -462,9 +455,9 @@ export class JsonToBorshConverter {
     if (typeof context.value !== "string") {
       throw new SerializationError(
         `Expected String, encountered invalid JSON value ${JSON.stringify(
-          context.value,
+          context.value
         )}`,
-        "InvalidType",
+        "InvalidType"
       );
     }
     this.writer.writeString(context.value);
@@ -483,17 +476,17 @@ export class JsonToBorshConverter {
       } else {
         throw new SerializationError(
           `Expected bool, encountered invalid JSON value ${JSON.stringify(
-            context.value,
+            context.value
           )}`,
-          "InvalidType",
+          "InvalidType"
         );
       }
     } else {
       throw new SerializationError(
         `Expected bool, encountered invalid JSON value ${JSON.stringify(
-          context.value,
+          context.value
         )}`,
-        "InvalidType",
+        "InvalidType"
       );
     }
 
@@ -508,9 +501,9 @@ export class JsonToBorshConverter {
         if (typeof v !== "number" || v < 0 || v > 255 || !Number.isInteger(v)) {
           throw new SerializationError(
             `Expected byte, encountered invalid JSON value ${JSON.stringify(
-              v,
+              v
             )}`,
-            "InvalidType",
+            "InvalidType"
           );
         }
         return v;
@@ -518,21 +511,21 @@ export class JsonToBorshConverter {
     } else if (typeof context.value === "string") {
       bytes = byteDisplay.parse(
         context.currentLink.Immediate.ByteArray.display,
-        context.value,
+        context.value
       );
     } else {
       throw new SerializationError(
         `Expected byte array, encountered invalid JSON value ${JSON.stringify(
-          context.value,
+          context.value
         )}`,
-        "InvalidType",
+        "InvalidType"
       );
     }
 
     if (bytes.length !== len) {
       throw new SerializationError(
         `Expected an array of size ${len}, but only found ${bytes.length} elements in the JSON`,
-        "WrongArrayLength",
+        "WrongArrayLength"
       );
     }
 
@@ -549,9 +542,9 @@ export class JsonToBorshConverter {
         if (typeof v !== "number" || v < 0 || v > 255 || !Number.isInteger(v)) {
           throw new SerializationError(
             `Expected byte, encountered invalid JSON value ${JSON.stringify(
-              v,
+              v
             )}`,
-            "InvalidType",
+            "InvalidType"
           );
         }
         return v;
@@ -559,14 +552,14 @@ export class JsonToBorshConverter {
     } else if (typeof context.value === "string") {
       bytes = byteDisplay.parse(
         context.currentLink.Immediate.ByteArray.display,
-        context.value,
+        context.value
       );
     } else {
       throw new SerializationError(
         `Expected byte vector, encountered invalid JSON value ${JSON.stringify(
-          context.value,
+          context.value
         )}`,
-        "InvalidType",
+        "InvalidType"
       );
     }
 
@@ -580,16 +573,16 @@ export class JsonToBorshConverter {
     if (!Array.isArray(context.value)) {
       throw new SerializationError(
         `Expected array, encountered invalid JSON value ${JSON.stringify(
-          context.value,
+          context.value
         )}`,
-        "InvalidType",
+        "InvalidType"
       );
     }
 
     if (context.value.length !== len) {
       throw new SerializationError(
         `Expected an array of size ${len}, but only found ${context.value.length} elements in the JSON`,
-        "WrongArrayLength",
+        "WrongArrayLength"
       );
     }
 
@@ -607,16 +600,16 @@ export class JsonToBorshConverter {
     if (!Array.isArray(context.value)) {
       throw new SerializationError(
         `Expected vector, encountered invalid JSON value ${JSON.stringify(
-          context.value,
+          context.value
         )}`,
-        "InvalidType",
+        "InvalidType"
       );
     }
 
     if (context.value.length > 0xffffffff) {
       throw new SerializationError(
         `Only array sizes that fit into u32 are supported; input contained size ${context.value.length}`,
-        "InvalidVecLength",
+        "InvalidVecLength"
       );
     }
 
@@ -639,20 +632,20 @@ export class JsonToBorshConverter {
     ) {
       throw new SerializationError(
         `Expected map, encountered invalid JSON value ${JSON.stringify(
-          context.value,
+          context.value
         )}`,
-        "InvalidType",
+        "InvalidType"
       );
     }
 
     // Sort entries by key to ensure deterministic ordering (matching Rust behavior)
     const entries = Object.entries(context.value).sort(([a], [b]) =>
-      a.localeCompare(b),
+      a.localeCompare(b)
     );
     if (entries.length > 0xffffffff) {
       throw new SerializationError(
         `Only array sizes that fit into u32 are supported; input contained size ${entries.length}`,
-        "InvalidVecLength",
+        "InvalidVecLength"
       );
     }
 
@@ -692,11 +685,20 @@ export class JsonToBorshConverter {
     return "Integer" in ty;
   }
 
+  private hexToFloat(hexString: string, precision = 32): number {
+    const hex = hexString.replace(/^0x/, "");
+    const bytes = hex.match(/.{2}/g)!.map((b) => parseInt(b, 16));
+    const view = new DataView(new Uint8Array(bytes).buffer);
+    return precision === 64
+      ? view.getFloat64(0, true)
+      : view.getFloat32(0, true);
+  }
+
   private resolveLink(link: Link): Ty {
     if (typeof link === "string") {
       throw new SerializationError(
         `Unresolved placeholder link: ${link}`,
-        "UnresolvedType",
+        "UnresolvedType"
       );
     }
 
@@ -705,7 +707,7 @@ export class JsonToBorshConverter {
       if (!ty) {
         throw new SerializationError(
           `Invalid type index: ${link.ByIndex}`,
-          "UnresolvedType",
+          "UnresolvedType"
         );
       }
       return ty;
@@ -714,7 +716,7 @@ export class JsonToBorshConverter {
     } else {
       throw new SerializationError(
         `Unresolved placeholder link: ${JSON.stringify(link)}`,
-        "UnresolvedType",
+        "UnresolvedType"
       );
     }
   }
@@ -733,7 +735,7 @@ export class JsonToBorshConverter {
     } else {
       throw new SerializationError(
         `Unknown primitive: ${JSON.stringify(primitive)}`,
-        "InvalidType",
+        "InvalidType"
       );
     }
   }
@@ -758,7 +760,7 @@ export class JsonToBorshConverter {
 export function jsonToBorsh(
   schema: Schema,
   typeIndex: number,
-  jsonInput: string,
+  input: unknown
 ): Uint8Array {
-  return JsonToBorshConverter.convertToBytes(schema, typeIndex, jsonInput);
+  return JsonToBorshConverter.convertToBytes(schema, typeIndex, input);
 }

@@ -5,13 +5,11 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 publish = false
 
-[workspace]
-
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
 wasm-bindgen = "0.2.93"
-sov-universal-wallet = { git = "https://@github.com/Sovereign-Labs/sovereign-sdk.git", rev = "349bdcd8b76067b6f120db06a66d518fd8f80f8a", package = "sov-universal-wallet", features = [
+sov-universal-wallet = { git = "https://@github.com/Sovereign-Labs/sovereign-sdk.git", rev = "9792d66f4b85df268169f5753e7bd0b7017551a6", package = "sov-universal-wallet", features = [
   "serde",
 ] }

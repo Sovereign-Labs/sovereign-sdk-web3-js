@@ -1,2 +1,2 @@
 export * from "./js";
-export * from "./serializer";
+export { Serializer, RollupSchema, KnownTypeId } from "./serializer";

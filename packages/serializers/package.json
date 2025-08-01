@@ -6,6 +6,7 @@
     "build": "tsup",
     "test": "vitest",
     "test:universal-wallet": "vitest run --config ./vitest.universal-wallet.config.ts",
+    "test:debug": "vitest --inspect-brk --browser --no-file-parallelism",
     "ci": "biome ci",
     "fix": "biome check --write",
     "lint": "biome lint"
@@ -28,9 +29,9 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "bech32": "^2.0.0",
+    "@sovereign-sdk/universal-wallet-wasm": "workspace:^",
     "@sovereign-sdk/utils": "workspace:^",
-    "@sovereign-sdk/universal-wallet-wasm": "workspace:^"
+    "bech32": "^2.0.0"
   },
   "devDependencies": {
     "tsup": "^8.3.0",

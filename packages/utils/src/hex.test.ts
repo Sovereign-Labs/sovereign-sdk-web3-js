@@ -33,6 +33,11 @@ describe("bytesToHex", () => {
     const result = bytesToHex(arr);
     expect(result).toBe("0a1b2c");
   });
+  it("should convert zero array", () => {
+    const arr = new Uint8Array([0]);
+    const result = bytesToHex(arr);
+    expect(result).toBe("00");
+  });
 });
 
 describe("ensureBytes", () => {
