@@ -1,13 +1,10 @@
 import SovereignClient from "@sovereign-sdk/client";
 import type { APIError } from "@sovereign-sdk/client";
+import type { RollupSchema, Serializer } from "@sovereign-sdk/serializers";
 import type { Signer } from "@sovereign-sdk/signers";
-import { bytesToHex } from "@sovereign-sdk/utils";
+import { bytesToHex, hexToBytes } from "@sovereign-sdk/utils";
 import { Base64 } from "js-base64";
 import { VersionMismatchError } from "../errors";
-import {
-  type RollupSerializer,
-  createSerializerFromHttp,
-} from "../serialization";
 import {
   type Subscription,
   type SubscriptionToCallbackMap,
@@ -63,10 +60,12 @@ export type RollupConfig<C extends RollupContext> = {
    */
   client: SovereignClient;
   /**
-   * The serializer to use for the rollup.
-   * If not provided, a serializer will be created using the provided client and the rollup HTTP endpoint.
+   * Creates the serializer instance to use for the rollup.
+   *
+   * This can be called more than once, for example if the chain hash changes (i.e a new rollup version)
+   * is detected then it will be called again with the new rollup schema.
    */
-  serializer: RollupSerializer;
+  getSerializer: (schema: RollupSchema) => Serializer;
   /**
    * Arbitrary context that is associated with the rollup.
    */
@@ -116,6 +115,8 @@ export type CallParams<S extends BaseTypeSpec> = {
 export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   private readonly _config: RollupConfig<C>;
   private readonly _typeBuilder: TypeBuilder<S, C>;
+  private _chainHash?: Uint8Array;
+  private _serializer?: Serializer;
 
   /**
    * Creates a new rollup client.
@@ -148,15 +149,18 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
     transaction: S["Transaction"],
     options?: SovereignClient.RequestOptions,
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
-    const serializedTx = this.serializer.serializeTx(transaction);
+    const serializer = await this.serializer();
+    const serializedTx = serializer.serializeTx(transaction);
 
     return this.sequencer.txs
       .create({ body: Base64.fromUint8Array(serializedTx) }, options)
       .catch(async (e) => {
         if (isVersionMismatchError(e as APIError)) {
-          const oldVersion = bytesToHex(this.chainHash);
-          this._config.serializer = await createSerializerFromHttp(this.http);
-          const newVersion = bytesToHex(this.chainHash);
+          const oldVersion = bytesToHex(await this.chainHash());
+          const { schema, chain_hash: newVersion } =
+            await this.rollup.schema.retrieve();
+          this._chainHash = hexToBytes(newVersion);
+          this._serializer = this._config.getSerializer(schema);
 
           if (oldVersion !== newVersion) {
             throw new VersionMismatchError(
@@ -183,10 +187,11 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
     { signer }: SignerParams,
     options?: SovereignClient.RequestOptions,
   ): Promise<TransactionResult<S["Transaction"]>> {
-    const serializedUnsignedTx =
-      this.serializer.serializeUnsignedTx(unsignedTx);
+    const serializer = await this.serializer();
+    const serializedUnsignedTx = serializer.serializeUnsignedTx(unsignedTx);
+    const chainHash = await this.chainHash();
     const signature = await signer.sign(
-      new Uint8Array([...serializedUnsignedTx, ...this.chainHash]),
+      new Uint8Array([...serializedUnsignedTx, ...chainHash]),
     );
     const publicKey = await signer.publicKey();
     const context = {
@@ -288,10 +293,12 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   /**
    * The serializer for the rollup.
    * Can be used to serialize transactions, runtime calls, etc.
-   * See {@link RollupSerializer} for more information.
    */
-  get serializer(): RollupSerializer {
-    return this._config.serializer;
+  async serializer(): Promise<Serializer> {
+    if (this._serializer) return this._serializer;
+    const { schema } = await this.rollup.schema.retrieve();
+    this._serializer = this._config.getSerializer(schema);
+    return this._serializer;
   }
 
   /**
@@ -301,11 +308,11 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
     return this._config.context;
   }
 
-  /**
-   * The chain hash of the rollup.
-   */
-  get chainHash(): Uint8Array {
-    return this.serializer.schema.chainHash;
+  async chainHash(): Promise<Uint8Array> {
+    if (this._chainHash) return this._chainHash;
+    const { chain_hash } = await this.rollup.schema.retrieve();
+    this._chainHash = hexToBytes(chain_hash);
+    return this._chainHash;
   }
 }
 

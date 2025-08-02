@@ -1,8 +1,8 @@
 import SovereignClient from "@sovereign-sdk/client";
+import type { RollupSchema, Serializer } from "@sovereign-sdk/serializers";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import demoRollupSchema from "../../../__fixtures__/demo-rollup-schema.json";
 import { VersionMismatchError } from "../errors";
-import type { RollupSerializer } from "../serialization";
 import type { BaseTypeSpec } from "../type-spec";
 import {
   Rollup,
@@ -11,7 +11,7 @@ import {
   type TypeBuilder,
 } from "./rollup";
 
-const mockSerializer: RollupSerializer = {
+const mockSerializer = {
   serialize: vi.fn().mockReturnValue(new Uint8Array([1, 2, 3])),
   serializeRuntimeCall: vi.fn().mockReturnValue(new Uint8Array([4, 5, 6])),
   serializeUnsignedTx: vi.fn().mockReturnValue(new Uint8Array([7, 8, 9])),
@@ -19,15 +19,20 @@ const mockSerializer: RollupSerializer = {
   schema: { chainHash: new Uint8Array([1, 2, 3, 4]) } as any,
 };
 
+const getSerializer = (_schema: RollupSchema) =>
+  mockSerializer as unknown as Serializer;
+
 const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
   config?: Partial<RollupConfig<C>>,
   builder?: Partial<TypeBuilder<S, C>>,
-) =>
-  new Rollup(
+) => {
+  const client = new SovereignClient();
+  client.request = vi.fn();
+  const rollup = new Rollup(
     {
-      client: new SovereignClient({ fetch: vi.fn() }),
+      client,
       context: {} as C,
-      serializer: mockSerializer,
+      getSerializer,
       ...config,
     },
     {
@@ -37,25 +42,32 @@ const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
     },
   );
 
+  client.rollup.schema.retrieve = vi.fn().mockResolvedValue({
+    schema: demoRollupSchema,
+    chain_hash: "01020304",
+  });
+
+  return { rollup, client };
+};
+
 describe("Rollup", () => {
   describe("constructor", () => {
-    it("should use the provided serializer if it is provided", () => {
-      const rollup = testRollup({ serializer: mockSerializer });
-      expect(rollup.serializer).toBe(mockSerializer);
+    it("should use the provided serializer if it is provided", async () => {
+      const { rollup, client } = testRollup({ getSerializer });
+      client.rollup.schema.retrieve = vi.fn().mockResolvedValueOnce({});
+      const actual = await rollup.serializer();
+      expect(actual).toBe(mockSerializer);
     });
     it("should use the provided client if it is provided", () => {
       const client = new SovereignClient({ fetch: vi.fn() });
-      const rollup = testRollup({ client });
+      const { rollup } = testRollup({ client });
       expect(rollup.http).toBe(client);
     });
   });
   describe("dedup", () => {
     it("should call the rollup addresses dedup endpoint with hex-encoded address", async () => {
-      const client = new SovereignClient({ fetch: vi.fn() });
-      client.rollup.addresses.dedup = vi.fn().mockResolvedValue({
-        data: { nonce: 1 },
-      });
-      const rollup = testRollup({ client });
+      const { rollup, client } = testRollup();
+      client.rollup.addresses.dedup = vi.fn().mockResolvedValue({ nonce: 1 });
 
       const address = new Uint8Array([1, 2, 3]);
       await rollup.dedup(address);
@@ -65,9 +77,8 @@ describe("Rollup", () => {
 
     it("should return the dedup data from the response", async () => {
       const expectedDedup = { nonce: 42 };
-      const client = new SovereignClient({ fetch: vi.fn() });
+      const { rollup, client } = testRollup();
       client.rollup.addresses.dedup = vi.fn().mockResolvedValue(expectedDedup);
-      const rollup = testRollup({ client });
 
       const result = await rollup.dedup(new Uint8Array([1, 2, 3]));
 
@@ -84,9 +95,8 @@ describe("Rollup", () => {
     };
 
     it("should correctly serialize and submit the transaction", async () => {
-      const client = new SovereignClient({ fetch: vi.fn() });
+      const { rollup, client } = testRollup();
       client.sequencer.txs.create = vi.fn().mockResolvedValue({});
-      const rollup = testRollup({ client });
       const transaction = { foo: "bar" };
 
       await rollup.submitTransaction(transaction);
@@ -101,9 +111,8 @@ describe("Rollup", () => {
     });
 
     it("should pass options to the sequencer client", async () => {
-      const client = new SovereignClient({ fetch: vi.fn() });
+      const { rollup, client } = testRollup();
       client.sequencer.txs.create = vi.fn().mockResolvedValue({});
-      const rollup = testRollup({ client });
       const transaction = { foo: "bar" };
       const options = { timeout: 5000, maxRetries: 3 };
 
@@ -126,12 +135,10 @@ describe("Rollup", () => {
         },
       };
 
-      const client = new SovereignClient({ fetch: vi.fn() });
+      const { rollup, client } = testRollup();
       client.sequencer.txs.create = vi
         .fn()
         .mockRejectedValue(nonVersionMismatchError);
-
-      const rollup = testRollup({ client });
       const transaction = { foo: "bar" };
 
       await expect(rollup.submitTransaction(transaction)).rejects.toEqual(
@@ -140,19 +147,19 @@ describe("Rollup", () => {
     });
 
     it("should throw VersionMismatchError when chain hash changes", async () => {
-      const client = new SovereignClient({ fetch: vi.fn() });
+      const { rollup, client } = testRollup();
+
       client.sequencer.txs.create = vi
         .fn()
         .mockRejectedValue(versionMismatchError);
-      client.rollup.schema.retrieve = vi
-        .fn()
-        .mockResolvedValue(demoRollupSchema);
+      client.rollup.schema.retrieve = vi.fn().mockResolvedValue({
+        schema: demoRollupSchema,
+        chain_hash: "0x00",
+      });
 
-      const rollup = testRollup({ client });
-
-      vi.spyOn(rollup, "chainHash", "get")
-        .mockReturnValueOnce(new Uint8Array([1, 2, 3, 4]))
-        .mockReturnValueOnce(new Uint8Array([5, 5, 5, 5]));
+      vi.spyOn(rollup, "chainHash").mockResolvedValueOnce(
+        new Uint8Array([1, 2, 3, 4]),
+      );
       const transaction = { foo: "bar" };
 
       await expect(rollup.submitTransaction(transaction)).rejects.toThrow(
@@ -161,19 +168,14 @@ describe("Rollup", () => {
     });
 
     it("should bubble error if chain hash does not change", async () => {
-      const client = new SovereignClient({ fetch: vi.fn() });
+      const { rollup, client } = testRollup();
       client.sequencer.txs.create = vi
         .fn()
         .mockRejectedValue(versionMismatchError);
-      client.rollup.schema.retrieve = vi
-        .fn()
-        .mockResolvedValue(demoRollupSchema);
 
-      const rollup = testRollup({ client });
-
-      vi.spyOn(rollup, "chainHash", "get")
-        .mockReturnValueOnce(new Uint8Array([1, 2, 3, 4]))
-        .mockReturnValueOnce(new Uint8Array([1, 2, 3, 4]));
+      vi.spyOn(rollup, "chainHash").mockResolvedValueOnce(
+        new Uint8Array([1, 2, 3, 4]),
+      );
       const transaction = { foo: "bar" };
 
       await expect(rollup.submitTransaction(transaction)).rejects.toEqual(
@@ -182,11 +184,9 @@ describe("Rollup", () => {
     });
 
     it("should propagate non-version-mismatch errors", async () => {
-      const client = new SovereignClient({ fetch: vi.fn() });
+      const { rollup, client } = testRollup();
       const error = new Error("Different error");
       client.sequencer.txs.create = vi.fn().mockRejectedValue(error);
-
-      const rollup = testRollup({ client });
       const transaction = { foo: "bar" };
 
       await expect(rollup.submitTransaction(transaction)).rejects.toThrow(
@@ -212,7 +212,7 @@ describe("Rollup", () => {
     });
 
     it("should call signer to sign the unsigned transaction", async () => {
-      const rollup = testRollup({}, mockTypeBuilder);
+      const { rollup } = testRollup({}, mockTypeBuilder);
       rollup.submitTransaction = vi.fn();
 
       await rollup.signAndSubmitTransaction(unsignedTx, { signer: mockSigner });
@@ -227,7 +227,7 @@ describe("Rollup", () => {
     });
 
     it("should pass options to submitTransaction", async () => {
-      const rollup = testRollup({}, mockTypeBuilder);
+      const { rollup } = testRollup({}, mockTypeBuilder);
       rollup.submitTransaction = vi.fn();
       const options = { timeout: 5000, maxRetries: 3 };
 
@@ -244,7 +244,7 @@ describe("Rollup", () => {
     });
 
     it("should call type builder with correct parameters", async () => {
-      const rollup = testRollup({}, mockTypeBuilder);
+      const { rollup } = testRollup({}, mockTypeBuilder);
       rollup.submitTransaction = vi.fn();
 
       await rollup.signAndSubmitTransaction(unsignedTx, { signer: mockSigner });
@@ -258,7 +258,7 @@ describe("Rollup", () => {
     });
 
     it("should call submitTransaction() with the result of the type builder", async () => {
-      const rollup = testRollup({}, mockTypeBuilder);
+      const { rollup } = testRollup({}, mockTypeBuilder);
       rollup.submitTransaction = vi.fn();
 
       await rollup.signAndSubmitTransaction(unsignedTx, { signer: mockSigner });
@@ -270,7 +270,7 @@ describe("Rollup", () => {
     });
 
     it("should return the submitted tx and response", async () => {
-      const rollup = testRollup({}, mockTypeBuilder);
+      const { rollup } = testRollup({}, mockTypeBuilder);
       rollup.submitTransaction = vi
         .fn()
         .mockResolvedValue({ txHash: "mock-hash" });
@@ -306,7 +306,7 @@ describe("Rollup", () => {
     });
 
     it("should call type builder with correct parameters", async () => {
-      const rollup = testRollup({}, mockTypeBuilder);
+      const { rollup } = testRollup({}, mockTypeBuilder);
       rollup.submitTransaction = vi.fn();
 
       await rollup.call(mockRuntimeCall, {
@@ -322,7 +322,7 @@ describe("Rollup", () => {
     });
 
     it("should pass options to signAndSubmitTransaction", async () => {
-      const rollup = testRollup({}, mockTypeBuilder);
+      const { rollup } = testRollup({}, mockTypeBuilder);
       const signAndSubmitSpy = vi.spyOn(rollup, "signAndSubmitTransaction");
       rollup.submitTransaction = vi.fn();
       const options = { timeout: 5000, maxRetries: 3 };
@@ -346,7 +346,7 @@ describe("Rollup", () => {
     });
 
     it("should pass the unsigned transaction to signAndSubmitTransaction", async () => {
-      const rollup = testRollup({}, mockTypeBuilder);
+      const { rollup } = testRollup({}, mockTypeBuilder);
       const signAndSubmitSpy = vi.spyOn(rollup, "signAndSubmitTransaction");
       rollup.submitTransaction = vi.fn();
 
@@ -365,11 +365,10 @@ describe("Rollup", () => {
     });
 
     it("should return the result from signAndSubmitTransaction", async () => {
-      const client = new SovereignClient({ fetch: vi.fn() });
+      const { rollup, client } = testRollup({}, mockTypeBuilder);
       client.sequencer.txs.create = vi
         .fn()
         .mockResolvedValue({ txHash: "mock-hash" });
-      const rollup = testRollup({ client }, mockTypeBuilder);
 
       const result = await rollup.call(mockRuntimeCall, {
         signer: mockSigner,
@@ -384,66 +383,48 @@ describe("Rollup", () => {
   });
   describe("getters", () => {
     it("should return the ledger client", () => {
-      const client = new SovereignClient({ fetch: vi.fn() });
-      const rollup = testRollup({ client });
+      const { rollup, client } = testRollup();
 
       expect(rollup.ledger).toBe(client.ledger);
     });
 
     it("should return the configured context", () => {
       const context = { foo: "bar", baz: 123 };
-      const rollup = testRollup({ context });
+      const { rollup } = testRollup({ context });
 
       expect(rollup.context).toBe(context);
-    });
-
-    it("should return the chain hash from the serializer schema", () => {
-      const chainHash = new Uint8Array([1, 2, 3, 4]);
-      const serializer = {
-        ...mockSerializer,
-        schema: {
-          chainHash,
-        },
-      } as any;
-      const rollup = testRollup({ serializer });
-
-      expect(rollup.chainHash).toBe(chainHash);
     });
   });
   describe("healthcheck", () => {
     it("should return false if http request throws APIConnectionError", async () => {
-      const client = new SovereignClient({ fetch: vi.fn() });
+      const { rollup, client } = testRollup();
       client.get = vi
         .fn()
         .mockRejectedValue(new SovereignClient.APIConnectionError({}));
-      const rollup = testRollup({ client });
 
       const result = await rollup.healthcheck();
       expect(result).toBe(false);
     });
 
     it("should return true if http request throws error unrelated to connection", async () => {
-      const client = new SovereignClient({ fetch: vi.fn() });
+      const { rollup, client } = testRollup();
       client.get = vi.fn().mockRejectedValue(new Error("Some other error"));
-      const rollup = testRollup({ client });
 
       const result = await rollup.healthcheck();
       expect(result).toBe(true);
     });
 
     it("should return true if http request completes successfully", async () => {
-      const client = new SovereignClient({ fetch: vi.fn() });
-      client.get = vi.fn().mockResolvedValue({ data: { status: "ok" } });
-      const rollup = testRollup({ client });
+      const { rollup, client } = testRollup();
+      client.get = vi.fn().mockResolvedValue({ status: "ok" });
 
       const result = await rollup.healthcheck();
       expect(result).toBe(true);
     });
 
     it("should pass timeout to the get request", async () => {
-      const client = new SovereignClient({ fetch: vi.fn() });
-      client.get = vi.fn().mockResolvedValue({ data: { status: "ok" } });
-      const rollup = testRollup({ client });
+      const { rollup, client } = testRollup();
+      client.get = vi.fn().mockResolvedValue({ status: "ok" });
 
       await rollup.healthcheck(1000);
       expect(client.get).toHaveBeenCalledWith("/healthcheck", {
