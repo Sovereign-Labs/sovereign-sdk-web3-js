@@ -29,8 +29,9 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@sovereign-sdk/client": "0.1.0-alpha.35",
+    "@sovereign-sdk/client": "0.1.0-alpha.36",
     "@sovereign-sdk/signers": "workspace:^",
+    "@sovereign-sdk/serializers": "workspace:^",
     "@sovereign-sdk/universal-wallet-wasm": "workspace:^",
     "@sovereign-sdk/utils": "workspace:^",
     "bech32": "^2.0.0",

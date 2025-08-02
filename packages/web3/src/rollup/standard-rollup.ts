@@ -1,6 +1,6 @@
 import SovereignClient from "@sovereign-sdk/client";
+import { WasmSerializer } from "@sovereign-sdk/serializers/wasm";
 import { bytesToHex } from "@sovereign-sdk/utils";
-import { createSerializerFromHttp } from "../serialization";
 import type { DeepPartial } from "../utils";
 import {
   Rollup,
@@ -132,7 +132,8 @@ export class StandardRollup<RuntimeCall> extends Rollup<
     runtimeMessage: StandardRollupSpec<RuntimeCall>["RuntimeCall"],
     { signer, txDetails, generation: overrideGeneration }: SimulateParams,
   ): Promise<SovereignClient.Rollup.SimulateExecutionResponse> {
-    const runtimeCall = this.serializer.serializeRuntimeCall(runtimeMessage);
+    const serializer = await this.serializer();
+    const runtimeCall = serializer.serializeRuntimeCall(runtimeMessage);
     const publicKey = await signer.publicKey();
     const generation = await useOrFetchGeneration({
       rollup: this,
@@ -192,12 +193,12 @@ export async function createStandardRollup<
 ) {
   const config = rollupConfig ?? {};
   const client = config.client ?? new SovereignClient({ baseURL: config.url });
-  const serializer =
-    config.serializer ?? (await createSerializerFromHttp(client));
+  const getSerializer =
+    config.getSerializer ?? ((schema) => new WasmSerializer(schema));
   const context = await buildContext<C>(client, config.context);
 
   return new StandardRollup<RuntimeCall>(
-    { ...config, client, serializer, context },
+    { ...config, client, getSerializer, context },
     {
       ...standardTypeBuilder(),
       ...typeBuilderOverrides,
