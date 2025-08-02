@@ -1,5 +1,5 @@
 import SovereignClient from "@sovereign-sdk/client";
-import { WasmSerializer } from "@sovereign-sdk/serializers/wasm";
+import { JsSerializer } from "@sovereign-sdk/serializers";
 import { bytesToHex } from "@sovereign-sdk/utils";
 import type { DeepPartial } from "../utils";
 import {
@@ -194,7 +194,7 @@ export async function createStandardRollup<
   const config = rollupConfig ?? {};
   const client = config.client ?? new SovereignClient({ baseURL: config.url });
   const getSerializer =
-    config.getSerializer ?? ((schema) => new WasmSerializer(schema));
+    config.getSerializer ?? ((schema) => new JsSerializer(schema));
   const context = await buildContext<C>(client, config.context);
 
   return new StandardRollup<RuntimeCall>(
