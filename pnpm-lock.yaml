@@ -88,10 +88,6 @@ importers:
         version: 10.9.2(@swc/core@1.7.42)(@types/node@22.7.5)(typescript@5.6.3)
 
   packages/integration-tests:
-    dependencies:
-      tsx:
-        specifier: ^4.20.3
-        version: 4.20.3
     devDependencies:
       '@noble/ed25519':
         specifier: ^2.1.0
@@ -99,9 +95,6 @@ importers:
       '@noble/hashes':
         specifier: ^1.5.0
         version: 1.5.0
-      '@sovereign-sdk/serializers':
-        specifier: workspace:^
-        version: link:../serializers
       '@sovereign-sdk/signers':
         specifier: workspace:^
         version: link:../signers
@@ -4506,6 +4499,7 @@ snapshots:
   get-tsconfig@4.10.1:
     dependencies:
       resolve-pkg-maps: 1.0.0
+    optional: true
 
   glob-parent@5.1.2:
     dependencies:
@@ -5047,7 +5041,8 @@ snapshots:
 
   resolve-from@5.0.0: {}
 
-  resolve-pkg-maps@1.0.0: {}
+  resolve-pkg-maps@1.0.0:
+    optional: true
 
   retry@0.12.0: {}
 
@@ -5388,6 +5383,7 @@ snapshots:
       get-tsconfig: 4.10.1
     optionalDependencies:
       fsevents: 2.3.3
+    optional: true
 
   tweetnacl@0.14.5: {}
 
