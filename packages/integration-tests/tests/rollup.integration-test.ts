@@ -21,11 +21,9 @@ describe("rollup", async () => {
   describe.sequential("transaction submission", () => {
     it("should throw a version mismatch error if chain hash is wrong", async () => {
       rollup = await createStandardRollup();
-      const chainHash = rollup.chainHash;
-      Object.defineProperty(rollup.serializer.schema, "chainHash", {
-        get: () => new Uint8Array([1]),
-        configurable: true,
-      });
+      const chainHashFn = rollup.chainHash;
+      rollup.chainHash = async () => new Uint8Array([1]);
+
       const runtimeCall = {
         bank: {
           create_token: {
@@ -42,11 +40,7 @@ describe("rollup", async () => {
         VersionMismatchError
       );
 
-      // restore correct chainhash
-      Object.defineProperty(rollup.serializer.schema, "chainHash", {
-        get: () => chainHash,
-        configurable: true,
-      });
+      rollup.chainHash = chainHashFn;
 
       // if we succeed now then the chain hash was the issue
       // and we correctly threw a version mismatch error the first time

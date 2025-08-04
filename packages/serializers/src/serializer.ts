@@ -104,8 +104,6 @@ export abstract class Serializer {
   get schema(): RollupSchema {
     return { ...this._schema };
   }
-
-  // TODO: create from http
 }
 
 /**
