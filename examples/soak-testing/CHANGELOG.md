@@ -1,5 +1,13 @@
 # soak-testing
 
+## 1.0.9
+
+### Patch Changes
+
+- Updated dependencies [729da4e]
+  - @sovereign-sdk/web3@0.9.0
+  - @sovereign-sdk/test@0.1.9
+
 ## 1.0.8
 
 ### Patch Changes

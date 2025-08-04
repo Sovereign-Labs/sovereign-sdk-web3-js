@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.9.0
+
+### Minor Changes
+
+- 729da4e: integrates `serializers` package into main web3 package & updates http client version
+
 ## 0.8.1
 
 ### Patch Changes
