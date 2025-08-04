@@ -9,6 +9,7 @@
     "test:debug": "vitest --inspect-brk --browser --no-file-parallelism",
     "ci": "biome ci",
     "fix": "biome check --write",
+    "typecheck": "tsc --noEmit",
     "lint": "biome lint"
   },
   "repository": "github:Sovereign-Labs/sovereign-sdk-web3-js",

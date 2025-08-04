@@ -242,8 +242,11 @@ importers:
   packages/web3:
     dependencies:
       '@sovereign-sdk/client':
-        specifier: 0.1.0-alpha.35
-        version: 0.1.0-alpha.35
+        specifier: 0.1.0-alpha.36
+        version: 0.1.0-alpha.36
+      '@sovereign-sdk/serializers':
+        specifier: workspace:^
+        version: link:../serializers
       '@sovereign-sdk/signers':
         specifier: workspace:^
         version: link:../signers
@@ -1093,8 +1096,8 @@ packages:
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
 
-  '@sovereign-sdk/client@0.1.0-alpha.35':
-    resolution: {integrity: sha512-DkORDXRyM71TDg3+v9HhyMzG9CrmVtQTegKvg0wBfylly5LoQxWPUGYFKJ5pAgOCLnd+RJ64TGWg7IiNXpMRMw==}
+  '@sovereign-sdk/client@0.1.0-alpha.36':
+    resolution: {integrity: sha512-avDO8co/+YRmMIG1+LcPP3ANDIJAbefz3tY155ozKSWfWQNJ8WC5DPKXiiMwxkGU4cPeO1LHgVhNg+Ho6FzcHg==}
 
   '@swc/core-darwin-arm64@1.7.42':
     resolution: {integrity: sha512-fWhaCs2+8GDRIcjExVDEIfbptVrxDqG8oHkESnXgymmvqTWzWei5SOnPNMS8Q+MYsn/b++Y2bDxkcwmq35Bvxg==}
@@ -2514,6 +2517,7 @@ packages:
   source-map@0.8.0-beta.0:
     resolution: {integrity: sha512-2ymg6oRBpebeZi9UUNsgQ89bhx01TcTkmNTGnNO88imTmbSgy4nfujrgVEFKWpMTEGA11EDkTt7mqObTPdigIA==}
     engines: {node: '>= 8'}
+    deprecated: The work that was done in this beta branch won't be included in future versions
 
   spawndamnit@2.0.0:
     resolution: {integrity: sha512-j4JKEcncSjFlqIwU5L/rp2N5SIPsdxaRsIv678+TZxZ0SRDJTm8JrxJMjE/XuiEZNEir3S8l0Fa3Ke339WI4qA==}
@@ -3691,7 +3695,7 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@sovereign-sdk/client@0.1.0-alpha.35':
+  '@sovereign-sdk/client@0.1.0-alpha.36':
     dependencies:
       '@types/node': 18.19.54
       '@types/node-fetch': 2.6.11

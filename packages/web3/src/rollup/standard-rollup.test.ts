@@ -1,6 +1,6 @@
 import SovereignClient from "@sovereign-sdk/client";
+import type { RollupSchema, Serializer } from "@sovereign-sdk/serializers";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { RollupSerializer } from "../serialization";
 import {
   StandardRollup,
   createStandardRollup,
@@ -150,18 +150,21 @@ describe("standardTypeBuilder", () => {
   });
 });
 
-const mockSerializer: RollupSerializer = {
-  schema: {} as any,
+const mockSerializer = {
   serialize: vi.fn().mockReturnValue(new Uint8Array([1, 2, 3])),
   serializeRuntimeCall: vi.fn().mockReturnValue(new Uint8Array([4, 5, 6])),
   serializeUnsignedTx: vi.fn().mockReturnValue(new Uint8Array([7, 8, 9])),
   serializeTx: vi.fn().mockReturnValue(new Uint8Array([10, 11, 12])),
+  schema: { chainHash: new Uint8Array([1, 2, 3, 4]) } as any,
 };
+
+const getSerializer = (_schema: RollupSchema) =>
+  mockSerializer as unknown as Serializer;
 
 describe("createStandardRollup", () => {
   const mockConfig = {
     client: new SovereignClient({ fetch: vi.fn() }),
-    serializer: mockSerializer,
+    getSerializer,
     context: {
       defaultTxDetails: {
         max_priority_fee_bips: 100,
