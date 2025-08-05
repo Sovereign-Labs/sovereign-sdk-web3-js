@@ -1,3 +1,5 @@
+// Ran by https://github.com/Sovereign-Labs/sovereign-sdk/blob/nightly/crates/universal-wallet/fuzz/fuzz_targets/fuzz_js_impl.rs
+// as part of fuzz testing suite.
 import { bytesToHex } from "@sovereign-sdk/utils";
 import { JsSerializer } from "../src";
 

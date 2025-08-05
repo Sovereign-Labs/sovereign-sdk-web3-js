@@ -32,7 +32,8 @@
   "dependencies": {
     "@sovereign-sdk/universal-wallet-wasm": "workspace:^",
     "@sovereign-sdk/utils": "workspace:^",
-    "bech32": "^2.0.0"
+    "bech32": "^2.0.0",
+    "bs58": "^6.0.0"
   },
   "devDependencies": {
     "tsup": "^8.3.0",

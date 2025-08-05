@@ -551,7 +551,7 @@ export class JsonToBorshConverter {
       });
     } else if (typeof context.value === "string") {
       bytes = byteDisplay.parse(
-        context.currentLink.Immediate.ByteArray.display,
+        context.currentLink.Immediate.ByteVec.display,
         context.value
       );
     } else {

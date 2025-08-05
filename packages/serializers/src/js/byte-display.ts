@@ -1,20 +1,21 @@
 import { bech32, bech32m } from "bech32";
 import type { ByteDisplay } from "./types";
+import { hexToBytes } from "@sovereign-sdk/utils";
+import { ByteDisplayError } from "./errors";
+import bs58 from "bs58";
 
 export function parse(display: ByteDisplay, input: string): number[] {
   if (display === "Hex") {
-    // Parse hex string to bytes
-    const hex = input.replace(/^0x/, "");
-    const bytes: number[] = [];
-    for (let i = 0; i < hex.length; i += 2) {
-      bytes.push(Number.parseInt(hex.substr(i, 2), 16));
-    }
-    return bytes;
+    return Array.from(hexToBytes(input));
+  }
+
+  if (display === "Base58") {
+    return Array.from(bs58.decode(input));
   }
 
   if (display === "Decimal") {
-    // Parse decimal string to bytes (assuming comma-separated)
-    // return input.split(",").map((s) => parseInt(s.trim(), 10));
+    const parsed = input.replace("[", "").replace("]", "");
+    return parsed.split(",").map((s) => parseInt(s.trim()));
   }
 
   if (typeof display === "object" && "Bech32" in display) {
@@ -23,8 +24,8 @@ export function parse(display: ByteDisplay, input: string): number[] {
 
       // Verify the HRP matches
       if (decoded.prefix !== display.Bech32.prefix) {
-        throw new Error(
-          `Expected prefix '${display.Bech32.prefix}' but got '${decoded.prefix}'`,
+        throw new ByteDisplayError(
+          `Expected prefix '${display.Bech32.prefix}' but got '${decoded.prefix}'`
         );
       }
 
@@ -32,7 +33,9 @@ export function parse(display: ByteDisplay, input: string): number[] {
       const bytes = bech32.fromWords(decoded.words);
       return bytes;
     } catch (error) {
-      throw new Error(`Failed to decode bech32: ${(error as any).message}`);
+      throw new ByteDisplayError(
+        `Failed to decode bech32: ${(error as any).message}`
+      );
     }
   }
 
@@ -42,8 +45,8 @@ export function parse(display: ByteDisplay, input: string): number[] {
 
       // Verify the HRP matches
       if (decoded.prefix !== display.Bech32m.prefix) {
-        throw new Error(
-          `Expected prefix '${display.Bech32m.prefix}' but got '${decoded.prefix}'`,
+        throw new ByteDisplayError(
+          `Expected prefix '${display.Bech32m.prefix}' but got '${decoded.prefix}'`
         );
       }
 
@@ -51,9 +54,11 @@ export function parse(display: ByteDisplay, input: string): number[] {
       const bytes = bech32m.fromWords(decoded.words);
       return bytes;
     } catch (error) {
-      throw new Error(`Failed to decode bech32m: ${(error as any).message}`);
+      throw new ByteDisplayError(
+        `Failed to decode bech32m: ${(error as any).message}`
+      );
     }
   }
 
-  throw new Error("idk");
+  throw new ByteDisplayError(`Unsupported display: ${display}`);
 }

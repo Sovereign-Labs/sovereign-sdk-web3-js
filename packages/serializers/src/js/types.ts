@@ -118,14 +118,12 @@ export type FixedPointDisplay =
 export type ByteDisplay =
   | "Hex"
   | "Decimal"
+  | "Base58"
   | { Bech32: { prefix: string } }
   | { Bech32m: { prefix: string } };
 
 export class SerializationError extends Error {
-  constructor(
-    message: string,
-    public readonly kind: string,
-  ) {
+  constructor(message: string, public readonly kind: string) {
     super(message);
     this.name = "SerializationError";
   }
