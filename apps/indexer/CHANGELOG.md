@@ -1,5 +1,11 @@
 # @sovereign-sdk/indexer
 
+## 0.4.9
+
+### Patch Changes
+
+- @sovereign-sdk/web3@0.9.1
+
 ## 0.4.8
 
 ### Patch Changes

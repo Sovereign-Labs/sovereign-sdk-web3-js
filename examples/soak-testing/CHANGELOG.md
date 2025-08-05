@@ -1,5 +1,12 @@
 # soak-testing
 
+## 1.0.10
+
+### Patch Changes
+
+- @sovereign-sdk/web3@0.9.1
+- @sovereign-sdk/test@0.1.10
+
 ## 1.0.9
 
 ### Patch Changes

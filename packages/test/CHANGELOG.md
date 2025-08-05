@@ -1,5 +1,11 @@
 # @sovereign-sdk/test
 
+## 0.1.10
+
+### Patch Changes
+
+- @sovereign-sdk/web3@0.9.1
+
 ## 0.1.9
 
 ### Patch Changes
