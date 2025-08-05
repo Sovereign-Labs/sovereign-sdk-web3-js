@@ -1,5 +1,11 @@
 # @sovereign-sdk/serializers
 
+## 0.1.1
+
+### Patch Changes
+
+- de579e7: Fixes missing base58 handling of byte displays in universal wallet schema
+
 ## 0.1.0
 
 ### Minor Changes

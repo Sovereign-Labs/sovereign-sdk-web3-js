@@ -1,5 +1,12 @@
 # @sovereign-sdk/web3
 
+## 0.9.1
+
+### Patch Changes
+
+- Updated dependencies [de579e7]
+  - @sovereign-sdk/serializers@0.1.1
+
 ## 0.9.0
 
 ### Minor Changes
