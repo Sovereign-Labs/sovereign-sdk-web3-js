@@ -18,9 +18,13 @@ export type TxDetails = {
   chain_id: number;
 };
 
+export type Uniqueness = {
+  generation: number;
+};
+
 export type UnsignedTransaction<RuntimeCall> = {
   runtime_call: RuntimeCall;
-  generation: number;
+  uniqueness: Uniqueness;
   details: TxDetails;
 };
 
@@ -54,8 +58,8 @@ const useOrFetchGeneration = async <S extends StandardRollupSpec<unknown>>({
   UnsignedTransactionContext<S, StandardRollupContext>,
   "runtimeCall"
 >) => {
-  if (overrides?.generation !== undefined && overrides.generation >= 0) {
-    return overrides.generation;
+  if (overrides?.uniqueness?.generation !== undefined && overrides.uniqueness.generation >= 0) {
+    return overrides.uniqueness.generation;
   }
 
   return Date.now();
@@ -69,7 +73,7 @@ export function standardTypeBuilder<
       context: UnsignedTransactionContext<S, StandardRollupContext>,
     ) {
       const { rollup, runtimeCall } = context;
-      const { generation: _, ...overrides } = context.overrides;
+      const { uniqueness, ...overrides } = context.overrides;
       const generation = await useOrFetchGeneration(context);
       const details: TxDetails = {
         ...rollup.context.defaultTxDetails,
@@ -78,7 +82,7 @@ export function standardTypeBuilder<
 
       return {
         runtime_call: runtimeCall,
-        generation,
+        uniqueness: { generation },
         details,
       };
     },
@@ -137,7 +141,7 @@ export class StandardRollup<RuntimeCall> extends Rollup<
     const publicKey = await signer.publicKey();
     const generation = await useOrFetchGeneration({
       rollup: this,
-      overrides: { generation: overrideGeneration },
+      overrides: { uniqueness: { generation: overrideGeneration } },
     });
     const response = await this.rollup.simulate({
       body: {
