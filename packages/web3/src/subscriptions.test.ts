@@ -33,9 +33,9 @@ describe("subscriptions", () => {
   describe("subscribe", () => {
     afterEach(() => {
       vi.clearAllMocks();
-      Object.keys(_subscriptions).forEach((key) => {
+      for (const key of Object.keys(_subscriptions)) {
         delete _subscriptions[key];
-      });
+      }
     });
 
     const TEST_URL = "ws://test.com";
