@@ -18,9 +18,7 @@ export type TxDetails = {
   chain_id: number;
 };
 
-export type Uniqueness = {
-  generation: number;
-};
+export type Uniqueness = { nonce: number } | { generation: number };
 
 export type UnsignedTransaction<RuntimeCall> = {
   runtime_call: RuntimeCall;
@@ -59,7 +57,9 @@ const useOrFetchGeneration = async <S extends StandardRollupSpec<unknown>>({
   "runtimeCall"
 >) => {
   if (
-    overrides?.uniqueness?.generation !== undefined &&
+    overrides?.uniqueness &&
+    'generation' in overrides.uniqueness &&
+    overrides.uniqueness.generation !== undefined &&
     overrides.uniqueness.generation >= 0
   ) {
     return overrides.uniqueness.generation;
