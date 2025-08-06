@@ -18,7 +18,9 @@ export type TxDetails = {
   chain_id: number;
 };
 
-export type Uniqueness = { nonce: number } | { generation: number };
+export type Generation = { generation: number };
+export type Nonce = { nonce: number };
+export type Uniqueness = Nonce | Generation;
 
 export type UnsignedTransaction<RuntimeCall> = {
   runtime_call: RuntimeCall;
@@ -148,8 +150,8 @@ export class StandardRollup<RuntimeCall> extends Rollup<
     // Extract the generation number from the uniqueness object
     const generation =
       "generation" in uniqueness
-        ? (uniqueness as any).generation
-        : (uniqueness as any).nonce;
+        ? (uniqueness as Generation).generation
+        : (uniqueness as Nonce).nonce; // Use nonce as fallback until simulate endpoint is updated.
     const response = await this.rollup.simulate({
       body: {
         details: {
