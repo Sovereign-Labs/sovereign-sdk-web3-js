@@ -50,22 +50,17 @@ export type StandardRollupSpec<RuntimeCall> = {
   Dedup: Dedup;
 };
 
-const useOrFetchGeneration = async <S extends StandardRollupSpec<unknown>>({
+const useOrFetchUniqueness = async <S extends StandardRollupSpec<unknown>>({
   overrides,
 }: Omit<
   UnsignedTransactionContext<S, StandardRollupContext>,
   "runtimeCall"
 >) => {
-  if (
-    overrides?.uniqueness &&
-    'generation' in overrides.uniqueness &&
-    overrides.uniqueness.generation !== undefined &&
-    overrides.uniqueness.generation >= 0
-  ) {
-    return overrides.uniqueness.generation;
+  if (overrides?.uniqueness) {
+    return overrides.uniqueness;
   }
 
-  return Date.now();
+  return { generation: Date.now() };
 };
 
 export function standardTypeBuilder<
@@ -76,8 +71,8 @@ export function standardTypeBuilder<
       context: UnsignedTransactionContext<S, StandardRollupContext>,
     ) {
       const { rollup, runtimeCall } = context;
-      const { uniqueness, ...overrides } = context.overrides;
-      const generation = await useOrFetchGeneration(context);
+      const { uniqueness: _, ...overrides } = context.overrides;
+      const uniqueness = await useOrFetchUniqueness(context);
       const details: TxDetails = {
         ...rollup.context.defaultTxDetails,
         ...overrides.details,
@@ -85,9 +80,9 @@ export function standardTypeBuilder<
 
       return {
         runtime_call: runtimeCall,
-        uniqueness: { generation },
+        uniqueness,
         details,
-      };
+      } as S["UnsignedTransaction"];
     },
     async transaction({
       sender,
@@ -142,10 +137,19 @@ export class StandardRollup<RuntimeCall> extends Rollup<
     const serializer = await this.serializer();
     const runtimeCall = serializer.serializeRuntimeCall(runtimeMessage);
     const publicKey = await signer.publicKey();
-    const generation = await useOrFetchGeneration({
+    const uniqueness = await useOrFetchUniqueness({
       rollup: this,
-      overrides: { uniqueness: { generation: overrideGeneration } },
+      overrides: {
+        uniqueness: overrideGeneration
+          ? { generation: overrideGeneration }
+          : undefined,
+      },
     });
+    // Extract the generation number from the uniqueness object
+    const generation =
+      "generation" in uniqueness
+        ? (uniqueness as any).generation
+        : (uniqueness as any).nonce;
     const response = await this.rollup.simulate({
       body: {
         details: {
