@@ -44,7 +44,12 @@ export function subscribe(
 
     websocket.addEventListener("message", (message) => {
       const data = JSON.parse(message.data);
-      _subscriptions[url]?.callbacks.forEach((cb) => cb(data));
+      const callbacks = _subscriptions[url]?.callbacks;
+      if (callbacks) {
+        for (const cb of callbacks) {
+          cb(data);
+        }
+      }
     });
     websocket.addEventListener("error", (e) =>
       console.log("Websocket error", e),

@@ -18,9 +18,13 @@ export type TxDetails = {
   chain_id: number;
 };
 
+export type Generation = { generation: number };
+export type Nonce = { nonce: number };
+export type Uniqueness = Nonce | Generation;
+
 export type UnsignedTransaction<RuntimeCall> = {
   runtime_call: RuntimeCall;
-  generation: number;
+  uniqueness: Uniqueness;
   details: TxDetails;
 };
 
@@ -48,17 +52,17 @@ export type StandardRollupSpec<RuntimeCall> = {
   Dedup: Dedup;
 };
 
-const useOrFetchGeneration = async <S extends StandardRollupSpec<unknown>>({
+const useOrFetchUniqueness = async <S extends StandardRollupSpec<unknown>>({
   overrides,
 }: Omit<
   UnsignedTransactionContext<S, StandardRollupContext>,
   "runtimeCall"
 >) => {
-  if (overrides?.generation !== undefined && overrides.generation >= 0) {
-    return overrides.generation;
+  if (overrides?.uniqueness) {
+    return overrides.uniqueness;
   }
 
-  return Date.now();
+  return { generation: Date.now() };
 };
 
 export function standardTypeBuilder<
@@ -69,8 +73,8 @@ export function standardTypeBuilder<
       context: UnsignedTransactionContext<S, StandardRollupContext>,
     ) {
       const { rollup, runtimeCall } = context;
-      const { generation: _, ...overrides } = context.overrides;
-      const generation = await useOrFetchGeneration(context);
+      const { uniqueness: _, ...overrides } = context.overrides;
+      const uniqueness = await useOrFetchUniqueness(context);
       const details: TxDetails = {
         ...rollup.context.defaultTxDetails,
         ...overrides.details,
@@ -78,9 +82,9 @@ export function standardTypeBuilder<
 
       return {
         runtime_call: runtimeCall,
-        generation,
+        uniqueness,
         details,
-      };
+      } as S["UnsignedTransaction"];
     },
     async transaction({
       sender,
@@ -135,10 +139,19 @@ export class StandardRollup<RuntimeCall> extends Rollup<
     const serializer = await this.serializer();
     const runtimeCall = serializer.serializeRuntimeCall(runtimeMessage);
     const publicKey = await signer.publicKey();
-    const generation = await useOrFetchGeneration({
+    const uniqueness = await useOrFetchUniqueness({
       rollup: this,
-      overrides: { generation: overrideGeneration },
+      overrides: {
+        uniqueness: overrideGeneration
+          ? { generation: overrideGeneration }
+          : undefined,
+      },
     });
+    // Extract the generation number from the uniqueness object
+    const generation =
+      "generation" in uniqueness
+        ? (uniqueness as Generation).generation
+        : (uniqueness as Nonce).nonce; // Use nonce as fallback until simulate endpoint is updated.
     const response = await this.rollup.simulate({
       body: {
         details: {

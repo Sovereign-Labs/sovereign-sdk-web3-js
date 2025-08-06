@@ -42,13 +42,13 @@ describe("standardTypeBuilder", () => {
     it("should use provided generation from overrides", async () => {
       const result = await builder.unsignedTransaction({
         runtimeCall: { foo: "bar" },
-        overrides: { generation: 10 },
+        overrides: { uniqueness: { generation: 10 } },
         rollup: mockRollup as any,
       });
 
       expect(result).toEqual({
         runtime_call: { foo: "bar" },
-        generation: 10,
+        uniqueness: { generation: 10 },
         details: {
           max_priority_fee_bips: 100,
           max_fee: "1000",
@@ -68,7 +68,7 @@ describe("standardTypeBuilder", () => {
 
       expect(result).toEqual({
         runtime_call: { foo: "bar" },
-        generation: 1709211600000,
+        uniqueness: { generation: 1709211600000 },
         details: {
           max_priority_fee_bips: 100,
           max_fee: "1000",
@@ -93,7 +93,7 @@ describe("standardTypeBuilder", () => {
 
       expect(result).toEqual({
         runtime_call: { foo: "bar" },
-        generation: 1709211601100,
+        uniqueness: { generation: 1709211601100 },
         details: {
           max_priority_fee_bips: 100,
           max_fee: "2000",
@@ -111,7 +111,7 @@ describe("standardTypeBuilder", () => {
           runtime_call: {
             value_setter: { set_value: { value: 5, gas: null } },
           },
-          generation: 5,
+          uniqueness: { generation: 5 },
           details: {
             max_priority_fee_bips: 100,
             max_fee: "1000",
@@ -136,7 +136,7 @@ describe("standardTypeBuilder", () => {
             runtime_call: {
               value_setter: { set_value: { value: 5, gas: null } },
             },
-            generation: 5,
+            uniqueness: { generation: 5 },
             details: {
               max_priority_fee_bips: 100,
               max_fee: "1000",
