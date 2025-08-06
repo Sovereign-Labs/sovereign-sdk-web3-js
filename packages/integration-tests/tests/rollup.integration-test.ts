@@ -20,6 +20,7 @@ const testAddress = {
 describe("rollup", async () => {
   describe.sequential("transaction submission", () => {
     it("should throw a version mismatch error if chain hash is wrong", async () => {
+      const timestamp = Date.now();
       rollup = await createStandardRollup();
       const chainHashFn = rollup.chainHash;
       rollup.chainHash = async () => new Uint8Array([1]);
@@ -27,7 +28,7 @@ describe("rollup", async () => {
       const runtimeCall = {
         bank: {
           create_token: {
-            token_name: "token_2",
+            token_name: `version_test_${timestamp}`,
             initial_balance: "20000",
             token_decimals: 12,
             supply_cap: "100000000000",
@@ -37,7 +38,7 @@ describe("rollup", async () => {
         },
       };
       await expect(rollup.call(runtimeCall, { signer })).rejects.toThrow(
-        VersionMismatchError
+        VersionMismatchError,
       );
 
       rollup.chainHash = chainHashFn;
@@ -48,11 +49,12 @@ describe("rollup", async () => {
       expect(result.response.status).toEqual("submitted");
     });
     it("should successfully sign and submit a transaction", async () => {
+      const timestamp = Date.now();
       rollup = await createStandardRollup();
       const runtimeCall = {
         bank: {
           create_token: {
-            token_name: "token_1",
+            token_name: `submit_test_${timestamp}`,
             initial_balance: "20000",
             token_decimals: 12,
             supply_cap: "100000000000",
@@ -67,6 +69,7 @@ describe("rollup", async () => {
       expect(response.status).toEqual("submitted");
     });
     it("should submit a batch with manually incrementing nonces successfully", async () => {
+      const timestamp = Date.now();
       rollup = await createStandardRollup();
       const publicKey = await signer.publicKey();
       let { nonce } = await rollup.dedup(publicKey);
@@ -76,7 +79,7 @@ describe("rollup", async () => {
         {
           bank: {
             create_token: {
-              token_name: "token_100",
+              token_name: `batch_test_1_${timestamp}`,
               initial_balance: "20000",
               token_decimals: 12,
               supply_cap: "100000000000",
@@ -88,7 +91,7 @@ describe("rollup", async () => {
         {
           bank: {
             create_token: {
-              token_name: "token_200",
+              token_name: `batch_test_2_${timestamp}`,
               initial_balance: "20000",
               token_decimals: 12,
               supply_cap: "100000000000",
@@ -100,7 +103,7 @@ describe("rollup", async () => {
         {
           bank: {
             create_token: {
-              token_name: "token_300",
+              token_name: `batch_test_3_${timestamp}`,
               initial_balance: "30000",
               token_decimals: 12,
               supply_cap: "100000000000",
@@ -114,7 +117,7 @@ describe("rollup", async () => {
       for (const callMessage of callMessages) {
         const { transaction } = await rollup.call(callMessage, {
           signer,
-          overrides: { generation: nonce },
+          overrides: { uniqueness: { generation: nonce } },
         });
 
         batch.push(transaction);
