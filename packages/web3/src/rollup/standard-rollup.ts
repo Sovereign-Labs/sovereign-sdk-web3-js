@@ -58,7 +58,10 @@ const useOrFetchGeneration = async <S extends StandardRollupSpec<unknown>>({
   UnsignedTransactionContext<S, StandardRollupContext>,
   "runtimeCall"
 >) => {
-  if (overrides?.uniqueness?.generation !== undefined && overrides.uniqueness.generation >= 0) {
+  if (
+    overrides?.uniqueness?.generation !== undefined &&
+    overrides.uniqueness.generation >= 0
+  ) {
     return overrides.uniqueness.generation;
   }
 
