@@ -1,74 +1,76 @@
 import { TurnkeyClient } from "@turnkey/http";
 import { ApiKeyStamper } from "@turnkey/api-key-stamper";
 import { ethers } from "ethers"; // v6 helpers
-import 'dotenv/config';
 import type { Signer } from "@sovereign-sdk/signers";
 import { hexToBytes, bytesToHex } from "@sovereign-sdk/utils";
 import { Point } from "@noble/secp256k1";
 import { keccak_256 } from "@noble/hashes/sha3";
 
-// --- Turnkey Configuration ---
-const ORG_ID = process.env.TURNKEY_ORG_ID;
-const API_PUBLIC_KEY = process.env.TURNKEY_API_PUB;
-const API_PRIVATE_KEY = process.env.TURNKEY_API_PRIV;
-// This is the private key that will be used to sign the transaction.
-// It is managed by Turnkey and never leaves their environment.
-const ECDSA_KEY_ID = process.env.TURNKEY_ECDSA_KEY_ID; // your key ID
-
-if (!ORG_ID || !API_PUBLIC_KEY || !API_PRIVATE_KEY || !ECDSA_KEY_ID) {
-    throw new Error("Turnkey environment variables are not set. Please create a .env file.");
+export interface TurnkeyConfig {
+    organizationId: string;
+    apiPublicKey: string;
+    apiPrivateKey: string;
+    keyId: string;
 }
 
 // Helper function to wait for a certain amount of time.
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-export class TurnkeySecp256k1Signer implements Signer {
+// A signer key from Turnkey.
+export class TurnkeySigner implements Signer {
     private tk: TurnkeyClient;
+    private config: TurnkeyConfig;
     public readonly _publicKey: Uint8Array;
-
+    public readonly curve: string;
     private constructor(
         publicKey: Uint8Array,
-        turnkeyClient: TurnkeyClient
+        turnkeyClient: TurnkeyClient,
+        config: TurnkeyConfig,
+        curve: string
     ) {
         this._publicKey = publicKey;
         this.tk = turnkeyClient;
-
-        // Bind `this` to the methods to ensure the context is not lost
-        // when they are called by the Sovereign SDK.
-        this.sign = this.sign.bind(this);
+        this.config = config;
+        this.curve = curve;
     }
 
-    public static async create(): Promise<TurnkeySecp256k1Signer> {
-        if (!/^[0-9a-fA-F]+$/.test(API_PRIVATE_KEY!)) {
-            throw new Error(`Invalid TURNKEY_API_PRIV: not a valid hex string. Please check your .env file.`);
-        }
-        if (!/^[0-9a-fA-F]+$/.test(API_PUBLIC_KEY!)) {
-            throw new Error(`Invalid TURNKEY_API_PUB: not a valid hex string. Please check your .env file.`);
-        }
+    public static async create(config: TurnkeyConfig): Promise<TurnkeySigner> {
 
         const stamper = new ApiKeyStamper({
-            apiPublicKey: API_PUBLIC_KEY!,
-            apiPrivateKey: API_PRIVATE_KEY!,
+            apiPublicKey: config.apiPublicKey,
+            apiPrivateKey: config.apiPrivateKey,
         });
 
         const turnkeyClient = new TurnkeyClient({ baseUrl: "https://api.turnkey.com" }, stamper);
 
         const response = await turnkeyClient.getPrivateKey({
-            organizationId: ORG_ID!,
-            privateKeyId: ECDSA_KEY_ID!,
+            organizationId: config.organizationId,
+            privateKeyId: config.keyId,
         });
 
-        const uncompressedPublicKey = response.privateKey.publicKey;
-        if (!uncompressedPublicKey) {
-            throw new Error(`Could not retrieve public key for Turnkey key ${ECDSA_KEY_ID}`);
+        if (response.privateKey.curve === "CURVE_SECP256K1") {
+            const uncompressedPublicKey = response.privateKey.publicKey;
+            if (!uncompressedPublicKey) {
+                throw new Error(`Could not retrieve public key for Turnkey key ${config.keyId}`);
+            }
+            // The public key from Turnkey is uncompressed (prefixed with 0x04, 65 bytes).
+            // The Sovereign SDK expects a compressed (33-byte) public key.
+            const point   = Point.fromHex(uncompressedPublicKey);
+            const compressedPublicKey = point.toRawBytes(true);
+            return new TurnkeySigner(compressedPublicKey, turnkeyClient, config, "secp256k1");
+        } else if (response.privateKey.curve === "CURVE_ED25519") {
+            const publicKeyHex = response.privateKey.publicKey;
+            if (!publicKeyHex) {
+                throw new Error(`Could not retrieve public key for Turnkey key ${config.keyId}`);
+            }
+            // ED25519 public keys are 32 bytes in raw format
+            // Convert from hex string to Uint8Array
+            const publicKeyBytes = hexToBytes(publicKeyHex);
+            return new TurnkeySigner(publicKeyBytes, turnkeyClient, config, "ed25519");
+        } else {
+            throw new Error(`Unsupported curve: ${response.privateKey.curve}`);
         }
-        
-        // The public key from Turnkey is uncompressed (prefixed with 0x04, 65 bytes).
-        // The Sovereign SDK expects a compressed (33-byte) public key.
-        const point   = Point.fromHex(uncompressedPublicKey);
-        const compressedPublicKey = point.toRawBytes(true);
 
-        return new TurnkeySecp256k1Signer(compressedPublicKey, turnkeyClient);
     }
 
     public async publicKey(): Promise<Uint8Array> {
@@ -76,25 +78,26 @@ export class TurnkeySecp256k1Signer implements Signer {
     }
 
     async sign(message: Uint8Array): Promise<Uint8Array> {
-        const msgHash = bytesToHex(keccak_256(message));
+        // For ed255519, the hashing is internal to turnkey. Their docs state that only `HASH_FUNCTION_NOT_APPLICABLE` is supported.
+        const payload = this.curve === "secp256k1" ? bytesToHex(keccak_256(message)) : bytesToHex(message);
 
         const response = await this.tk.signRawPayload({
             type: "ACTIVITY_TYPE_SIGN_RAW_PAYLOAD_V2",
-            organizationId: ORG_ID!,
+            organizationId: this.config.organizationId,
             timestampMs: String(Date.now()),
             parameters: {
-                signWith: ECDSA_KEY_ID!,
-                payload: msgHash,
+                signWith: this.config.keyId,
+                payload,
                 encoding: "PAYLOAD_ENCODING_HEXADECIMAL",
-                hashFunction: "HASH_FUNCTION_NO_OP",
+                hashFunction: this.curve === "secp256k1" ? "HASH_FUNCTION_NO_OP" : "HASH_FUNCTION_NOT_APPLICABLE",
             },
         });
+        await wait(500);
 
         // Poll every 60s until COMPLETED
         while (true) {
-            await wait(60000);
             const { activity } = await this.tk.getActivity({
-                organizationId: ORG_ID!,
+                organizationId: this.config.organizationId,
                 activityId: response.activity.id,
             });
 
@@ -118,6 +121,7 @@ export class TurnkeySecp256k1Signer implements Signer {
             if (activity.status === "ACTIVITY_STATUS_REJECTED" || activity.status === "ACTIVITY_STATUS_FAILED") {
                 throw new Error(`Turnkey activity was not completed. Status: ${activity.status}`);
             }
+            await wait(60000);
 
         }
     }
