@@ -509,8 +509,17 @@ export class JsonToBorshConverter {
         return v;
       });
     } else if (typeof context.value === "string") {
+      // Use the display from context.currentLink if it's an Immediate link,
+      // otherwise use the display parameter passed directly
+      const actualDisplay = 
+        typeof context.currentLink === "object" && 
+        "Immediate" in context.currentLink && 
+        typeof context.currentLink.Immediate === "object" &&
+        "ByteArray" in context.currentLink.Immediate
+          ? context.currentLink.Immediate.ByteArray.display
+          : display;
       bytes = byteDisplay.parse(
-        display,
+        actualDisplay,
         context.value
       );
     } else {
@@ -550,8 +559,17 @@ export class JsonToBorshConverter {
         return v;
       });
     } else if (typeof context.value === "string") {
+      // Use the display from context.currentLink if it's an Immediate link,
+      // otherwise use the display parameter passed directly
+      const actualDisplay = 
+        typeof context.currentLink === "object" && 
+        "Immediate" in context.currentLink && 
+        typeof context.currentLink.Immediate === "object" &&
+        "ByteVec" in context.currentLink.Immediate
+          ? context.currentLink.Immediate.ByteVec.display
+          : display;
       bytes = byteDisplay.parse(
-        display,
+        actualDisplay,
         context.value
       );
     } else {
