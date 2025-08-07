@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.10.0
+
+### Minor Changes
+
+- 0e2376b: Add more flexity Uniqueness parameter to UnsignedTransaction, so use can specify nonce, not only generation number
+
 ## 0.9.1
 
 ### Patch Changes
