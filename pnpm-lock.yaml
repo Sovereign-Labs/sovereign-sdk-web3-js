@@ -175,6 +175,12 @@ importers:
       '@sovereign-sdk/utils':
         specifier: workspace:^
         version: link:../utils
+      '@turnkey/api-key-stamper':
+        specifier: ^0.4.7
+        version: 0.4.7
+      '@turnkey/http':
+        specifier: ^3.5.1
+        version: 3.6.0
       ethers:
         specifier: ^6.15.0
         version: 6.15.0
@@ -1186,6 +1192,22 @@ packages:
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
 
+  '@turnkey/api-key-stamper@0.4.7':
+    resolution: {integrity: sha512-/0/kW7v+uCnmHnGMoHSXn4Vb/MxLAIivGxX/T0L4vVoIiJalQmqcCtgiWnPWZDiJNGjMKp+jd/8j6VXgbVVozg==}
+    engines: {node: '>=18.0.0'}
+
+  '@turnkey/encoding@0.5.0':
+    resolution: {integrity: sha512-nRlKRQa6B5/xltGUKN1iKo4h4YC/0iFz0fAuFFZevc+YGDj7ddAP/3HkWmVvLmdoicUgs9rxvWbLRlgqPkbwzQ==}
+    engines: {node: '>=18.0.0'}
+
+  '@turnkey/http@3.6.0':
+    resolution: {integrity: sha512-TpjZNpNWuJVDbnMGQva/kAuDheWDjZwS6BweeXuqQsfPf/pBeuqP0HVj6+3D2jQAQYNfQ1IE0snRURs+Uu0Inw==}
+    engines: {node: '>=18.0.0'}
+
+  '@turnkey/webauthn-stamper@0.5.1':
+    resolution: {integrity: sha512-eBwceTStSSettBQsLo3X5eJEarcK9f20cGUdi6jOesXOP86iYEIgR4+aH2qyCQ3eaovj+Hl44UGngXueIm/tKg==}
+    engines: {node: '>=18.0.0'}
+
   '@types/bun@1.2.19':
     resolution: {integrity: sha512-d9ZCmrH3CJ2uYKXQIUuZ/pUnTqIvLDS0SK7pFmbx8ma+ziH/FRMoAq5bYpRG7y+w1gl+HgyNZbtqgMq4W4e2Lg==}
 
@@ -1574,6 +1596,9 @@ packages:
 
   create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
+
+  cross-fetch@3.2.0:
+    resolution: {integrity: sha512-Q+xVJLoGOeIMXZmbUK4HYk+69cQH6LudR0Vu/pRm2YlU/hDV9CiS0gKUMaWY5f2NeUH9C1nV3bsTlCo0FsTV1Q==}
 
   cross-spawn@5.1.0:
     resolution: {integrity: sha512-pTgQJ5KC0d2hcY8eyL1IzlBPYjTkyH72XRZPnLyKus2mBfNjQs3klqbJU2VILqZryAZUt9JOb3h/mWMy23/f5A==}
@@ -2467,6 +2492,9 @@ packages:
     resolution: {integrity: sha512-hlq8tAfn0m/61p4BVRcPzIGr6LKiMwo4VM6dGi6pt4qcRkmNzTcWq6eCEjEh+qXjkMDvPlOFFSGwQjoEa6gyMA==}
     engines: {node: '>=10'}
     hasBin: true
+
+  sha256-uint8array@0.10.7:
+    resolution: {integrity: sha512-1Q6JQU4tX9NqsDGodej6pkrUVQVNapLZnvkwIhddH/JqzBZF1fSaxSWNY6sziXBE8aEa2twtGkXUrwzGeZCMpQ==}
 
   shebang-command@1.2.0:
     resolution: {integrity: sha512-EV3L1+UQWGor21OmnvojK36mhg+TyIKDh3iFBKBohr5xeXIhNBcx8oWdgkTEEQ+BEFFYdLRuqMfd5L84N1V5Vg==}
@@ -3762,6 +3790,27 @@ snapshots:
 
   '@tsconfig/node16@1.0.4': {}
 
+  '@turnkey/api-key-stamper@0.4.7':
+    dependencies:
+      '@noble/curves': 1.4.2
+      '@turnkey/encoding': 0.5.0
+      sha256-uint8array: 0.10.7
+
+  '@turnkey/encoding@0.5.0': {}
+
+  '@turnkey/http@3.6.0':
+    dependencies:
+      '@turnkey/api-key-stamper': 0.4.7
+      '@turnkey/encoding': 0.5.0
+      '@turnkey/webauthn-stamper': 0.5.1
+      cross-fetch: 3.2.0
+    transitivePeerDependencies:
+      - encoding
+
+  '@turnkey/webauthn-stamper@0.5.1':
+    dependencies:
+      sha256-uint8array: 0.10.7
+
   '@types/bun@1.2.19(@types/react@19.1.8)':
     dependencies:
       bun-types: 1.2.19(@types/react@19.1.8)
@@ -4196,6 +4245,12 @@ snapshots:
       readable-stream: 4.7.0
 
   create-require@1.1.1: {}
+
+  cross-fetch@3.2.0:
+    dependencies:
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
 
   cross-spawn@5.1.0:
     dependencies:
@@ -5069,6 +5124,8 @@ snapshots:
   semver@7.6.3: {}
 
   semver@7.7.1: {}
+
+  sha256-uint8array@0.10.7: {}
 
   shebang-command@1.2.0:
     dependencies:
