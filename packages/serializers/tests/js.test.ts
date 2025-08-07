@@ -4,7 +4,7 @@ import schema from "./fuzz-input-schema.json";
 
 const js = new JsSerializer(schema);
 
-const byteVecCases = [
+const byteVecCases: Array<[string, any]> = [
   ["Base58", { address: "gFqoeNwi4sf1M" }],
   ["Hex", "0x1717171717171717171717171717171717171717171717171717171717171717"],
   // handles non 0x prefix
@@ -14,7 +14,7 @@ const byteVecCases = [
 ];
 
 // TODO: get 32byte values
-const byteArrayCases = [
+const byteArrayCases: Array<[string, any]> = [
   ["Hex", "0x1717171717171717171717171717171717171717171717171717171717171717"],
   // handles non 0x prefix
   ["Hex", "1717171717171717171717171717171717171717171717171717171717171717"],
