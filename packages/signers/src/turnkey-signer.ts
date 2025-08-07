@@ -22,7 +22,7 @@ export class TurnkeySigner implements Signer {
     private config: TurnkeyConfig;
     public readonly _publicKey: Uint8Array;
     public readonly curve: string;
-    private constructor(
+    constructor(
         publicKey: Uint8Array,
         turnkeyClient: TurnkeyClient,
         config: TurnkeyConfig,
@@ -92,7 +92,7 @@ export class TurnkeySigner implements Signer {
                 hashFunction: this.curve === "secp256k1" ? "HASH_FUNCTION_NO_OP" : "HASH_FUNCTION_NOT_APPLICABLE",
             },
         });
-        await wait(500);
+        await wait(1000);
 
         // Poll every 60s until COMPLETED
         while (true) {
