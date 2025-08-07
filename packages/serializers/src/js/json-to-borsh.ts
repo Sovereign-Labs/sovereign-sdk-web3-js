@@ -493,7 +493,7 @@ export class JsonToBorshConverter {
     this.writer.writeBool(value);
   }
 
-  private visitByteArray(len: number, _display: any, context: Context): void {
+  private visitByteArray(len: number, display: any, context: Context): void {
     let bytes: number[];
 
     if (Array.isArray(context.value)) {
@@ -510,7 +510,7 @@ export class JsonToBorshConverter {
       });
     } else if (typeof context.value === "string") {
       bytes = byteDisplay.parse(
-        context.currentLink.Immediate.ByteArray.display,
+        display,
         context.value
       );
     } else {
@@ -534,7 +534,7 @@ export class JsonToBorshConverter {
     }
   }
 
-  private visitByteVec(_display: any, context: Context): void {
+  private visitByteVec(display: any, context: Context): void {
     let bytes: number[];
 
     if (Array.isArray(context.value)) {
@@ -551,7 +551,7 @@ export class JsonToBorshConverter {
       });
     } else if (typeof context.value === "string") {
       bytes = byteDisplay.parse(
-        context.currentLink.Immediate.ByteVec.display,
+        display,
         context.value
       );
     } else {
