@@ -66,22 +66,20 @@ const createMockTurnkeyClient = (curve: "CURVE_ED25519" | "CURVE_SECP256K1", tes
 						}
 					}
 				};
-			} else {
-				// secp256k1 signature parsing
-				const sig = secp256k1.Signature.fromCompact(signature);
-				return {
-					activity: {
-						status: "ACTIVITY_STATUS_COMPLETED",
-						result: {
-							signRawPayloadResult: {
-								r: sig.r.toString(16).padStart(64, '0'),
-								s: sig.s.toString(16).padStart(64, '0')
-							}
+			} 				// secp256k1 signature parsing
+			const sig = secp256k1.Signature.fromCompact(signature);
+			return {
+				activity: {
+					status: "ACTIVITY_STATUS_COMPLETED",
+					result: {
+						signRawPayloadResult: {
+							r: sig.r.toString(16).padStart(64, '0'),
+							s: sig.s.toString(16).padStart(64, '0')
 						}
 					}
-				};
-			}
-		}
+				}
+			};
+	}
 	} as any;
 };
 
@@ -91,7 +89,7 @@ describe("TurnkeySigner - Ed25519", async () => {
 	const vanillaSigner = new Ed25519Signer(testPrivateKeyBytes);
 	const publickey = await vanillaSigner.publicKey();
 
-	const ORG_ID = `mock-org`;
+	const ORG_ID = 'mock-org';
 	const mockClient = createMockTurnkeyClient("CURVE_ED25519", vanillaSigner);
 	const signer = new TurnkeySigner(publickey, mockClient, {
 		organizationId: ORG_ID,
@@ -132,7 +130,7 @@ describe("TurnkeySigner - Secp256k1", () => {
 	// Add private key bytes to the signer for the mock to access
 	(vanillaSigner as any).privateKeyBytes = testPrivateKeyBytes;
 	
-	const ORG_ID = `mock-org`;
+	const ORG_ID = 'mock-org';
 	const mockClient = createMockTurnkeyClient("CURVE_SECP256K1", vanillaSigner);
 	
 	// Get compressed public key for TurnkeySigner (matching the behavior in create method)

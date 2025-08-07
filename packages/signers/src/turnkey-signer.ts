@@ -58,7 +58,9 @@ export class TurnkeySigner implements Signer {
             const point   = Point.fromHex(uncompressedPublicKey);
             const compressedPublicKey = point.toRawBytes(true);
             return new TurnkeySigner(compressedPublicKey, turnkeyClient, config, "secp256k1");
-        } else if (response.privateKey.curve === "CURVE_ED25519") {
+        } 
+
+        if (response.privateKey.curve === "CURVE_ED25519") {
             const publicKeyHex = response.privateKey.publicKey;
             if (!publicKeyHex) {
                 throw new Error(`Could not retrieve public key for Turnkey key ${config.keyId}`);
@@ -67,9 +69,10 @@ export class TurnkeySigner implements Signer {
             // Convert from hex string to Uint8Array
             const publicKeyBytes = hexToBytes(publicKeyHex);
             return new TurnkeySigner(publicKeyBytes, turnkeyClient, config, "ed25519");
-        } else {
-            throw new Error(`Unsupported curve: ${response.privateKey.curve}`);
-        }
+        } 
+
+        throw new Error(`Unsupported curve: ${response.privateKey.curve}`);
+        
 
     }
 
@@ -102,7 +105,7 @@ export class TurnkeySigner implements Signer {
             });
 
             if (activity.status === "ACTIVITY_STATUS_COMPLETED") {
-                if (activity.result && activity.result.signRawPayloadResult) {
+                if (activity.result?.signRawPayloadResult) {
                     const { r, s } = activity.result.signRawPayloadResult;
 
                     // The Sovereign SDK expects a 64-byte signature (r || s).
@@ -113,9 +116,9 @@ export class TurnkeySigner implements Signer {
                     ]);
 
                     return hexToBytes(sigBytes);
-                } else {
-                    throw new Error(`Turnkey activity completed but missing signature result. Full activity: ${JSON.stringify(activity, null, 2)}`);
-                }
+                } 
+
+                throw new Error(`Turnkey activity completed but missing signature result. Full activity: ${JSON.stringify(activity, null, 2)}`);
             }
 
             if (activity.status === "ACTIVITY_STATUS_REJECTED" || activity.status === "ACTIVITY_STATUS_FAILED") {
