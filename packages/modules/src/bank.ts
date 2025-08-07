@@ -121,12 +121,13 @@ export class Bank {
     return tokenId ?? this.gasTokenId();
   }
 
-  private isMissingAccountError(anyError: unknown): boolean {
-    if (!(anyError instanceof SovereignClient.APIError)) return false;
-    if (anyError.status !== 404) return false;
-    const body = anyError.error as ErrorResponse;
+  // biome-ignore lint/suspicious/noExplicitAny: todo
+  private isMissingAccountError(anyError: any): boolean {
+    if (anyError?.status !== 404) return false;
+    const body = anyError?.error as ErrorResponse;
     return (
-      body.message.startsWith("Balance") && body.message.endsWith("not found")
+      body?.message?.startsWith("Balance") &&
+      body?.message?.endsWith("not found")
     );
   }
 }
