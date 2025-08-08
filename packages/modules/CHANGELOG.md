@@ -1,5 +1,11 @@
 # @sovereign-sdk/modules
 
+## 0.1.5
+
+### Patch Changes
+
+- 0bf15e7: bump error check in bank module
+
 ## 0.1.4
 
 ### Patch Changes
