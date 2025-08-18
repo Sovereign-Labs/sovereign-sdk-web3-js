@@ -12,7 +12,9 @@ import {
   createStandardRollup,
 } from "./standard-rollup";
 
-export type SolanaSignableRollupContext = StandardRollupContext;
+export type SolanaSignableRollupContext = StandardRollupContext & {
+  solanaEndpoint: string;
+};
 
 export type SolanaSignableRollupSpec<RuntimeCall> =
   StandardRollupSpec<RuntimeCall>;
@@ -36,9 +38,10 @@ export type SolanaOffchainSimpleMessage = {
   signature: Uint8Array;
 };
 
-export class SolanaSignableRollup<
+export class SolanaSignableRollup<RuntimeCall> extends StandardRollup<
   RuntimeCall,
-> extends StandardRollup<RuntimeCall> {
+  SolanaSignableRollupContext
+> {
   /**
    * Signs an unsigned transaction using Solana offchain signing and submits it to the rollup.
    * Utilizes the provided signer to sign the transaction.
@@ -88,7 +91,7 @@ export class SolanaSignableRollup<
     const response = await this.http.post<
       string,
       SovereignClient.Sequencer.TxCreateResponse
-    >("/sequencer/accept-solana-offchain-tx", {
+    >(this.context.solanaEndpoint, {
       body: Base64.fromUint8Array(serializedMessage),
     });
 
@@ -167,13 +170,26 @@ export async function createSolanaSignableRollup<
     TypeBuilder<SolanaSignableRollupSpec<RuntimeCall>, C>
   >,
 ) {
+  // Build the config with default Solana endpoint
+  const config = rollupConfig ?? {};
+  const contextWithDefaults = {
+    solanaEndpoint: "/sequencer/accept-solana-offchain-tx",
+    ...config.context,
+  } as DeepPartial<C>;
+
+  const configWithDefaults = {
+    ...config,
+    context: contextWithDefaults,
+  };
+
+  // Create StandardRollup with the Solana context
   const standardRollup = await createStandardRollup<RuntimeCall, C>(
-    rollupConfig,
+    configWithDefaults,
     typeBuilderOverrides,
   );
 
-  // Transfer all properties from StandardRollup to SolanaSignableRollup
+  // Transform the StandardRollup into a SolanaSignableRollup by changing its prototype
   Object.setPrototypeOf(standardRollup, SolanaSignableRollup.prototype);
 
-  return standardRollup as SolanaSignableRollup<RuntimeCall>;
+  return standardRollup as unknown as SolanaSignableRollup<RuntimeCall>;
 }

@@ -67,11 +67,10 @@ const useOrFetchUniqueness = async <S extends StandardRollupSpec<unknown>>({
 
 export function standardTypeBuilder<
   S extends StandardRollupSpec<unknown>,
->(): TypeBuilder<S, StandardRollupContext> {
+  C extends StandardRollupContext = StandardRollupContext,
+>(): TypeBuilder<S, C> {
   return {
-    async unsignedTransaction(
-      context: UnsignedTransactionContext<S, StandardRollupContext>,
-    ) {
+    async unsignedTransaction(context: UnsignedTransactionContext<S, C>) {
       const { rollup, runtimeCall } = context;
       const { uniqueness: _, ...overrides } = context.overrides;
       const uniqueness = await useOrFetchUniqueness(context);
@@ -90,7 +89,7 @@ export function standardTypeBuilder<
       sender,
       signature,
       unsignedTx,
-    }: TransactionContext<S, StandardRollupContext>) {
+    }: TransactionContext<S, C>) {
       return {
         versioned_tx: {
           V0: {
@@ -121,10 +120,10 @@ export type SimulateParams = {
   generation?: number;
 } & SignerParams;
 
-export class StandardRollup<RuntimeCall> extends Rollup<
-  StandardRollupSpec<RuntimeCall>,
-  StandardRollupContext
-> {
+export class StandardRollup<
+  RuntimeCall,
+  C extends StandardRollupContext = StandardRollupContext,
+> extends Rollup<StandardRollupSpec<RuntimeCall>, C> {
   /**
    * Simulates a runtime call transaction.
    *
@@ -191,6 +190,7 @@ async function buildContext<C extends StandardRollupContext>(
   }
 
   return {
+    ...context,
     defaultTxDetails,
   } as C;
 }
@@ -210,10 +210,10 @@ export async function createStandardRollup<
     config.getSerializer ?? ((schema) => new JsSerializer(schema));
   const context = await buildContext<C>(client, config.context);
 
-  return new StandardRollup<RuntimeCall>(
+  return new StandardRollup<RuntimeCall, C>(
     { ...config, client, getSerializer, context },
     {
-      ...standardTypeBuilder(),
+      ...standardTypeBuilder<StandardRollupSpec<RuntimeCall>, C>(),
       ...typeBuilderOverrides,
     },
   );

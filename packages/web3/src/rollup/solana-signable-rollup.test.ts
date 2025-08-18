@@ -23,6 +23,11 @@ describe("SolanaSignableRollup", () => {
 
     expect(rollup).toBeInstanceOf(SolanaSignableRollup);
     expect(rollup).toBeInstanceOf(StandardRollup);
+
+    // Verify that the default Solana endpoint is set
+    expect(rollup.context.solanaEndpoint).toBe(
+      "/sequencer/accept-solana-offchain-tx",
+    );
   });
 
   it("should inherit all StandardRollup methods", async () => {
@@ -86,6 +91,29 @@ describe("SolanaSignableRollup", () => {
 
     expect(rollup).toBeInstanceOf(SolanaSignableRollup);
     expect(rollup.context.defaultTxDetails.chain_id).toBe(1);
+    expect(rollup.context.solanaEndpoint).toBe(
+      "/sequencer/accept-solana-offchain-tx",
+    );
+  });
+
+  it("should allow custom Solana endpoint configuration", async () => {
+    const mockClient = new SovereignClient();
+    mockClient.rollup = {
+      constants: {
+        retrieve: vi.fn().mockResolvedValue({ chain_id: 1 }),
+      },
+    } as any;
+
+    const customEndpoint = "/custom/solana-tx-endpoint";
+    const rollup = await createSolanaSignableRollup({
+      client: mockClient,
+      context: {
+        solanaEndpoint: customEndpoint,
+      },
+    });
+
+    expect(rollup).toBeInstanceOf(SolanaSignableRollup);
+    expect(rollup.context.solanaEndpoint).toBe(customEndpoint);
   });
 
   describe("byte-level compatibility with Rust implementation", () => {
