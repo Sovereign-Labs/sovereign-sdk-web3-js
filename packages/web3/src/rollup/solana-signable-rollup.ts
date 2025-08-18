@@ -1,8 +1,9 @@
-import { bytesToHex, hexToBytes } from "@sovereign-sdk/utils";
+import type SovereignClient from "@sovereign-sdk/client";
 import type { Signer } from "@sovereign-sdk/signers";
-import SovereignClient from "@sovereign-sdk/client";
+import { bytesToHex, hexToBytes } from "@sovereign-sdk/utils";
 import { Base64 } from "js-base64";
 import type { DeepPartial } from "../utils";
+import type { RollupConfig, TypeBuilder } from "./rollup";
 import {
   StandardRollup,
   type StandardRollupContext,
@@ -10,11 +11,11 @@ import {
   type UnsignedTransaction,
   createStandardRollup,
 } from "./standard-rollup";
-import type { RollupConfig, TypeBuilder } from "./rollup";
 
 export type SolanaSignableRollupContext = StandardRollupContext;
 
-export type SolanaSignableRollupSpec<RuntimeCall> = StandardRollupSpec<RuntimeCall>;
+export type SolanaSignableRollupSpec<RuntimeCall> =
+  StandardRollupSpec<RuntimeCall>;
 
 export type SolanaOffchainUnsignedTransaction<RuntimeCall> = {
   runtime_call: RuntimeCall;
@@ -35,12 +36,14 @@ export type SolanaOffchainSimpleMessage = {
   signature: Uint8Array;
 };
 
-export class SolanaSignableRollup<RuntimeCall> extends StandardRollup<RuntimeCall> {
+export class SolanaSignableRollup<
+  RuntimeCall,
+> extends StandardRollup<RuntimeCall> {
   /**
    * Signs an unsigned transaction using Solana offchain signing and submits it to the rollup.
    * Utilizes the provided signer to sign the transaction.
    * Only compatible with ED25519 signers - signers using other signature types will create an invalid TX!
-   * 
+   *
    * @param unsignedTx - The unsigned transaction to sign and submit
    * @param signer - The signer to sign the transaction with
    * @returns The transaction hash
@@ -61,7 +64,9 @@ export class SolanaSignableRollup<RuntimeCall> extends StandardRollup<RuntimeCal
     };
 
     // JSON serialize the Solana unsigned transaction
-    const jsonBytes = new TextEncoder().encode(JSON.stringify(solanaUnsignedTx));
+    const jsonBytes = new TextEncoder().encode(
+      JSON.stringify(solanaUnsignedTx),
+    );
 
     // Sign the JSON bytes
     const signature = await signer.sign(jsonBytes);
@@ -80,12 +85,12 @@ export class SolanaSignableRollup<RuntimeCall> extends StandardRollup<RuntimeCal
     const serializedMessage = this.serializeSolanaMessage(solanaMessage);
 
     // Submit the transaction using custom endpoint
-    const response = await this.http.post<{ body: string }, SovereignClient.Sequencer.TxCreateResponse>(
-      '/sequencer/accept-solana-offchain-tx',
-      {
-        body: Base64.fromUint8Array(serializedMessage),
-      },
-    );
+    const response = await this.http.post<
+      string,
+      SovereignClient.Sequencer.TxCreateResponse
+    >("/sequencer/accept-solana-offchain-tx", {
+      body: Base64.fromUint8Array(serializedMessage),
+    });
 
     return response.id;
   }
@@ -94,7 +99,7 @@ export class SolanaSignableRollup<RuntimeCall> extends StandardRollup<RuntimeCal
    * Performs a runtime call transaction using Solana offchain signing.
    * Utilizes the provided signer to sign the transaction.
    * Only compatible with ED25519 signers - signers using other signature types will create an invalid TX!
-   * 
+   *
    * @param runtimeCall - The runtime call to execute
    * @param signer - The signer to sign the transaction with
    * @param overrides - Optional overrides for transaction details
@@ -103,14 +108,17 @@ export class SolanaSignableRollup<RuntimeCall> extends StandardRollup<RuntimeCal
   async callWithSolana(
     runtimeCall: RuntimeCall,
     signer: Signer,
-    overrides: Partial<UnsignedTransaction<RuntimeCall>> = {},
+    overrides: DeepPartial<UnsignedTransaction<RuntimeCall>> = {},
   ): Promise<string> {
     const context = {
       runtimeCall,
       rollup: this,
-      overrides: overrides ?? ({} as Partial<UnsignedTransaction<RuntimeCall>>),
+      overrides:
+        overrides ?? ({} as DeepPartial<UnsignedTransaction<RuntimeCall>>),
     };
-    const unsignedTx = await (this as any)._typeBuilder.unsignedTransaction(context);
+
+    // Access the protected _typeBuilder directly
+    const unsignedTx = await this._typeBuilder.unsignedTransaction(context);
 
     return this.signWithSolanaAndSubmitTransaction(unsignedTx, signer);
   }
@@ -118,13 +126,16 @@ export class SolanaSignableRollup<RuntimeCall> extends StandardRollup<RuntimeCal
   /**
    * Serializes a SolanaOffchainSimpleMessage using borsh encoding.
    */
-  private serializeSolanaMessage(message: SolanaOffchainSimpleMessage): Uint8Array {
+  private serializeSolanaMessage(
+    message: SolanaOffchainSimpleMessage,
+  ): Uint8Array {
     // Calculate total size
-    const totalSize = 
-      4 + message.signed_message.length +  // Vec<u8> length prefix + data
-      32 +                                  // chain_hash [u8; 32]
-      32 +                                  // pubkey (assuming 32 bytes)
-      64;                                   // signature (assuming 64 bytes)
+    const totalSize =
+      4 +
+      message.signed_message.length + // Vec<u8> length prefix + data
+      32 + // chain_hash [u8; 32]
+      32 + // pubkey (assuming 32 bytes)
+      64; // signature (assuming 64 bytes)
 
     const buffer = new Uint8Array(totalSize);
     let offset = 0;

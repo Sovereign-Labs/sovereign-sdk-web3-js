@@ -1,8 +1,11 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
 import SovereignClient from "@sovereign-sdk/client";
 import type { Signer } from "@sovereign-sdk/signers";
 import { Ed25519Signer } from "@sovereign-sdk/signers";
-import { createSolanaSignableRollup, SolanaSignableRollup } from "./solana-signable-rollup";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  SolanaSignableRollup,
+  createSolanaSignableRollup,
+} from "./solana-signable-rollup";
 import { StandardRollup } from "./standard-rollup";
 
 vi.mock("@sovereign-sdk/client");
@@ -92,9 +95,11 @@ describe("SolanaSignableRollup", () => {
 
       // These values were generated using the test_submit_raw_signed_message_transaction() test from the sov-solana-offchain-auth crate.
       // The signer private key was logged, and the serde serialization of the AcceptTx was logged.
-      const privateKeyHex = "4096e0037e7dc13c28730b01e303ea4679a05e019f68a5ee8aec6c1968cac707";
-      const expectedJson = "{\"body\":\"cAEAAHsicnVudGltZV9jYWxsIjp7ImJhbmsiOnsidHJhbnNmZXIiOnsidG8iOiI0emR3SE5hRWE1bnBIdFJ0YVozUkwxbTZycHR1UVo2UkJMSEc2Y0F5VkhqTCIsImNvaW5zIjp7ImFtb3VudCI6IjEwMDAwIiwidG9rZW5faWQiOiJ0b2tlbl8xbnlsMGUweXdlcmFnZnNhdHlndDI0em1kOGpycjJ2cXR2ZGZwdHpqaHhrZ3V6Mnh4eDN2czB5MDd1NyJ9fX19LCJ1bmlxdWVuZXNzIjp7ImdlbmVyYXRpb24iOjB9LCJkZXRhaWxzIjp7Im1heF9wcmlvcml0eV9mZWVfYmlwcyI6MCwibWF4X2ZlZSI6IjEwMDAwMDAwMDAwMCIsImdhc19saW1pdCI6WzEwMDAwMDAwMDAsMTAwMDAwMDAwMF0sImNoYWluX2lkIjo0MzIxfSwiY2hhaW5fbmFtZSI6IlRlc3RDaGFpbiJ9CwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwuMdhE5OjziHniAzu9qaFH0I50R93Apv2VgyONYPuLm3nN3Cr4cJwZ5ii6YYXxr7LsW3qcL0NAJfIvmUZroK+fuM18D3Hj+NsFn+nmN9jCjiWhjbQO1/79i365l424Erwg=\"}";
-      
+      const privateKeyHex =
+        "4096e0037e7dc13c28730b01e303ea4679a05e019f68a5ee8aec6c1968cac707";
+      const expectedJson =
+        '{"body":"cAEAAHsicnVudGltZV9jYWxsIjp7ImJhbmsiOnsidHJhbnNmZXIiOnsidG8iOiI0emR3SE5hRWE1bnBIdFJ0YVozUkwxbTZycHR1UVo2UkJMSEc2Y0F5VkhqTCIsImNvaW5zIjp7ImFtb3VudCI6IjEwMDAwIiwidG9rZW5faWQiOiJ0b2tlbl8xbnlsMGUweXdlcmFnZnNhdHlndDI0em1kOGpycjJ2cXR2ZGZwdHpqaHhrZ3V6Mnh4eDN2czB5MDd1NyJ9fX19LCJ1bmlxdWVuZXNzIjp7ImdlbmVyYXRpb24iOjB9LCJkZXRhaWxzIjp7Im1heF9wcmlvcml0eV9mZWVfYmlwcyI6MCwibWF4X2ZlZSI6IjEwMDAwMDAwMDAwMCIsImdhc19saW1pdCI6WzEwMDAwMDAwMDAsMTAwMDAwMDAwMF0sImNoYWluX2lkIjo0MzIxfSwiY2hhaW5fbmFtZSI6IlRlc3RDaGFpbiJ9CwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwuMdhE5OjziHniAzu9qaFH0I50R93Apv2VgyONYPuLm3nN3Cr4cJwZ5ii6YYXxr7LsW3qcL0NAJfIvmUZroK+fuM18D3Hj+NsFn+nmN9jCjiWhjbQO1/79i365l424Erwg="}';
+
       const mockClient = new SovereignClient();
       mockClient.rollup = {
         constants: {
@@ -104,25 +109,30 @@ describe("SolanaSignableRollup", () => {
 
       // Mock the http.post method to capture the actual payload
       let capturedPayload: any;
-      const mockPost = vi.fn().mockImplementation((path: string, options: any) => {
-        capturedPayload = options;
-        return Promise.resolve({ id: "test-tx-hash" });
-      });
-      
+      const mockPost = vi
+        .fn()
+        .mockImplementation((path: string, options: any) => {
+          capturedPayload = options;
+          return Promise.resolve({ id: "test-tx-hash" });
+        });
+
       const rollup = await createSolanaSignableRollup({ client: mockClient });
-      
+
       // Mock serializer to return expected values
       vi.spyOn(rollup, "serializer").mockResolvedValue({
-        schema: { 
+        schema: {
           chain_name: "TestChain",
         },
       } as any);
 
       // Mock chainHash to return the same value as RT::CHAIN_HASH in Rust - the standard value used by TestRollup
-      const chainHash = new Uint8Array([11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11]);
+      const chainHash = new Uint8Array([
+        11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11,
+        11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11,
+      ]);
       vi.spyOn(rollup, "chainHash").mockResolvedValue(chainHash);
 
-      Object.defineProperty(rollup, 'http', {
+      Object.defineProperty(rollup, "http", {
         value: { post: mockPost },
         writable: false,
       });
@@ -137,10 +147,11 @@ describe("SolanaSignableRollup", () => {
             to: "4zdwHNaEa5npHtRtaZ3RL1m6rptuQZ6RBLHG6cAyVHjL", // RECIPIENT_ADDRESS
             coins: {
               amount: "10000",
-              token_id: "token_1nyl0e0yweragfsatygt24zmd8jrr2vqtvdfptzjhxkguz2xxx3vs0y07u7" // GAS_TOKEN_ID
-            }
-          }
-        }
+              token_id:
+                "token_1nyl0e0yweragfsatygt24zmd8jrr2vqtvdfptzjhxkguz2xxx3vs0y07u7", // GAS_TOKEN_ID
+            },
+          },
+        },
       };
 
       const unsignedTx = {
