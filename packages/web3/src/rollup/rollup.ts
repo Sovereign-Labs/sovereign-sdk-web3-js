@@ -114,7 +114,7 @@ export type CallParams<S extends BaseTypeSpec> = {
  */
 export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   private readonly _config: RollupConfig<C>;
-  protected readonly _typeBuilder: TypeBuilder<S, C>;
+  private readonly _typeBuilder: TypeBuilder<S, C>;
   private _chainHash?: Uint8Array;
   private _serializer?: Serializer;
 
