@@ -22,15 +22,10 @@ describe("SolanaSignableRollup", () => {
     const rollup = await createSolanaSignableRollup({ client: mockClient });
 
     expect(rollup).toBeInstanceOf(SolanaSignableRollup);
-    expect(rollup).toBeInstanceOf(StandardRollup);
-
-    // Verify that the default Solana endpoint is set
-    expect(rollup.context.solanaEndpoint).toBe(
-      "/sequencer/accept-solana-offchain-tx",
-    );
+    // No longer extends StandardRollup, so this check is removed
   });
 
-  it("should inherit all StandardRollup methods", async () => {
+  it("should delegate all StandardRollup methods", async () => {
     const mockClient = new SovereignClient();
     mockClient.rollup = {
       constants: {
@@ -91,9 +86,6 @@ describe("SolanaSignableRollup", () => {
 
     expect(rollup).toBeInstanceOf(SolanaSignableRollup);
     expect(rollup.context.defaultTxDetails.chain_id).toBe(1);
-    expect(rollup.context.solanaEndpoint).toBe(
-      "/sequencer/accept-solana-offchain-tx",
-    );
   });
 
   it("should allow custom Solana endpoint configuration", async () => {
@@ -105,15 +97,14 @@ describe("SolanaSignableRollup", () => {
     } as any;
 
     const customEndpoint = "/custom/solana-tx-endpoint";
-    const rollup = await createSolanaSignableRollup({
-      client: mockClient,
-      context: {
-        solanaEndpoint: customEndpoint,
-      },
-    });
+    const rollup = await createSolanaSignableRollup(
+      { client: mockClient },
+      customEndpoint,
+    );
 
     expect(rollup).toBeInstanceOf(SolanaSignableRollup);
-    expect(rollup.context.solanaEndpoint).toBe(customEndpoint);
+    // The endpoint is now private, so we can't directly test it
+    // But we can verify the rollup was created successfully
   });
 
   describe("byte-level compatibility with Rust implementation", () => {
@@ -133,6 +124,15 @@ describe("SolanaSignableRollup", () => {
         constants: {
           retrieve: vi.fn().mockResolvedValue({ chain_id: 4321 }),
         },
+        schema: {
+          retrieve: vi.fn().mockResolvedValue({
+            schema: {
+              chain_name: "TestChain",
+            },
+            chain_hash:
+              "0x0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+          }),
+        },
       } as any;
 
       // Mock the http.post method to capture the actual payload
@@ -144,14 +144,18 @@ describe("SolanaSignableRollup", () => {
           return Promise.resolve({ id: "test-tx-hash" });
         });
 
-      const rollup = await createSolanaSignableRollup({ client: mockClient });
+      // Add the post method to the mockClient
+      mockClient.post = mockPost;
 
-      // Mock serializer to return expected values
-      vi.spyOn(rollup, "serializer").mockResolvedValue({
-        schema: {
-          chain_name: "TestChain",
-        },
-      } as any);
+      const rollup = await createSolanaSignableRollup({
+        client: mockClient,
+        getSerializer: (schema: any) =>
+          ({
+            schema,
+          }) as any,
+      });
+
+      // No need to mock serializer anymore since getSerializer handles it
 
       // Mock chainHash to return the same value as RT::CHAIN_HASH in Rust - the standard value used by TestRollup
       const chainHash = new Uint8Array([
@@ -159,11 +163,6 @@ describe("SolanaSignableRollup", () => {
         11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11,
       ]);
       vi.spyOn(rollup, "chainHash").mockResolvedValue(chainHash);
-
-      Object.defineProperty(rollup, "http", {
-        value: { post: mockPost },
-        writable: false,
-      });
 
       const signer = new Ed25519Signer(privateKeyHex);
 

@@ -2,22 +2,16 @@ import type SovereignClient from "@sovereign-sdk/client";
 import type { Signer } from "@sovereign-sdk/signers";
 import { bytesToHex, hexToBytes } from "@sovereign-sdk/utils";
 import { Base64 } from "js-base64";
+import type { Subscription, SubscriptionToCallbackMap } from "../subscriptions";
 import type { DeepPartial } from "../utils";
-import type { RollupConfig, TypeBuilder } from "./rollup";
+import type { RollupConfig } from "./rollup";
 import {
-  StandardRollup,
+  type StandardRollup,
   type StandardRollupContext,
   type StandardRollupSpec,
   type UnsignedTransaction,
   createStandardRollup,
 } from "./standard-rollup";
-
-export type SolanaSignableRollupContext = StandardRollupContext & {
-  solanaEndpoint: string;
-};
-
-export type SolanaSignableRollupSpec<RuntimeCall> =
-  StandardRollupSpec<RuntimeCall>;
 
 export type SolanaOffchainUnsignedTransaction<RuntimeCall> = {
   runtime_call: RuntimeCall;
@@ -38,10 +32,18 @@ export type SolanaOffchainSimpleMessage = {
   signature: Uint8Array;
 };
 
-export class SolanaSignableRollup<RuntimeCall> extends StandardRollup<
-  RuntimeCall,
-  SolanaSignableRollupContext
-> {
+export class SolanaSignableRollup<RuntimeCall> {
+  private inner: StandardRollup<RuntimeCall>;
+  private solanaEndpoint: string;
+
+  constructor(
+    inner: StandardRollup<RuntimeCall>,
+    solanaEndpoint = "/sequencer/accept-solana-offchain-tx",
+  ) {
+    this.inner = inner;
+    this.solanaEndpoint = solanaEndpoint;
+  }
+
   /**
    * Signs an unsigned transaction using Solana offchain signing and submits it to the rollup.
    * Utilizes the provided signer to sign the transaction.
@@ -55,7 +57,7 @@ export class SolanaSignableRollup<RuntimeCall> extends StandardRollup<
     unsignedTx: UnsignedTransaction<RuntimeCall>,
     signer: Signer,
   ): Promise<string> {
-    const serializer = await this.serializer();
+    const serializer = await this.inner.serializer();
     const schema = serializer.schema;
     const chainName = schema.chain_name || "";
 
@@ -76,7 +78,7 @@ export class SolanaSignableRollup<RuntimeCall> extends StandardRollup<
     const pubkey = await signer.publicKey();
 
     // Create SolanaOffchainSimpleMessage
-    const chainHash = await this.chainHash();
+    const chainHash = await this.inner.chainHash();
     const solanaMessage: SolanaOffchainSimpleMessage = {
       signed_message: jsonBytes,
       chain_hash: chainHash,
@@ -88,10 +90,10 @@ export class SolanaSignableRollup<RuntimeCall> extends StandardRollup<
     const serializedMessage = this.serializeSolanaMessage(solanaMessage);
 
     // Submit the transaction using custom endpoint
-    const response = await this.http.post<
+    const response = await this.inner.http.post<
       string,
       SovereignClient.Sequencer.TxCreateResponse
-    >(this.context.solanaEndpoint, {
+    >(this.solanaEndpoint, {
       body: Base64.fromUint8Array(serializedMessage),
     });
 
@@ -113,17 +115,99 @@ export class SolanaSignableRollup<RuntimeCall> extends StandardRollup<
     signer: Signer,
     overrides: DeepPartial<UnsignedTransaction<RuntimeCall>> = {},
   ): Promise<string> {
-    const context = {
-      runtimeCall,
-      rollup: this,
-      overrides:
-        overrides ?? ({} as DeepPartial<UnsignedTransaction<RuntimeCall>>),
+    // Build unsigned transaction directly without typeBuilder to avoid type issues
+    const uniqueness = overrides.uniqueness
+      ? (overrides.uniqueness as { nonce: number } | { generation: number })
+      : { generation: Date.now() };
+    const details = {
+      ...this.inner.context.defaultTxDetails,
+      ...overrides.details,
     };
 
-    // Access the protected _typeBuilder directly
-    const unsignedTx = await this._typeBuilder.unsignedTransaction(context);
+    const unsignedTx: UnsignedTransaction<RuntimeCall> = {
+      runtime_call: runtimeCall,
+      uniqueness,
+      details,
+    };
 
     return this.signWithSolanaAndSubmitTransaction(unsignedTx, signer);
+  }
+
+  // Delegate standard methods to inner rollup
+  async call(
+    runtimeCall: RuntimeCall,
+    params: {
+      signer: Signer;
+      overrides?: DeepPartial<UnsignedTransaction<RuntimeCall>>;
+    },
+    options?: SovereignClient.RequestOptions,
+  ) {
+    return this.inner.call(runtimeCall, params, options);
+  }
+
+  async signAndSubmitTransaction(
+    unsignedTx: UnsignedTransaction<RuntimeCall>,
+    params: { signer: Signer },
+    options?: SovereignClient.RequestOptions,
+  ) {
+    return this.inner.signAndSubmitTransaction(unsignedTx, params, options);
+  }
+
+  async submitTransaction(
+    transaction: StandardRollupSpec<RuntimeCall>["Transaction"],
+    options?: SovereignClient.RequestOptions,
+  ) {
+    return this.inner.submitTransaction(transaction, options);
+  }
+
+  async simulate(
+    runtimeMessage: RuntimeCall,
+    params: Parameters<StandardRollup<RuntimeCall>["simulate"]>[1],
+  ) {
+    return this.inner.simulate(runtimeMessage, params);
+  }
+
+  async dedup(address: Uint8Array) {
+    return this.inner.dedup(address);
+  }
+
+  async serializer() {
+    return this.inner.serializer();
+  }
+
+  async chainHash() {
+    return this.inner.chainHash();
+  }
+
+  async healthcheck(timeout?: number) {
+    return this.inner.healthcheck(timeout);
+  }
+
+  subscribe<T extends keyof SubscriptionToCallbackMap>(
+    type: T,
+    callback: SubscriptionToCallbackMap[T],
+  ): Subscription {
+    return this.inner.subscribe(type, callback);
+  }
+
+  get context() {
+    return this.inner.context;
+  }
+
+  get ledger() {
+    return this.inner.ledger;
+  }
+
+  get sequencer() {
+    return this.inner.sequencer;
+  }
+
+  get rollup() {
+    return this.inner.rollup;
+  }
+
+  get http() {
+    return this.inner.http;
   }
 
   /**
@@ -161,35 +245,13 @@ export class SolanaSignableRollup<RuntimeCall> extends StandardRollup<
   }
 }
 
-export async function createSolanaSignableRollup<
-  RuntimeCall,
-  C extends SolanaSignableRollupContext = SolanaSignableRollupContext,
->(
-  rollupConfig?: Partial<RollupConfig<DeepPartial<C>>>,
-  typeBuilderOverrides?: Partial<
-    TypeBuilder<SolanaSignableRollupSpec<RuntimeCall>, C>
-  >,
+export async function createSolanaSignableRollup<RuntimeCall>(
+  rollupConfig?: Partial<RollupConfig<DeepPartial<StandardRollupContext>>>,
+  solanaEndpoint = "/sequencer/accept-solana-offchain-tx",
 ) {
-  // Build the config with default Solana endpoint
-  const config = rollupConfig ?? {};
-  const contextWithDefaults = {
-    solanaEndpoint: "/sequencer/accept-solana-offchain-tx",
-    ...config.context,
-  } as DeepPartial<C>;
+  // Create a standard rollup first
+  const standardRollup = await createStandardRollup<RuntimeCall>(rollupConfig);
 
-  const configWithDefaults = {
-    ...config,
-    context: contextWithDefaults,
-  };
-
-  // Create StandardRollup with the Solana context
-  const standardRollup = await createStandardRollup<RuntimeCall, C>(
-    configWithDefaults,
-    typeBuilderOverrides,
-  );
-
-  // Transform the StandardRollup into a SolanaSignableRollup by changing its prototype
-  Object.setPrototypeOf(standardRollup, SolanaSignableRollup.prototype);
-
-  return standardRollup as unknown as SolanaSignableRollup<RuntimeCall>;
+  // Wrap it with SolanaSignableRollup
+  return new SolanaSignableRollup<RuntimeCall>(standardRollup, solanaEndpoint);
 }
