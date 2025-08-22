@@ -33,11 +33,75 @@ export type SolanaOffchainSimpleMessage = {
   signature: Uint8Array;
 };
 
-export type Authenticator = "standard" | "solanaSimple";
+export type SolanaOffchainSpecCompliantMessage = {
+  signed_message_with_preamble: Uint8Array;
+  signature: Uint8Array;
+};
+
+export type Authenticator = "standard" | "solanaSimple" | "solanaSpec";
+
+// Borsh serialization constants
+const VEC_LENGTH_PREFIX_SIZE = 4;
+const CHAIN_HASH_SIZE = 32;
+const PUBKEY_SIZE = 32;
+const SIGNATURE_SIZE = 64;
+const PREAMBLE_LENGTH = 85;
+
+// Solana preamble constants
+const SIGNING_DOMAIN = new Uint8Array([
+  0xff,
+  ...new TextEncoder().encode("solana offchain"),
+]);
+const HEADER_VERSION = 0;
+const MESSAGE_FORMAT = 0;
+const SINGLE_SIGNER_COUNT = 1;
+
+/**
+ * Creates a Solana offchain message preamble according to the spec.
+ * See https://docs.anza.xyz/proposals/off-chain-message-signing#message-preamble
+ */
+export function createSolanaPreamble(
+  pubkey: Uint8Array,
+  chainHash: Uint8Array,
+  messageLength: number,
+): Uint8Array {
+  const preamble = new Uint8Array(PREAMBLE_LENGTH);
+  let offset = 0;
+
+  // signing_domain: [u8; 16] = b"\xffsolana offchain"
+  preamble.set(SIGNING_DOMAIN, offset);
+  offset += 16;
+
+  // header_version: u8 = 0 (ASCII format, hw-wallet compatible)
+  preamble[offset] = HEADER_VERSION;
+  offset += 1;
+
+  // application_domain: [u8; 32] (chain_hash)
+  preamble.set(chainHash, offset);
+  offset += 32;
+
+  // message_format: u8 = 0 (ASCII format)
+  preamble[offset] = MESSAGE_FORMAT;
+  offset += 1;
+
+  // signer_count: u8 = 1 (single signer)
+  preamble[offset] = SINGLE_SIGNER_COUNT;
+  offset += 1;
+
+  // signer: [u8; 32] (public key)
+  preamble.set(pubkey, offset);
+  offset += 32;
+
+  // message_length: [u8; 2] (little-endian u16)
+  new DataView(preamble.buffer, offset).setUint16(0, messageLength, true);
+
+  return preamble;
+}
 
 export class SolanaSignableRollup<RuntimeCall> {
   private inner: StandardRollup<RuntimeCall>;
   private solanaEndpoint: string;
+  private typeBuilder = standardTypeBuilder<StandardRollupSpec<RuntimeCall>>();
 
   constructor(
     inner: StandardRollup<RuntimeCall>,
@@ -48,13 +112,11 @@ export class SolanaSignableRollup<RuntimeCall> {
   }
 
   /**
-   * Submits a Solana offchain message to the rollup.
+   * Submits serialized data to the Solana endpoint.
    */
-  private async submitSolanaMessage(
-    solanaMessage: SolanaOffchainSimpleMessage,
+  private async submitSerializedMessage(
+    serializedMessage: Uint8Array,
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
-    const serializedMessage = this.serializeSolanaMessage(solanaMessage);
-
     return await this.inner.http.post<
       string,
       SovereignClient.Sequencer.TxCreateResponse
@@ -64,13 +126,63 @@ export class SolanaSignableRollup<RuntimeCall> {
   }
 
   /**
-   * Signs an unsigned transaction using Solana offchain simple signing and submits it.
-   * Returns the transaction result in the same format as standard rollup.
+   * Submits a Solana offchain message to the rollup.
    */
-  private async signWithSolanaSimpleAndSubmit(
+  private async submitSolanaMessage(
+    solanaMessage: SolanaOffchainSimpleMessage,
+  ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
+    const serializedMessage = this.serializeSolanaMessage(solanaMessage);
+    return this.submitSerializedMessage(serializedMessage);
+  }
+
+  /**
+   * Submits a Solana spec-compliant message to the rollup.
+   */
+  private async submitSolanaSpecMessage(
+    solanaMessage: SolanaOffchainSpecCompliantMessage,
+  ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
+    const serializedMessage = this.serializeSolanaSpecMessage(solanaMessage);
+    return this.submitSerializedMessage(serializedMessage);
+  }
+
+  /**
+   * Helper to build an unsigned transaction using the standard type builder.
+   */
+  private async buildUnsignedTransaction(
+    runtimeCall: RuntimeCall,
+    overrides?: DeepPartial<UnsignedTransaction<RuntimeCall>>,
+  ): Promise<UnsignedTransaction<RuntimeCall>> {
+    return this.typeBuilder.unsignedTransaction({
+      runtimeCall,
+      overrides: overrides ?? {},
+      rollup: this.inner,
+    });
+  }
+
+  /**
+   * Helper to build a transaction result object.
+   */
+  private async buildTransactionResult(
+    response: SovereignClient.Sequencer.TxCreateResponse,
     unsignedTx: UnsignedTransaction<RuntimeCall>,
-    signer: Signer,
+    pubkey: Uint8Array,
+    signature: Uint8Array,
   ): Promise<TransactionResult<Transaction<RuntimeCall>>> {
+    const transaction = await this.typeBuilder.transaction({
+      unsignedTx,
+      sender: pubkey,
+      signature,
+      rollup: this.inner,
+    });
+    return { response, transaction };
+  }
+
+  /**
+   * Helper to create and serialize a SolanaOffchainUnsignedTransaction to JSON bytes.
+   */
+  private async createSolanaJsonBytes(
+    unsignedTx: UnsignedTransaction<RuntimeCall>,
+  ): Promise<Uint8Array> {
     const serializer = await this.inner.serializer();
     const schema = serializer.schema;
     const chainName = schema.chain_name || "";
@@ -83,16 +195,25 @@ export class SolanaSignableRollup<RuntimeCall> {
     };
 
     // JSON serialize the Solana unsigned transaction
-    const jsonBytes = new TextEncoder().encode(
-      JSON.stringify(solanaUnsignedTx),
-    );
+    return new TextEncoder().encode(JSON.stringify(solanaUnsignedTx));
+  }
 
-    // Sign the JSON bytes
-    const signature = await signer.sign(jsonBytes);
+  /**
+   * Signs an unsigned transaction using Solana offchain simple signing and submits it.
+   * Returns the transaction result in the same format as standard rollup.
+   */
+  private async signWithSolanaSimpleAndSubmit(
+    unsignedTx: UnsignedTransaction<RuntimeCall>,
+    signer: Signer,
+  ): Promise<TransactionResult<Transaction<RuntimeCall>>> {
+    const jsonBytes = await this.createSolanaJsonBytes(unsignedTx);
+
     const pubkey = await signer.publicKey();
-
-    // Create SolanaOffchainSimpleMessage
     const chainHash = await this.inner.chainHash();
+
+    const signature = await signer.sign(jsonBytes);
+
+    // Build and submit result
     const solanaMessage: SolanaOffchainSimpleMessage = {
       signed_message: jsonBytes,
       chain_hash: chainHash,
@@ -100,19 +221,40 @@ export class SolanaSignableRollup<RuntimeCall> {
       signature: signature,
     };
 
-    // Use the shared submission method
     const response = await this.submitSolanaMessage(solanaMessage);
+    return this.buildTransactionResult(response, unsignedTx, pubkey, signature);
+  }
 
-    // Construct a standard transaction object for consistency
-    const typeBuilder = standardTypeBuilder<StandardRollupSpec<RuntimeCall>>();
-    const transaction = await typeBuilder.transaction({
-      unsignedTx,
-      sender: pubkey,
+  /**
+   * Signs an unsigned transaction using Solana spec-compliant signing and submits it.
+   * Returns the transaction result in the same format as standard rollup.
+   */
+  private async signWithSolanaSpecAndSubmit(
+    unsignedTx: UnsignedTransaction<RuntimeCall>,
+    signer: Signer,
+  ): Promise<TransactionResult<Transaction<RuntimeCall>>> {
+    const jsonBytes = await this.createSolanaJsonBytes(unsignedTx);
+
+    const pubkey = await signer.publicKey();
+    const chainHash = await this.inner.chainHash();
+
+    // Create preamble and combine with message
+    const preamble = createSolanaPreamble(pubkey, chainHash, jsonBytes.length);
+    const signedMessageWithPreamble = new Uint8Array(
+      preamble.length + jsonBytes.length,
+    );
+    signedMessageWithPreamble.set(preamble, 0);
+    signedMessageWithPreamble.set(jsonBytes, preamble.length);
+    const signature = await signer.sign(signedMessageWithPreamble);
+
+    // Build and submit result
+    const solanaMessage: SolanaOffchainSpecCompliantMessage = {
+      signed_message_with_preamble: signedMessageWithPreamble,
       signature: signature,
-      rollup: this.inner,
-    });
+    };
 
-    return { response, transaction };
+    const response = await this.submitSolanaSpecMessage(solanaMessage);
+    return this.buildTransactionResult(response, unsignedTx, pubkey, signature);
   }
 
   /**
@@ -144,24 +286,18 @@ export class SolanaSignableRollup<RuntimeCall> {
           options,
         );
       case "solanaSimple": {
-        // Build unsigned transaction
-        const uniqueness = params.overrides?.uniqueness
-          ? (params.overrides.uniqueness as
-              | { nonce: number }
-              | { generation: number })
-          : { generation: Date.now() };
-        const details = {
-          ...this.inner.context.defaultTxDetails,
-          ...params.overrides?.details,
-        };
-
-        const unsignedTx: UnsignedTransaction<RuntimeCall> = {
-          runtime_call: runtimeCall,
-          uniqueness,
-          details,
-        };
-
+        const unsignedTx = await this.buildUnsignedTransaction(
+          runtimeCall,
+          params.overrides,
+        );
         return this.signWithSolanaSimpleAndSubmit(unsignedTx, params.signer);
+      }
+      case "solanaSpec": {
+        const unsignedTx = await this.buildUnsignedTransaction(
+          runtimeCall,
+          params.overrides,
+        );
+        return this.signWithSolanaSpecAndSubmit(unsignedTx, params.signer);
       }
       default:
         throw new Error(`Unsupported authenticator: ${params.authenticator}`);
@@ -192,6 +328,8 @@ export class SolanaSignableRollup<RuntimeCall> {
         );
       case "solanaSimple":
         return this.signWithSolanaSimpleAndSubmit(unsignedTx, params.signer);
+      case "solanaSpec":
+        return this.signWithSolanaSpecAndSubmit(unsignedTx, params.signer);
       default:
         throw new Error(`Unsupported authenticator: ${params.authenticator}`);
     }
@@ -216,6 +354,15 @@ export class SolanaSignableRollup<RuntimeCall> {
   ): Promise<SovereignClient.Sequencer.TxCreateResponse>;
 
   /**
+   * Submits a Solana spec-compliant message.
+   */
+  async submitTransaction(
+    transaction: SolanaOffchainSpecCompliantMessage,
+    authenticator: "solanaSpec",
+    options?: SovereignClient.RequestOptions,
+  ): Promise<SovereignClient.Sequencer.TxCreateResponse>;
+
+  /**
    * Submits a transaction with the specified authenticator.
    *
    * @param transaction - Either a standard transaction or a Solana message
@@ -226,7 +373,8 @@ export class SolanaSignableRollup<RuntimeCall> {
   async submitTransaction(
     transaction:
       | StandardRollupSpec<RuntimeCall>["Transaction"]
-      | SolanaOffchainSimpleMessage,
+      | SolanaOffchainSimpleMessage
+      | SolanaOffchainSpecCompliantMessage,
     authenticator: Authenticator,
     options?: SovereignClient.RequestOptions,
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
@@ -237,9 +385,14 @@ export class SolanaSignableRollup<RuntimeCall> {
           options,
         );
       case "solanaSimple": {
-        // For Solana, we expect a SolanaOffchainSimpleMessage
+        // For Solana simple, we expect a SolanaOffchainSimpleMessage
         const solanaMessage = transaction as SolanaOffchainSimpleMessage;
         return await this.submitSolanaMessage(solanaMessage);
+      }
+      case "solanaSpec": {
+        // For Solana spec-compliant, we expect a SolanaOffchainSpecCompliantMessage
+        const solanaMessage = transaction as SolanaOffchainSpecCompliantMessage;
+        return await this.submitSolanaSpecMessage(solanaMessage);
       }
       default:
         throw new Error(`Unsupported authenticator: ${authenticator}`);
@@ -302,11 +455,6 @@ export class SolanaSignableRollup<RuntimeCall> {
   private serializeSolanaMessage(
     message: SolanaOffchainSimpleMessage,
   ): Uint8Array {
-    const VEC_LENGTH_PREFIX_SIZE = 4;
-    const CHAIN_HASH_SIZE = 32;
-    const PUBKEY_SIZE = 32;
-    const SIGNATURE_SIZE = 64;
-
     // Validate message field lengths
     if (message.chain_hash.length !== CHAIN_HASH_SIZE) {
       throw new Error(
@@ -351,6 +499,41 @@ export class SolanaSignableRollup<RuntimeCall> {
     // Serialize pubkey [u8; 32]
     buffer.set(message.pubkey, offset);
     offset += PUBKEY_SIZE;
+
+    // Serialize signature [u8; 64]
+    buffer.set(message.signature, offset);
+
+    return buffer;
+  }
+
+  /**
+   * Helper method to serialize a SolanaOffchainSpecCompliantMessage using borsh encoding.
+   */
+  private serializeSolanaSpecMessage(
+    message: SolanaOffchainSpecCompliantMessage,
+  ): Uint8Array {
+    // Validate signature length
+    if (message.signature.length !== SIGNATURE_SIZE) {
+      throw new Error(
+        `Invalid signature length: expected ${SIGNATURE_SIZE} bytes, got ${message.signature.length}`,
+      );
+    }
+
+    // Calculate total size
+    const totalSize =
+      VEC_LENGTH_PREFIX_SIZE +
+      message.signed_message_with_preamble.length +
+      SIGNATURE_SIZE;
+
+    const buffer = new Uint8Array(totalSize);
+    let offset = 0;
+
+    // Serialize Vec<u8> with length prefix (little-endian u32)
+    const view = new DataView(buffer.buffer);
+    view.setUint32(offset, message.signed_message_with_preamble.length, true);
+    offset += VEC_LENGTH_PREFIX_SIZE;
+    buffer.set(message.signed_message_with_preamble, offset);
+    offset += message.signed_message_with_preamble.length;
 
     // Serialize signature [u8; 64]
     buffer.set(message.signature, offset);
