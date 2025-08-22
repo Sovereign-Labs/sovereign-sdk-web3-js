@@ -10,46 +10,90 @@ import { StandardRollup } from "./standard-rollup";
 
 vi.mock("@sovereign-sdk/client");
 
+function createMockClient(overrides?: {
+  chainId?: number;
+  chainName?: string;
+  chainHash?: string;
+}) {
+  const mockClient = new SovereignClient();
+  const chainId = overrides?.chainId || 1;
+
+  mockClient.rollup = {
+    constants: {
+      retrieve: vi.fn().mockResolvedValue({ chain_id: chainId }),
+    },
+    schema: {
+      retrieve: vi.fn().mockResolvedValue({
+        schema: overrides?.chainName ? { chain_name: overrides.chainName } : {},
+        chain_hash:
+          overrides?.chainHash ||
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+      }),
+    },
+  } as any;
+
+  return mockClient;
+}
+
+function createMockSerializer(overrides?: any) {
+  return {
+    serializeUnsignedTx: vi.fn().mockReturnValue(new Uint8Array(10)),
+    serializeTx: vi.fn().mockReturnValue(new Uint8Array(10)),
+    serializeRuntimeCall: vi.fn().mockReturnValue(new Uint8Array(10)),
+    schema: overrides?.schema || {},
+    ...overrides,
+  } as any;
+}
+
+function createMockSigner() {
+  return {
+    sign: vi.fn().mockResolvedValue(new Uint8Array(64)),
+    publicKey: vi.fn().mockResolvedValue(new Uint8Array(32)),
+  } as any;
+}
+
 describe("SolanaSignableRollup", () => {
   it("should create a SolanaSignableRollup instance", async () => {
-    const mockClient = new SovereignClient();
-    mockClient.rollup = {
-      constants: {
-        retrieve: vi.fn().mockResolvedValue({ chain_id: 1 }),
-      },
-    } as any;
-
+    const mockClient = createMockClient();
     const rollup = await createSolanaSignableRollup({ client: mockClient });
-
     expect(rollup).toBeInstanceOf(SolanaSignableRollup);
-    // No longer extends StandardRollup, so this check is removed
   });
 
   it("should delegate all StandardRollup methods", async () => {
-    const mockClient = new SovereignClient();
-    mockClient.rollup = {
-      constants: {
-        retrieve: vi.fn().mockResolvedValue({ chain_id: 1 }),
+    const mockClient = createMockClient();
+
+    // Add sequencer mock for transaction submission
+    mockClient.sequencer = {
+      txs: {
+        create: vi.fn().mockResolvedValue({ id: "test-hash" }),
       },
     } as any;
 
-    const rollup = await createSolanaSignableRollup({ client: mockClient });
+    const rollup = await createSolanaSignableRollup({
+      client: mockClient,
+      getSerializer: () => createMockSerializer(),
+    });
 
-    // Check that key methods from StandardRollup are available
+    // Check that key methods are available
     expect(typeof rollup.call).toBe("function");
     expect(typeof rollup.signAndSubmitTransaction).toBe("function");
     expect(typeof rollup.simulate).toBe("function");
     expect(typeof rollup.serializer).toBe("function");
     expect(typeof rollup.submitTransaction).toBe("function");
+
+    // Verify that standard authenticator works
+    const result = await rollup.call({ test: "runtime" } as any, {
+      signer: createMockSigner(),
+      authenticator: "standard",
+    });
+
+    expect(result).toHaveProperty("response");
+    expect(result).toHaveProperty("transaction");
+    expect(result.response.id).toBe("test-hash");
   });
 
   it("should pass configuration to createStandardRollup", async () => {
-    const mockClient = new SovereignClient();
-    mockClient.rollup = {
-      constants: {
-        retrieve: vi.fn().mockResolvedValue({ chain_id: 42 }),
-      },
-    } as any;
+    const mockClient = createMockClient({ chainId: 42 });
 
     const customConfig = {
       client: mockClient,
@@ -71,15 +115,7 @@ describe("SolanaSignableRollup", () => {
   });
 
   it("should work without any configuration", async () => {
-    // Mock SovereignClient constructor
-    const mockClient = {
-      rollup: {
-        constants: {
-          retrieve: vi.fn().mockResolvedValue({ chain_id: 1 }),
-        },
-      },
-    } as any;
-
+    const mockClient = createMockClient();
     vi.mocked(SovereignClient).mockImplementation(() => mockClient as any);
 
     const rollup = await createSolanaSignableRollup();
@@ -89,22 +125,49 @@ describe("SolanaSignableRollup", () => {
   });
 
   it("should allow custom Solana endpoint configuration", async () => {
-    const mockClient = new SovereignClient();
-    mockClient.rollup = {
-      constants: {
-        retrieve: vi.fn().mockResolvedValue({ chain_id: 1 }),
-      },
-    } as any;
-
+    const mockClient = createMockClient();
     const customEndpoint = "/custom/solana-tx-endpoint";
+
+    // Capture the endpoint and payload sent to the client
+    let capturedEndpoint: string | undefined;
+    let capturedPayload: any;
+    mockClient.post = vi
+      .fn()
+      .mockImplementation((endpoint: string, payload: any) => {
+        capturedEndpoint = endpoint;
+        capturedPayload = payload;
+        return Promise.resolve({ id: "test-tx-hash" });
+      });
+
     const rollup = await createSolanaSignableRollup(
-      { client: mockClient },
+      {
+        client: mockClient,
+        getSerializer: () =>
+          createMockSerializer({ schema: { chain_name: "TestChain" } }),
+      },
       customEndpoint,
     );
 
-    expect(rollup).toBeInstanceOf(SolanaSignableRollup);
-    // The endpoint is now private, so we can't directly test it
-    // But we can verify the rollup was created successfully
+    // Submit a Solana transaction to verify the custom endpoint is used
+    await rollup.signAndSubmitTransaction(
+      {
+        runtime_call: { test: "call" },
+        uniqueness: { generation: 123 },
+        details: {
+          max_priority_fee_bips: 0,
+          max_fee: "1000",
+          gas_limit: null,
+          chain_id: 1,
+        },
+      } as any,
+      {
+        signer: createMockSigner(),
+        authenticator: "solanaSimple",
+      },
+    );
+
+    expect(capturedEndpoint).toBe(customEndpoint);
+    expect(capturedPayload).toHaveProperty("body");
   });
 
   describe("byte-level compatibility with Rust implementation", () => {
@@ -119,33 +182,21 @@ describe("SolanaSignableRollup", () => {
       const expectedJson =
         '{"body":"cAEAAHsicnVudGltZV9jYWxsIjp7ImJhbmsiOnsidHJhbnNmZXIiOnsidG8iOiI0emR3SE5hRWE1bnBIdFJ0YVozUkwxbTZycHR1UVo2UkJMSEc2Y0F5VkhqTCIsImNvaW5zIjp7ImFtb3VudCI6IjEwMDAwIiwidG9rZW5faWQiOiJ0b2tlbl8xbnlsMGUweXdlcmFnZnNhdHlndDI0em1kOGpycjJ2cXR2ZGZwdHpqaHhrZ3V6Mnh4eDN2czB5MDd1NyJ9fX19LCJ1bmlxdWVuZXNzIjp7ImdlbmVyYXRpb24iOjB9LCJkZXRhaWxzIjp7Im1heF9wcmlvcml0eV9mZWVfYmlwcyI6MCwibWF4X2ZlZSI6IjEwMDAwMDAwMDAwMCIsImdhc19saW1pdCI6WzEwMDAwMDAwMDAsMTAwMDAwMDAwMF0sImNoYWluX2lkIjo0MzIxfSwiY2hhaW5fbmFtZSI6IlRlc3RDaGFpbiJ9CwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwuMdhE5OjziHniAzu9qaFH0I50R93Apv2VgyONYPuLm3nN3Cr4cJwZ5ii6YYXxr7LsW3qcL0NAJfIvmUZroK+fuM18D3Hj+NsFn+nmN9jCjiWhjbQO1/79i365l424Erwg="}';
 
-      const mockClient = new SovereignClient();
-      mockClient.rollup = {
-        constants: {
-          retrieve: vi.fn().mockResolvedValue({ chain_id: 4321 }),
-        },
-        schema: {
-          retrieve: vi.fn().mockResolvedValue({
-            schema: {
-              chain_name: "TestChain",
-            },
-            chain_hash:
-              "0x0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
-          }),
-        },
-      } as any;
+      const mockClient = createMockClient({
+        chainId: 4321,
+        chainName: "TestChain",
+        chainHash:
+          "0x0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+      });
 
-      // Mock the http.post method to capture the actual payload
+      // Capture the actual payload sent to the endpoint
       let capturedPayload: any;
-      const mockPost = vi
+      mockClient.post = vi
         .fn()
         .mockImplementation((path: string, options: any) => {
           capturedPayload = options;
           return Promise.resolve({ id: "test-tx-hash" });
         });
-
-      // Add the post method to the mockClient
-      mockClient.post = mockPost;
 
       const rollup = await createSolanaSignableRollup({
         client: mockClient,
@@ -155,27 +206,17 @@ describe("SolanaSignableRollup", () => {
           }) as any,
       });
 
-      // No need to mock serializer anymore since getSerializer handles it
-
-      // Mock chainHash to return the same value as RT::CHAIN_HASH in Rust - the standard value used by TestRollup
-      const chainHash = new Uint8Array([
-        11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11,
-        11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11,
-      ]);
-      vi.spyOn(rollup, "chainHash").mockResolvedValue(chainHash);
-
       const signer = new Ed25519Signer(privateKeyHex);
 
-      // Create the same transaction as in the Rust test
-      // This matches create_transfer_tx_json(Amount(10_000), RECIPIENT_ADDRESS)
+      // Transaction matching Rust test
       const runtimeCall = {
         bank: {
           transfer: {
-            to: "4zdwHNaEa5npHtRtaZ3RL1m6rptuQZ6RBLHG6cAyVHjL", // RECIPIENT_ADDRESS
+            to: "4zdwHNaEa5npHtRtaZ3RL1m6rptuQZ6RBLHG6cAyVHjL",
             coins: {
               amount: "10000",
               token_id:
-                "token_1nyl0e0yweragfsatygt24zmd8jrr2vqtvdfptzjhxkguz2xxx3vs0y07u7", // GAS_TOKEN_ID
+                "token_1nyl0e0yweragfsatygt24zmd8jrr2vqtvdfptzjhxkguz2xxx3vs0y07u7",
             },
           },
         },
@@ -185,15 +226,17 @@ describe("SolanaSignableRollup", () => {
         runtime_call: runtimeCall,
         uniqueness: { generation: 0 },
         details: {
-          max_priority_fee_bips: 0, // TEST_DEFAULT_MAX_PRIORITY_FEE
-          max_fee: "100000000000", // TEST_DEFAULT_MAX_FEE
-          gas_limit: [1000000000, 1000000000], // TEST_DEFAULT_GAS_LIMIT
-          chain_id: 4321, // config_value!("CHAIN_ID")
+          max_priority_fee_bips: 0,
+          max_fee: "100000000000",
+          gas_limit: [1000000000, 1000000000],
+          chain_id: 4321,
         },
       };
 
-      // Call the method under test
-      await rollup.signWithSolanaAndSubmitTransaction(unsignedTx, signer);
+      await rollup.signAndSubmitTransaction(unsignedTx, {
+        signer,
+        authenticator: "solanaSimple",
+      });
 
       // Compare the entire POST body with the expected JSON from the Rust test
       const actualJson = JSON.stringify(capturedPayload);
