@@ -1,5 +1,6 @@
 import type SovereignClient from "@sovereign-sdk/client";
 import type { Signer } from "@sovereign-sdk/signers";
+import { LedgerSigner } from "@sovereign-sdk/signers";
 import { Base64 } from "js-base64";
 import type { Subscription, SubscriptionToCallbackMap } from "../subscriptions";
 import type { DeepPartial } from "../utils";
@@ -38,7 +39,11 @@ export type SolanaOffchainSpecCompliantMessage = {
   signature: Uint8Array;
 };
 
-export type Authenticator = "standard" | "solanaSimple" | "solana";
+export type Authenticator =
+  | "standard"
+  | "solanaSimple"
+  | "solana"
+  | "solanaAuto";
 
 // Borsh serialization constants
 const VEC_LENGTH_PREFIX_SIZE = 4;
@@ -109,6 +114,15 @@ export class SolanaSignableRollup<RuntimeCall> {
   ) {
     this.inner = inner;
     this.solanaEndpoint = solanaEndpoint;
+  }
+
+  /**
+   * Determines the appropriate authenticator based on the signer type.
+   * Returns "solana" for LedgerSigner (hardware wallet with spec-compliant signing)
+   * and "solanaSimple" for software signers.
+   */
+  private getAutoAuthenticator(signer: Signer): "solana" | "solanaSimple" {
+    return signer instanceof LedgerSigner ? "solana" : "solanaSimple";
   }
 
   /**
@@ -274,8 +288,14 @@ export class SolanaSignableRollup<RuntimeCall> {
     },
     options?: SovereignClient.RequestOptions,
   ): Promise<TransactionResult<Transaction<RuntimeCall>>> {
+    // Handle auto authenticator
+    const authenticator =
+      params.authenticator === "solanaAuto"
+        ? this.getAutoAuthenticator(params.signer)
+        : params.authenticator;
+
     // Dispatch based on authenticator
-    switch (params.authenticator) {
+    switch (authenticator) {
       case "standard":
         return this.inner.call(
           runtimeCall,
@@ -300,7 +320,7 @@ export class SolanaSignableRollup<RuntimeCall> {
         return this.signWithSolanaSpecAndSubmit(unsignedTx, params.signer);
       }
       default:
-        throw new Error(`Unsupported authenticator: ${params.authenticator}`);
+        throw new Error(`Unsupported authenticator: ${authenticator}`);
     }
   }
 
@@ -317,7 +337,13 @@ export class SolanaSignableRollup<RuntimeCall> {
     params: { signer: Signer; authenticator: Authenticator },
     options?: SovereignClient.RequestOptions,
   ): Promise<TransactionResult<Transaction<RuntimeCall>>> {
-    switch (params.authenticator) {
+    // Handle auto authenticator
+    const authenticator =
+      params.authenticator === "solanaAuto"
+        ? this.getAutoAuthenticator(params.signer)
+        : params.authenticator;
+
+    switch (authenticator) {
       case "standard":
         return this.inner.signAndSubmitTransaction(
           unsignedTx,
@@ -331,7 +357,7 @@ export class SolanaSignableRollup<RuntimeCall> {
       case "solana":
         return this.signWithSolanaSpecAndSubmit(unsignedTx, params.signer);
       default:
-        throw new Error(`Unsupported authenticator: ${params.authenticator}`);
+        throw new Error(`Unsupported authenticator: ${authenticator}`);
     }
   }
 
