@@ -1476,7 +1476,7 @@ dependencies = [
 [[package]]
 name = "sov-universal-wallet"
 version = "0.1.0"
-source = "git+https://github.com/Sovereign-Labs/sovereign-sdk.git?rev=6f845e5c8949d86eb4c3f1a0acb35cd02df6bf55#6f845e5c8949d86eb4c3f1a0acb35cd02df6bf55"
+source = "git+https://github.com/Sovereign-Labs/sovereign-sdk.git?rev=1578adfb0395abc77d9bac660a4f9f3a513b717d#1578adfb0395abc77d9bac660a4f9f3a513b717d"
 dependencies = [
  "alloy-dyn-abi",
  "alloy-primitives",
