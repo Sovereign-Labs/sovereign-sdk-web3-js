@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Eip712Signer } from "../src/eip712";
 
 describe("Eip712Signer", () => {
@@ -25,7 +25,11 @@ describe("Eip712Signer", () => {
 
   describe("constructor", () => {
     it("should create a signer instance with address", () => {
-      const signer = new Eip712Signer(mockProvider as any, mockSchema, testAddress);
+      const signer = new Eip712Signer(
+        mockProvider as any,
+        mockSchema,
+        testAddress,
+      );
 
       expect(signer).toBeDefined();
       expect(signer.publicKey).toBeDefined();
@@ -42,18 +46,30 @@ describe("Eip712Signer", () => {
 
   describe("publicKey", () => {
     it("should throw error if public key not available before signing", async () => {
-      const signer = new Eip712Signer(mockProvider as any, mockSchema, testAddress);
+      const signer = new Eip712Signer(
+        mockProvider as any,
+        mockSchema,
+        testAddress,
+      );
 
-      await expect(signer.publicKey()).rejects.toThrow("Public key was not available, you must call sign() first");
+      await expect(signer.publicKey()).rejects.toThrow(
+        "Public key was not available, you must call sign() first",
+      );
     });
   });
 
   describe("sign", () => {
     it("should throw error if message is too short for chain hash", async () => {
-      const signer = new Eip712Signer(mockProvider as any, mockSchema, testAddress);
+      const signer = new Eip712Signer(
+        mockProvider as any,
+        mockSchema,
+        testAddress,
+      );
 
       const shortMessage = new Uint8Array([1, 2, 3]); // Less than 32 bytes
-      await expect(signer.sign(shortMessage)).rejects.toThrow("Message too short, expected at least 32 bytes for chain hash");
+      await expect(signer.sign(shortMessage)).rejects.toThrow(
+        "Message too short, expected at least 32 bytes for chain hash",
+      );
     });
   });
 });

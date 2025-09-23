@@ -1,12 +1,12 @@
 /// <reference path="./snap-env.d.ts" />
 
 import type { MetaMaskInpageProvider } from "@metamask/providers";
-import { Schema, KnownTypeId } from "@sovereign-sdk/universal-wallet-wasm";
+import * as secp from "@noble/secp256k1";
+import { KnownTypeId, Schema } from "@sovereign-sdk/universal-wallet-wasm";
 import { hexToBytes } from "@sovereign-sdk/utils";
+import { Signature } from "ethers";
 import { SignerError } from "./errors";
 import type { Signer } from "./signer";
-import * as secp from "@noble/secp256k1";
-import { Signature } from "ethers";
 
 /**
  * EIP-712 signer implementation that uses MetaMask's eth_signTypedData_v4 method.
@@ -23,7 +23,11 @@ export class Eip712Signer implements Signer {
   private cachedPublicKey?: Uint8Array;
   private static readonly SIGNER_ID = "Eip712";
 
-  constructor(provider: MetaMaskInpageProvider, schemaJson: Record<string, unknown>, address: string) {
+  constructor(
+    provider: MetaMaskInpageProvider,
+    schemaJson: Record<string, unknown>,
+    address: string,
+  ) {
     if (!address) {
       throw new SignerError("Address is required", Eip712Signer.SIGNER_ID);
     }
@@ -32,7 +36,6 @@ export class Eip712Signer implements Signer {
     this.address = address;
   }
 
-
   /**
    * Cache the public key recovered from a signature.
    */
@@ -40,7 +43,10 @@ export class Eip712Signer implements Signer {
     if (this.cachedPublicKey) return;
 
     let secpSig = secp.Signature.fromCompact(
-      new Uint8Array([...hexToBytes(signature.r.slice(2)), ...hexToBytes(signature.s.slice(2))])
+      new Uint8Array([
+        ...hexToBytes(signature.r.slice(2)),
+        ...hexToBytes(signature.s.slice(2)),
+      ]),
     );
     secpSig = secpSig.addRecoveryBit(signature.yParity);
     const publicKey = secpSig.recoverPublicKey(signingHash);
@@ -55,7 +61,7 @@ export class Eip712Signer implements Signer {
     if (!this.cachedPublicKey) {
       throw new SignerError(
         "Public key was not available, you must call sign() first",
-        Eip712Signer.SIGNER_ID
+        Eip712Signer.SIGNER_ID,
       );
     }
 
@@ -72,13 +78,15 @@ export class Eip712Signer implements Signer {
     if (message.length < 32) {
       throw new SignerError(
         "Message too short, expected at least 32 bytes for chain hash",
-        Eip712Signer.SIGNER_ID
+        Eip712Signer.SIGNER_ID,
       );
     }
     const unsignedTxBytes = message.slice(0, -32);
 
     // Get the UnsignedTransaction type index
-    const typeIndex = this.schema.knownTypeIndex(KnownTypeId.UnsignedTransaction);
+    const typeIndex = this.schema.knownTypeIndex(
+      KnownTypeId.UnsignedTransaction,
+    );
 
     // Generate the EIP-712 JSON from the message bytes
     let eip712Json: string;
@@ -87,7 +95,7 @@ export class Eip712Signer implements Signer {
     } catch (error) {
       throw new SignerError(
         `Failed to generate EIP-712 JSON from message: ${error}`,
-        Eip712Signer.SIGNER_ID
+        Eip712Signer.SIGNER_ID,
       );
     }
 
@@ -98,20 +106,20 @@ export class Eip712Signer implements Signer {
     } catch (error) {
       throw new SignerError(
         `Failed to generate EIP-712 signing hash: ${error}`,
-        Eip712Signer.SIGNER_ID
+        Eip712Signer.SIGNER_ID,
       );
     }
 
     let signatureHex: string;
     try {
-      signatureHex = await this.provider.request({
+      signatureHex = (await this.provider.request({
         method: "eth_signTypedData_v4",
         params: [address, eip712Json],
-      }) as string;
+      })) as string;
     } catch (error) {
       throw new SignerError(
         `Failed to sign with EIP-712: ${error}`,
-        Eip712Signer.SIGNER_ID
+        Eip712Signer.SIGNER_ID,
       );
     }
 
