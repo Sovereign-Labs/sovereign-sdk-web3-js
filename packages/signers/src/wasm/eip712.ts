@@ -1,12 +1,10 @@
-/// <reference path="./snap-env.d.ts" />
-
 import type { MetaMaskInpageProvider } from "@metamask/providers";
 import * as secp from "@noble/secp256k1";
 import { KnownTypeId, Schema } from "@sovereign-sdk/universal-wallet-wasm";
 import { hexToBytes } from "@sovereign-sdk/utils";
 import { Signature } from "ethers";
-import { SignerError } from "./errors";
-import type { Signer } from "./signer";
+import { SignerError } from "../errors";
+import type { Signer } from "../signer";
 
 /**
  * EIP-712 signer implementation that uses MetaMask's eth_signTypedData_v4 method.

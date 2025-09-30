@@ -16,6 +16,11 @@
       "types": "./dist/index.d.ts",
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
+    },
+    "./wasm": {
+      "types": "./dist/wasm.d.ts",
+      "require": "./dist/wasm.js",
+      "import": "./dist/wasm.mjs"
     }
   },
   "main": "./dist/index.js",

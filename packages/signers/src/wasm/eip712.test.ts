@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { Eip712Signer } from "../src/eip712";
+import { Eip712Signer } from "./eip712";
 
 describe("Eip712Signer", () => {
   const mockProvider = {
