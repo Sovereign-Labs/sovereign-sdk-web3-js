@@ -1,5 +1,19 @@
 # @sovereign-sdk/web3
 
+## 0.11.0
+
+### Minor Changes
+
+- 29ec627: Add EIP712 signer support.
+
+### Patch Changes
+
+- Updated dependencies [ff942a8]
+- Updated dependencies [29ec627]
+  - @sovereign-sdk/universal-wallet-wasm@0.5.0
+  - @sovereign-sdk/signers@0.3.0
+  - @sovereign-sdk/serializers@0.1.2
+
 ## 0.10.0
 
 ### Minor Changes
