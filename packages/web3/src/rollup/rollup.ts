@@ -70,6 +70,12 @@ export type RollupConfig<C extends RollupContext> = {
    * Arbitrary context that is associated with the rollup.
    */
   context: C;
+  /**
+   * The endpoint path for submitting transactions.
+   * Defaults to "/sequencer/txs" for standard transactions.
+   * Can be set to "/sequencer/eip712_tx" for EIP712-authenticated transactions.
+   */
+  txSubmissionEndpoint: string;
 };
 
 /**
@@ -152,8 +158,18 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
     const serializer = await this.serializer();
     const serializedTx = serializer.serializeTx(transaction);
 
-    return this.sequencer.txs
-      .create({ body: Base64.fromUint8Array(serializedTx) }, options)
+    // Stainless RequestOptions is generic internally, causing issues for `body` and `query`.
+    // That's fine since we supply the `body` and transaction submission doesn't take query parameters.
+    // So we hack around this by destructuring them out.
+    const { body: _, query: __, ...requestOptions } = options || {};
+    return this.http
+      .post<{ body: string }, SovereignClient.Sequencer.TxCreateResponse>(
+        this._config.txSubmissionEndpoint,
+        {
+          body: { body: Base64.fromUint8Array(serializedTx) },
+          ...requestOptions,
+        },
+      )
       .catch(async (e) => {
         if (isVersionMismatchError(e as APIError)) {
           const oldVersion = bytesToHex(await this.chainHash());

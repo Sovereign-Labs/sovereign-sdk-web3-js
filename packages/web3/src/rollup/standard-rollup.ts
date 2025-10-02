@@ -210,8 +210,17 @@ export async function createStandardRollup<
     config.getSerializer ?? ((schema) => new JsSerializer(schema));
   const context = await buildContext<C>(client, config.context);
 
+  // Default to the standard transaction submission endpoint
+  const txSubmissionEndpoint = config.txSubmissionEndpoint ?? "/sequencer/txs";
+
   return new StandardRollup<RuntimeCall>(
-    { ...config, client, getSerializer, context },
+    {
+      ...config,
+      client,
+      getSerializer,
+      context,
+      txSubmissionEndpoint,
+    },
     {
       ...standardTypeBuilder(),
       ...typeBuilderOverrides,
