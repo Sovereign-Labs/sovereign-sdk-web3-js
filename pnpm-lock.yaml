@@ -175,6 +175,9 @@ importers:
       '@noble/secp256k1':
         specifier: ^2.3.0
         version: 2.3.0
+      '@sovereign-sdk/universal-wallet-wasm':
+        specifier: workspace:^
+        version: link:../universal-wallet-wasm
       '@sovereign-sdk/utils':
         specifier: workspace:^
         version: link:../utils
@@ -1480,7 +1483,6 @@ packages:
 
   bun@1.2.17:
     resolution: {integrity: sha512-lrUZTWS24eVy6v+Eph8VTwqFPcG7/XQ0rLBQEMNoQs2Vd7ctVdMGAzJKKGZRUQH+rgkD8rBeHGIVoWxX4vJLCA==}
-    cpu: [arm64, x64, aarch64]
     os: [darwin, linux, win32]
     hasBin: true
 
