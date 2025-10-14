@@ -72,8 +72,9 @@ export type RollupConfig<C extends RollupContext> = {
   context: C;
   /**
    * The endpoint path for submitting transactions.
-   * Defaults to "/sequencer/txs" for standard transactions.
-   * Can be set to "/sequencer/eip712_tx" for EIP712-authenticated transactions.
+   * Defaults to "/sequencer/txs", the standard Sovereign SDK endpoint.
+   * Can be overridden if your rollup is configured to expose non-standard endpoints in
+   * order to support multiple different transaction encoding or authentication schemes.
    */
   txSubmissionEndpoint: string;
 };
@@ -109,7 +110,11 @@ export type SignerParams = {
  */
 export type CallParams<S extends BaseTypeSpec> = {
   overrides?: DeepPartial<S["UnsignedTransaction"]>;
-  txSubmissionEndpoint?: string,
+  /**
+   * Optional endpoint override for submitting this transaction.
+   * If not specified, uses the rollup's configured txSubmissionEndpoint.
+   */
+  endpoint?: string;
 } & SignerParams;
 
 /**
@@ -151,6 +156,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    *
    * @param transaction - The transaction to submit.
    * @param {SovereignClient.RequestOptions} options - The options for the request.
+   * @param endpoint - Optional endpoint override. If not specified, uses the rollup's configured txSubmissionEndpoint.
    */
   async submitTransaction(
     transaction: S["Transaction"],
@@ -201,6 +207,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    * @param unsignedTx - The unsigned transaction to sign and submit.
    * @param {SignerParams} params - The params for signing and submitting the transaction.
    * @param {SovereignClient.RequestOptions} options - The options for the request.
+   * @param endpoint - Optional endpoint override. If not specified, uses the rollup's configured txSubmissionEndpoint.
    */
   async signAndSubmitTransaction(
     unsignedTx: S["UnsignedTransaction"],
@@ -237,7 +244,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    */
   async call(
     runtimeCall: S["RuntimeCall"],
-    { signer, overrides, txSubmissionEndpoint }: CallParams<S>,
+    { signer, overrides, endpoint }: CallParams<S>,
     options?: SovereignClient.RequestOptions,
   ): Promise<TransactionResult<S["Transaction"]>> {
     const context = {
@@ -253,7 +260,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
         signer,
       },
       options,
-      txSubmissionEndpoint,
+      endpoint,
     );
   }
 

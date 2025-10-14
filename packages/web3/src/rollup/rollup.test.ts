@@ -414,7 +414,7 @@ describe("Rollup", () => {
       });
     });
 
-    it("should pass txSubmissionEndpoint through to submitTransaction", async () => {
+    it("should pass endpoint through to submitTransaction", async () => {
       const endpoint = "/sequencer/eip712_tx";
       const { rollup, client } = testRollup({}, mockTypeBuilder);
       const submitTransactionSpy = vi.spyOn(rollup, "submitTransaction");
@@ -422,7 +422,7 @@ describe("Rollup", () => {
 
       await rollup.call(mockRuntimeCall, {
         signer: mockSigner,
-        txSubmissionEndpoint: endpoint,
+        endpoint,
       });
 
       expect(submitTransactionSpy).toHaveBeenCalledWith(
