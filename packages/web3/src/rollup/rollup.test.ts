@@ -145,6 +145,24 @@ describe("Rollup", () => {
       );
     });
 
+    it("should allow overriding the transaction endpoint per-call", async () => {
+      const configEndpoint = "/sequencer/txs";
+      const overrideEndpoint = "/sequencer/eip712_tx";
+      const { rollup, client } = testRollup({
+        txSubmissionEndpoint: configEndpoint,
+      });
+      client.post = vi.fn().mockResolvedValue({});
+      const transaction = { foo: "bar" };
+
+      await rollup.submitTransaction(transaction, undefined, overrideEndpoint);
+
+      expect(rollup.http.post).toHaveBeenCalledWith("/sequencer/eip712_tx", {
+        body: {
+          body: "CgsM", // Base64 encoded [10,11,12]
+        },
+      });
+    });
+
     it("should identify version mismatch errors correctly", async () => {
       const nonVersionMismatchError = {
         error: {
@@ -253,7 +271,7 @@ describe("Rollup", () => {
       expect(rollup.submitTransaction).toHaveBeenCalledWith(
         mockTransaction,
         options,
-        undefined
+        undefined,
       );
     });
 
@@ -280,7 +298,7 @@ describe("Rollup", () => {
       expect(rollup.submitTransaction).toHaveBeenCalledWith(
         mockTransaction,
         undefined,
-        undefined
+        undefined,
       );
     });
 
@@ -357,7 +375,7 @@ describe("Rollup", () => {
           signer: mockSigner,
         },
         options,
-        undefined
+        undefined,
       );
     });
 
@@ -377,7 +395,7 @@ describe("Rollup", () => {
           signer: mockSigner,
         },
         undefined,
-        undefined
+        undefined,
       );
     });
 
@@ -394,6 +412,24 @@ describe("Rollup", () => {
         transaction: mockTransaction,
         response: { txHash: "mock-hash" },
       });
+    });
+
+    it("should pass txSubmissionEndpoint through to submitTransaction", async () => {
+      const endpoint = "/sequencer/eip712_tx";
+      const { rollup, client } = testRollup({}, mockTypeBuilder);
+      const submitTransactionSpy = vi.spyOn(rollup, "submitTransaction");
+      client.post = vi.fn().mockResolvedValue({ txHash: "mock-hash" });
+
+      await rollup.call(mockRuntimeCall, {
+        signer: mockSigner,
+        txSubmissionEndpoint: endpoint,
+      });
+
+      expect(submitTransactionSpy).toHaveBeenCalledWith(
+        mockTransaction,
+        undefined,
+        endpoint,
+      );
     });
   });
   describe("getters", () => {
