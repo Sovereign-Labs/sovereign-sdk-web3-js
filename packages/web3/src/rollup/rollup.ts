@@ -109,6 +109,7 @@ export type SignerParams = {
  */
 export type CallParams<S extends BaseTypeSpec> = {
   overrides?: DeepPartial<S["UnsignedTransaction"]>;
+  txSubmissionEndpoint?: string,
 } & SignerParams;
 
 /**
@@ -154,9 +155,12 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   async submitTransaction(
     transaction: S["Transaction"],
     options?: SovereignClient.RequestOptions,
+    endpoint?: string,
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializer = await this.serializer();
     const serializedTx = serializer.serializeTx(transaction);
+
+    const txSubmissionEndpoint = endpoint || this._config.txSubmissionEndpoint;
 
     // Stainless RequestOptions is generic internally, causing issues for `body` and `query`.
     // That's fine since we supply the `body` and transaction submission doesn't take query parameters.
@@ -164,7 +168,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
     const { body: _, query: __, ...requestOptions } = options || {};
     return this.http
       .post<{ body: string }, SovereignClient.Sequencer.TxCreateResponse>(
-        this._config.txSubmissionEndpoint,
+        txSubmissionEndpoint,
         {
           body: { body: Base64.fromUint8Array(serializedTx) },
           ...requestOptions,
@@ -202,6 +206,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
     unsignedTx: S["UnsignedTransaction"],
     { signer }: SignerParams,
     options?: SovereignClient.RequestOptions,
+    endpoint?: string,
   ): Promise<TransactionResult<S["Transaction"]>> {
     const serializer = await this.serializer();
     const serializedUnsignedTx = serializer.serializeUnsignedTx(unsignedTx);
@@ -217,7 +222,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
       rollup: this,
     };
     const tx = await this._typeBuilder.transaction(context);
-    const result = await this.submitTransaction(tx, options);
+    const result = await this.submitTransaction(tx, options, endpoint);
 
     return { transaction: tx, response: result };
   }
@@ -232,7 +237,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    */
   async call(
     runtimeCall: S["RuntimeCall"],
-    { signer, overrides }: CallParams<S>,
+    { signer, overrides, txSubmissionEndpoint }: CallParams<S>,
     options?: SovereignClient.RequestOptions,
   ): Promise<TransactionResult<S["Transaction"]>> {
     const context = {
@@ -248,6 +253,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
         signer,
       },
       options,
+      txSubmissionEndpoint,
     );
   }
 

@@ -253,6 +253,7 @@ describe("Rollup", () => {
       expect(rollup.submitTransaction).toHaveBeenCalledWith(
         mockTransaction,
         options,
+        undefined
       );
     });
 
@@ -279,6 +280,7 @@ describe("Rollup", () => {
       expect(rollup.submitTransaction).toHaveBeenCalledWith(
         mockTransaction,
         undefined,
+        undefined
       );
     });
 
@@ -355,6 +357,7 @@ describe("Rollup", () => {
           signer: mockSigner,
         },
         options,
+        undefined
       );
     });
 
@@ -374,6 +377,7 @@ describe("Rollup", () => {
           signer: mockSigner,
         },
         undefined,
+        undefined
       );
     });
 
