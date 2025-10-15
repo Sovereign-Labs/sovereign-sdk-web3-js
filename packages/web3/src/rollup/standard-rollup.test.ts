@@ -127,12 +127,8 @@ describe("standardTypeBuilder", () => {
       expect(result).toEqual({
         versioned_tx: {
           V0: {
-            pub_key: {
-              pub_key: new Uint8Array([4, 5, 6]),
-            },
-            signature: {
-              msg_sig: new Uint8Array([7, 8, 9]),
-            },
+            pub_key: "040506",
+            signature: "070809",
             runtime_call: {
               value_setter: { set_value: { value: 5, gas: null } },
             },
