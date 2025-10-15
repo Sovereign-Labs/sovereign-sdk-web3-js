@@ -117,7 +117,7 @@ describe("rollup", async () => {
       for (const callMessage of callMessages) {
         const { transaction } = await rollup.call(callMessage, {
           signer,
-          overrides: { uniqueness: { generation: nonce } },
+          overrides: { uniqueness: { nonce: nonce } },
         });
 
         batch.push(transaction);
