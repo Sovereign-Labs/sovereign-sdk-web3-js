@@ -45,6 +45,8 @@
     "@noble/secp256k1": "^2.3.0",
     "@sovereign-sdk/universal-wallet-wasm": "workspace:^",
     "@sovereign-sdk/utils": "workspace:^",
+    "@turnkey/api-key-stamper": "^0.4.7",
+    "@turnkey/http": "^3.5.1",
     "ethers": "^6.15.0"
   }
 }
