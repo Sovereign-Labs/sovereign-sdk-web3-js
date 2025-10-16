@@ -144,10 +144,13 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   /**
    * Retrieve dedup information about the provided address.
    *
-   * @param address - The public key to dedup.
+   * @param publicKey - The public key to dedup.
+   * TODO: How to add param for generation explicitly
    */
-  async dedup(address: Uint8Array): Promise<S["Dedup"]> {
-    const response = await this.rollup.addresses.dedup(bytesToHex(address));
+  async dedup(publicKey: Uint8Array): Promise<S["Dedup"]> {
+    // for public key credential id is just its bytes representation
+    const credentialId = bytesToHex(publicKey);
+    const response = await this.rollup.addresses.dedup(credentialId);
     return response as S["Dedup"];
   }
 

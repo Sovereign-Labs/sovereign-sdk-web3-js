@@ -70,8 +70,8 @@ describe("Rollup", () => {
       const { rollup, client } = testRollup();
       client.rollup.addresses.dedup = vi.fn().mockResolvedValue({ nonce: 1 });
 
-      const address = new Uint8Array([1, 2, 3]);
-      await rollup.dedup(address);
+      const publicKey = new Uint8Array([1, 2, 3]);
+      await rollup.dedup(publicKey);
 
       expect(client.rollup.addresses.dedup).toHaveBeenCalledWith("010203");
     });
@@ -81,7 +81,8 @@ describe("Rollup", () => {
       const { rollup, client } = testRollup();
       client.rollup.addresses.dedup = vi.fn().mockResolvedValue(expectedDedup);
 
-      const result = await rollup.dedup(new Uint8Array([1, 2, 3]));
+      const publicKey = new Uint8Array([1, 2, 3]);
+      const result = await rollup.dedup(publicKey);
 
       expect(result).toEqual(expectedDedup);
     });
