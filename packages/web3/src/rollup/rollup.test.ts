@@ -33,6 +33,7 @@ const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
       client,
       context: {} as C,
       getSerializer,
+      txSubmissionEndpoint: "/sequencer/txs",
       ...config,
     },
     {
@@ -97,34 +98,70 @@ describe("Rollup", () => {
 
     it("should correctly serialize and submit the transaction", async () => {
       const { rollup, client } = testRollup();
-      client.sequencer.txs.create = vi.fn().mockResolvedValue({});
+      client.post = vi.fn().mockResolvedValue({});
       const transaction = { foo: "bar" };
 
       await rollup.submitTransaction(transaction);
 
       expect(mockSerializer.serializeTx).toHaveBeenCalledWith(transaction);
-      expect(rollup.http.sequencer.txs.create).toHaveBeenCalledWith(
-        {
+      expect(rollup.http.post).toHaveBeenCalledWith("/sequencer/txs", {
+        body: {
           body: "CgsM", // Base64 encoded [10,11,12]
         },
-        undefined,
-      );
+      });
     });
 
     it("should pass options to the sequencer client", async () => {
       const { rollup, client } = testRollup();
-      client.sequencer.txs.create = vi.fn().mockResolvedValue({});
+      client.post = vi.fn().mockResolvedValue({});
       const transaction = { foo: "bar" };
       const options = { timeout: 5000, maxRetries: 3 };
 
       await rollup.submitTransaction(transaction, options);
 
-      expect(rollup.http.sequencer.txs.create).toHaveBeenCalledWith(
-        {
+      expect(rollup.http.post).toHaveBeenCalledWith("/sequencer/txs", {
+        body: {
           body: "CgsM", // Base64 encoded [10,11,12]
         },
-        options,
+        timeout: 5000,
+        maxRetries: 3,
+      });
+    });
+
+    it("should allow configuring the transaction endpoint", async () => {
+      const endpoint = "/sequencer/eip712_tx_for_example";
+      const { rollup, client } = testRollup({ txSubmissionEndpoint: endpoint });
+      client.post = vi.fn().mockResolvedValue({});
+      const transaction = { foo: "bar" };
+
+      await rollup.submitTransaction(transaction);
+
+      expect(rollup.http.post).toHaveBeenCalledWith(
+        "/sequencer/eip712_tx_for_example",
+        {
+          body: {
+            body: "CgsM", // Base64 encoded [10,11,12]
+          },
+        },
       );
+    });
+
+    it("should allow overriding the transaction endpoint per-call", async () => {
+      const configEndpoint = "/sequencer/txs";
+      const overrideEndpoint = "/sequencer/eip712_tx";
+      const { rollup, client } = testRollup({
+        txSubmissionEndpoint: configEndpoint,
+      });
+      client.post = vi.fn().mockResolvedValue({});
+      const transaction = { foo: "bar" };
+
+      await rollup.submitTransaction(transaction, undefined, overrideEndpoint);
+
+      expect(rollup.http.post).toHaveBeenCalledWith("/sequencer/eip712_tx", {
+        body: {
+          body: "CgsM", // Base64 encoded [10,11,12]
+        },
+      });
     });
 
     it("should identify version mismatch errors correctly", async () => {
@@ -137,9 +174,7 @@ describe("Rollup", () => {
       };
 
       const { rollup, client } = testRollup();
-      client.sequencer.txs.create = vi
-        .fn()
-        .mockRejectedValue(nonVersionMismatchError);
+      client.post = vi.fn().mockRejectedValue(nonVersionMismatchError);
       const transaction = { foo: "bar" };
 
       await expect(rollup.submitTransaction(transaction)).rejects.toEqual(
@@ -150,9 +185,7 @@ describe("Rollup", () => {
     it("should throw VersionMismatchError when chain hash changes", async () => {
       const { rollup, client } = testRollup();
 
-      client.sequencer.txs.create = vi
-        .fn()
-        .mockRejectedValue(versionMismatchError);
+      client.post = vi.fn().mockRejectedValue(versionMismatchError);
       client.rollup.schema.retrieve = vi.fn().mockResolvedValue({
         schema: demoRollupSchema,
         chain_hash: "0x00",
@@ -170,9 +203,7 @@ describe("Rollup", () => {
 
     it("should bubble error if chain hash does not change", async () => {
       const { rollup, client } = testRollup();
-      client.sequencer.txs.create = vi
-        .fn()
-        .mockRejectedValue(versionMismatchError);
+      client.post = vi.fn().mockRejectedValue(versionMismatchError);
 
       vi.spyOn(rollup, "chainHash").mockResolvedValueOnce(
         new Uint8Array([1, 2, 3, 4]),
@@ -187,7 +218,7 @@ describe("Rollup", () => {
     it("should propagate non-version-mismatch errors", async () => {
       const { rollup, client } = testRollup();
       const error = new Error("Different error");
-      client.sequencer.txs.create = vi.fn().mockRejectedValue(error);
+      client.post = vi.fn().mockRejectedValue(error);
       const transaction = { foo: "bar" };
 
       await expect(rollup.submitTransaction(transaction)).rejects.toThrow(
@@ -241,6 +272,7 @@ describe("Rollup", () => {
       expect(rollup.submitTransaction).toHaveBeenCalledWith(
         mockTransaction,
         options,
+        undefined,
       );
     });
 
@@ -266,6 +298,7 @@ describe("Rollup", () => {
 
       expect(rollup.submitTransaction).toHaveBeenCalledWith(
         mockTransaction,
+        undefined,
         undefined,
       );
     });
@@ -343,6 +376,7 @@ describe("Rollup", () => {
           signer: mockSigner,
         },
         options,
+        undefined,
       );
     });
 
@@ -362,14 +396,13 @@ describe("Rollup", () => {
           signer: mockSigner,
         },
         undefined,
+        undefined,
       );
     });
 
     it("should return the result from signAndSubmitTransaction", async () => {
       const { rollup, client } = testRollup({}, mockTypeBuilder);
-      client.sequencer.txs.create = vi
-        .fn()
-        .mockResolvedValue({ txHash: "mock-hash" });
+      client.post = vi.fn().mockResolvedValue({ txHash: "mock-hash" });
 
       const result = await rollup.call(mockRuntimeCall, {
         signer: mockSigner,
@@ -380,6 +413,24 @@ describe("Rollup", () => {
         transaction: mockTransaction,
         response: { txHash: "mock-hash" },
       });
+    });
+
+    it("should pass endpoint through to submitTransaction", async () => {
+      const endpoint = "/sequencer/eip712_tx";
+      const { rollup, client } = testRollup({}, mockTypeBuilder);
+      const submitTransactionSpy = vi.spyOn(rollup, "submitTransaction");
+      client.post = vi.fn().mockResolvedValue({ txHash: "mock-hash" });
+
+      await rollup.call(mockRuntimeCall, {
+        signer: mockSigner,
+        endpoint,
+      });
+
+      expect(submitTransactionSpy).toHaveBeenCalledWith(
+        mockTransaction,
+        undefined,
+        endpoint,
+      );
     });
   });
   describe("getters", () => {

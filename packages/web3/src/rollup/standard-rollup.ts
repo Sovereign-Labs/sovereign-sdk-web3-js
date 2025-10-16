@@ -1,6 +1,6 @@
 import SovereignClient from "@sovereign-sdk/client";
 import { JsSerializer } from "@sovereign-sdk/serializers";
-import { bytesToHex } from "@sovereign-sdk/utils";
+import { type HexString, bytesToHex } from "@sovereign-sdk/utils";
 import type { DeepPartial } from "../utils";
 import {
   Rollup,
@@ -29,8 +29,8 @@ export type UnsignedTransaction<RuntimeCall> = {
 };
 
 export type TransactionV0<RuntimeCall> = {
-  pub_key: { pub_key: Uint8Array };
-  signature: { msg_sig: Uint8Array };
+  pub_key: HexString;
+  signature: HexString;
 } & UnsignedTransaction<RuntimeCall>;
 
 export type Transaction<RuntimeCall> = {
@@ -94,12 +94,8 @@ export function standardTypeBuilder<
       return {
         versioned_tx: {
           V0: {
-            pub_key: {
-              pub_key: sender,
-            },
-            signature: {
-              msg_sig: signature,
-            },
+            pub_key: bytesToHex(sender),
+            signature: bytesToHex(signature),
             ...unsignedTx,
           },
         },
@@ -210,8 +206,17 @@ export async function createStandardRollup<
     config.getSerializer ?? ((schema) => new JsSerializer(schema));
   const context = await buildContext<C>(client, config.context);
 
+  // Default to the standard transaction submission endpoint
+  const txSubmissionEndpoint = config.txSubmissionEndpoint ?? "/sequencer/txs";
+
   return new StandardRollup<RuntimeCall>(
-    { ...config, client, getSerializer, context },
+    {
+      ...config,
+      client,
+      getSerializer,
+      context,
+      txSubmissionEndpoint,
+    },
     {
       ...standardTypeBuilder(),
       ...typeBuilderOverrides,

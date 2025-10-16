@@ -82,13 +82,23 @@ impl Schema {
 
     /// Get the metadata hash from the schema.
     #[wasm_bindgen(getter, js_name = metadataHash)]
-    pub fn metadata_hash(&mut self) -> Result<Vec<u8>, JsError> {
+    pub fn metadata_hash(&self) -> Result<Vec<u8>, JsError> {
         Ok(self.inner.metadata_hash().map_err_to_js()?.to_vec())
     }
 
     /// Get the chain hash from the schema.
     #[wasm_bindgen(getter, js_name = chainHash)]
-    pub fn chain_hash(&mut self) -> Result<Vec<u8>, JsError> {
+    pub fn chain_hash(&self) -> Result<Vec<u8>, JsError> {
         Ok(self.inner.chain_hash().map_err_to_js()?.to_vec())
+    }
+
+    #[wasm_bindgen(js_name = eip712Json)]
+    pub fn eip712_json(&self, type_index: usize, input: &[u8]) -> Result<String, JsError> {
+        self.inner.eip712_json(type_index, input).map_err_to_js()
+    }
+
+    #[wasm_bindgen(js_name = eip712SigningHash)]
+    pub fn eip712_signing_hash(&self, type_index: usize, input: &[u8]) -> Result<Vec<u8>, JsError> {
+        Ok(self.inner.eip712_signing_hash(type_index, input).map_err_to_js()?.to_vec())
     }
 }

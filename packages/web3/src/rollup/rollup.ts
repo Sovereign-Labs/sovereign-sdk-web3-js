@@ -70,6 +70,13 @@ export type RollupConfig<C extends RollupContext> = {
    * Arbitrary context that is associated with the rollup.
    */
   context: C;
+  /**
+   * The endpoint path for submitting transactions.
+   * Defaults to "/sequencer/txs", the standard Sovereign SDK endpoint.
+   * Can be overridden if your rollup is configured to expose non-standard endpoints in
+   * order to support multiple different transaction encoding or authentication schemes.
+   */
+  txSubmissionEndpoint: string;
 };
 
 /**
@@ -103,6 +110,11 @@ export type SignerParams = {
  */
 export type CallParams<S extends BaseTypeSpec> = {
   overrides?: DeepPartial<S["UnsignedTransaction"]>;
+  /**
+   * Optional endpoint override for submitting this transaction.
+   * If not specified, uses the rollup's configured txSubmissionEndpoint.
+   */
+  endpoint?: string;
 } & SignerParams;
 
 /**
@@ -147,16 +159,30 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    *
    * @param transaction - The transaction to submit.
    * @param {SovereignClient.RequestOptions} options - The options for the request.
+   * @param endpoint - Optional endpoint override. If not specified, uses the rollup's configured txSubmissionEndpoint.
    */
   async submitTransaction(
     transaction: S["Transaction"],
     options?: SovereignClient.RequestOptions,
+    endpoint?: string,
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializer = await this.serializer();
     const serializedTx = serializer.serializeTx(transaction);
 
-    return this.sequencer.txs
-      .create({ body: Base64.fromUint8Array(serializedTx) }, options)
+    const txSubmissionEndpoint = endpoint || this._config.txSubmissionEndpoint;
+
+    // Stainless RequestOptions is generic internally, causing issues for `body` and `query`.
+    // That's fine since we supply the `body` and transaction submission doesn't take query parameters.
+    // So we hack around this by destructuring them out.
+    const { body: _, query: __, ...requestOptions } = options || {};
+    return this.http
+      .post<{ body: string }, SovereignClient.Sequencer.TxCreateResponse>(
+        txSubmissionEndpoint,
+        {
+          body: { body: Base64.fromUint8Array(serializedTx) },
+          ...requestOptions,
+        },
+      )
       .catch(async (e) => {
         if (isVersionMismatchError(e as APIError)) {
           const oldVersion = bytesToHex(await this.chainHash());
@@ -184,11 +210,13 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    * @param unsignedTx - The unsigned transaction to sign and submit.
    * @param {SignerParams} params - The params for signing and submitting the transaction.
    * @param {SovereignClient.RequestOptions} options - The options for the request.
+   * @param endpoint - Optional endpoint override. If not specified, uses the rollup's configured txSubmissionEndpoint.
    */
   async signAndSubmitTransaction(
     unsignedTx: S["UnsignedTransaction"],
     { signer }: SignerParams,
     options?: SovereignClient.RequestOptions,
+    endpoint?: string,
   ): Promise<TransactionResult<S["Transaction"]>> {
     const serializer = await this.serializer();
     const serializedUnsignedTx = serializer.serializeUnsignedTx(unsignedTx);
@@ -204,7 +232,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
       rollup: this,
     };
     const tx = await this._typeBuilder.transaction(context);
-    const result = await this.submitTransaction(tx, options);
+    const result = await this.submitTransaction(tx, options, endpoint);
 
     return { transaction: tx, response: result };
   }
@@ -219,7 +247,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    */
   async call(
     runtimeCall: S["RuntimeCall"],
-    { signer, overrides }: CallParams<S>,
+    { signer, overrides, endpoint }: CallParams<S>,
     options?: SovereignClient.RequestOptions,
   ): Promise<TransactionResult<S["Transaction"]>> {
     const context = {
@@ -235,6 +263,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
         signer,
       },
       options,
+      endpoint,
     );
   }
 
