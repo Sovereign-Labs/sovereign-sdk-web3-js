@@ -215,7 +215,7 @@ describe("createStandardRollup", () => {
   });
 
   it("should be created using the default context", async () => {
-    mockConfig.client.rollup.constants.retrieve = vi
+    mockConfig.client.rollup.constants = vi
       .fn()
       .mockResolvedValue({ chain_id: 55 });
     const rollup = await createStandardRollup({
@@ -233,7 +233,7 @@ describe("createStandardRollup", () => {
   });
 
   it("should preserve supplied context and merge default context", async () => {
-    mockConfig.client.rollup.constants.retrieve = vi
+    mockConfig.client.rollup.constants = vi
       .fn()
       .mockResolvedValue({ data: { chain_id: 55 } });
     const rollup = await createStandardRollup({

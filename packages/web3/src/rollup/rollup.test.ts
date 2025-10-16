@@ -43,7 +43,7 @@ const testRollup = <S extends BaseTypeSpec, C extends RollupContext>(
     },
   );
 
-  client.rollup.schema.retrieve = vi.fn().mockResolvedValue({
+  client.rollup.schema = vi.fn().mockResolvedValue({
     schema: demoRollupSchema,
     chain_hash: "01020304",
   });
@@ -55,7 +55,7 @@ describe("Rollup", () => {
   describe("constructor", () => {
     it("should use the provided serializer if it is provided", async () => {
       const { rollup, client } = testRollup({ getSerializer });
-      client.rollup.schema.retrieve = vi.fn().mockResolvedValueOnce({});
+      client.rollup.schema = vi.fn().mockResolvedValueOnce({});
       const actual = await rollup.serializer();
       expect(actual).toBe(mockSerializer);
     });
@@ -186,7 +186,7 @@ describe("Rollup", () => {
       const { rollup, client } = testRollup();
 
       client.post = vi.fn().mockRejectedValue(versionMismatchError);
-      client.rollup.schema.retrieve = vi.fn().mockResolvedValue({
+      client.rollup.schema = vi.fn().mockResolvedValue({
         schema: demoRollupSchema,
         chain_hash: "0x00",
       });
