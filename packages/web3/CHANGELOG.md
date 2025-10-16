@@ -1,5 +1,23 @@
 # @sovereign-sdk/web3
 
+## 0.11.0
+
+### Minor Changes
+
+- 8eef971: flatten the versioned transaction structure
+- 8943b50: Explicitly using nonce from dedup endpoint instead of generation
+- 29ec627: Add EIP712 signer support.
+- a5f2fa4: Add configurations for non-standard transaction submission endpoints (which will be necessary for multi-authenticator rollups). StandardRollup defaults to the standard endpoint unless overridden, so normal behaviour is unchanged.
+
+### Patch Changes
+
+- 46c8778: updates the internal structure of transaction to latest in sovereign sdk
+- Updated dependencies [ff942a8]
+- Updated dependencies [29ec627]
+  - @sovereign-sdk/universal-wallet-wasm@0.5.0
+  - @sovereign-sdk/signers@0.3.0
+  - @sovereign-sdk/serializers@0.1.2
+
 ## 0.10.0
 
 ### Minor Changes
