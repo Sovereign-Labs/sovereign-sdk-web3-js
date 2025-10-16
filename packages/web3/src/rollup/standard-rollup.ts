@@ -34,7 +34,7 @@ export type TransactionV0<RuntimeCall> = {
 } & UnsignedTransaction<RuntimeCall>;
 
 export type Transaction<RuntimeCall> = {
-  versioned_tx: { V0: TransactionV0<RuntimeCall> };
+  V0: TransactionV0<RuntimeCall>;
 };
 
 export type Dedup = {
@@ -92,12 +92,10 @@ export function standardTypeBuilder<
       unsignedTx,
     }: TransactionContext<S, StandardRollupContext>) {
       return {
-        versioned_tx: {
-          V0: {
-            pub_key: bytesToHex(sender),
-            signature: bytesToHex(signature),
-            ...unsignedTx,
-          },
+        V0: {
+          pub_key: bytesToHex(sender),
+          signature: bytesToHex(signature),
+          ...unsignedTx,
         },
       };
     },

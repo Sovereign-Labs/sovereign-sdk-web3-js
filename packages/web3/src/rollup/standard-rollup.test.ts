@@ -125,20 +125,18 @@ describe("standardTypeBuilder", () => {
       });
 
       expect(result).toEqual({
-        versioned_tx: {
-          V0: {
-            pub_key: "040506",
-            signature: "070809",
-            runtime_call: {
-              value_setter: { set_value: { value: 5, gas: null } },
-            },
-            uniqueness: { generation: 5 },
-            details: {
-              max_priority_fee_bips: 100,
-              max_fee: "1000",
-              chain_id: 1,
-              gas_limit: null,
-            },
+        V0: {
+          pub_key: "040506",
+          signature: "070809",
+          runtime_call: {
+            value_setter: { set_value: { value: 5, gas: null } },
+          },
+          uniqueness: { generation: 5 },
+          details: {
+            max_priority_fee_bips: 100,
+            max_fee: "1000",
+            chain_id: 1,
+            gas_limit: null,
           },
         },
       });
