@@ -1,4 +1,5 @@
 import SovereignClient from "@sovereign-sdk/client";
+import type { RollupSimulateParams } from "@sovereign-sdk/client/resources/rollup";
 import { JsSerializer } from "@sovereign-sdk/serializers";
 import { type HexString, bytesToHex } from "@sovereign-sdk/utils";
 import type { DeepPartial } from "../utils";
@@ -105,15 +106,11 @@ export function standardTypeBuilder<
 /**
  * The parameters for simulating a runtime call transaction.
  */
-export type SimulateParams = {
-  /**
-   * The transaction details to use for the simulation.
-   */
-  txDetails: TxDetails;
-
-  /** The generation of the transaction for uniquness purposes. */
-  generation?: number;
-} & SignerParams;
+export type SimulateParams = Omit<
+  SovereignClient.RollupSimulateParams,
+  "call" | "sender"
+> &
+  SignerParams;
 
 export class StandardRollup<RuntimeCall> extends Rollup<
   StandardRollupSpec<RuntimeCall>,
@@ -128,38 +125,13 @@ export class StandardRollup<RuntimeCall> extends Rollup<
    */
   async simulate(
     runtimeMessage: StandardRollupSpec<RuntimeCall>["RuntimeCall"],
-    { signer, txDetails, generation: overrideGeneration }: SimulateParams,
-  ): Promise<SovereignClient.Rollup.SimulateExecutionResponse> {
-    const serializer = await this.serializer();
-    const runtimeCall = serializer.serializeRuntimeCall(runtimeMessage);
+    { signer }: SimulateParams,
+  ): Promise<SovereignClient.Rollup.RollupSimulateResponse> {
     const publicKey = await signer.publicKey();
-    const uniqueness = await useOrFetchUniqueness({
-      rollup: this,
-      overrides: {
-        uniqueness: overrideGeneration
-          ? { generation: overrideGeneration }
-          : undefined,
-      },
-    });
-    // Extract the generation number from the uniqueness object
-    const generation =
-      "generation" in uniqueness
-        ? (uniqueness as Generation).generation
-        : (uniqueness as Nonce).nonce; // Use nonce as fallback until simulate endpoint is updated.
-    const response = await this.rollup.simulate({
-      body: {
-        details: {
-          ...txDetails,
-          // simulate needs this field as `undefined` currently
-          gas_limit: txDetails.gas_limit || undefined,
-        },
-        encoded_call_message: bytesToHex(runtimeCall),
-        generation,
-        sender_pub_key: bytesToHex(publicKey),
-      },
-    });
+    const sender = bytesToHex(publicKey);
+    const call = runtimeMessage as { [key: string]: unknown };
 
-    return response;
+    return this.rollup.simulate({ sender, call });
   }
 }
 
@@ -179,7 +151,7 @@ async function buildContext<C extends StandardRollupContext>(
   };
 
   if (!defaultTxDetails.chain_id) {
-    const { chain_id } = await client.rollup.constants.retrieve();
+    const { chain_id } = await client.rollup.constants();
 
     defaultTxDetails.chain_id = chain_id;
   }
