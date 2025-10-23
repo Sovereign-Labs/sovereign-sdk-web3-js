@@ -1,5 +1,11 @@
 # @sovereign-sdk/integration-tests
 
+## 1.1.0
+
+### Minor Changes
+
+- 8943b50: Explicitly using nonce from dedup endpoint instead of generation
+
 ## 1.0.4
 
 ### Patch Changes

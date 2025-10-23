@@ -1,5 +1,12 @@
 # @sovereign-sdk/universal-wallet-wasm
 
+## 0.5.0
+
+### Minor Changes
+
+- ff942a8: Update to new version of Rust crate, and add bindings for EIP-712 functionality
+- 29ec627: Add EIP712 signer support.
+
 ## 0.4.0
 
 ### Minor Changes
