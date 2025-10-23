@@ -155,7 +155,7 @@ describe("Rollup", () => {
       client.post = vi.fn().mockResolvedValue({});
       const transaction = { foo: "bar" };
 
-      await rollup.submitTransaction(transaction, undefined, overrideEndpoint);
+      await rollup.submitTransaction(transaction, { path: overrideEndpoint });
 
       expect(rollup.http.post).toHaveBeenCalledWith("/sequencer/eip712_tx", {
         body: {
@@ -272,7 +272,6 @@ describe("Rollup", () => {
       expect(rollup.submitTransaction).toHaveBeenCalledWith(
         mockTransaction,
         options,
-        undefined,
       );
     });
 
@@ -298,7 +297,6 @@ describe("Rollup", () => {
 
       expect(rollup.submitTransaction).toHaveBeenCalledWith(
         mockTransaction,
-        undefined,
         undefined,
       );
     });
@@ -376,7 +374,6 @@ describe("Rollup", () => {
           signer: mockSigner,
         },
         options,
-        undefined,
       );
     });
 
@@ -395,7 +392,6 @@ describe("Rollup", () => {
         {
           signer: mockSigner,
         },
-        undefined,
         undefined,
       );
     });
@@ -421,16 +417,17 @@ describe("Rollup", () => {
       const submitTransactionSpy = vi.spyOn(rollup, "submitTransaction");
       client.post = vi.fn().mockResolvedValue({ txHash: "mock-hash" });
 
-      await rollup.call(mockRuntimeCall, {
-        signer: mockSigner,
-        endpoint,
-      });
-
-      expect(submitTransactionSpy).toHaveBeenCalledWith(
-        mockTransaction,
-        undefined,
-        endpoint,
+      await rollup.call(
+        mockRuntimeCall,
+        {
+          signer: mockSigner,
+        },
+        { path: endpoint },
       );
+
+      expect(submitTransactionSpy).toHaveBeenCalledWith(mockTransaction, {
+        path: endpoint,
+      });
     });
   });
   describe("getters", () => {

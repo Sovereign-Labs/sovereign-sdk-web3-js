@@ -110,11 +110,6 @@ export type SignerParams = {
  */
 export type CallParams<S extends BaseTypeSpec> = {
   overrides?: DeepPartial<S["UnsignedTransaction"]>;
-  /**
-   * Optional endpoint override for submitting this transaction.
-   * If not specified, uses the rollup's configured txSubmissionEndpoint.
-   */
-  endpoint?: string;
 } & SignerParams;
 
 /**
@@ -157,24 +152,24 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   /**
    * Submits a transaction to the rollup.
    *
+   * The endpoint used for submission can be overridden via the options.path parameter.
+   * If not specified, the rollup's configured txSubmissionEndpoint will be used.
+   *
    * @param transaction - The transaction to submit.
    * @param {SovereignClient.RequestOptions} options - The options for the request.
-   * @param endpoint - Optional endpoint override. If not specified, uses the rollup's configured txSubmissionEndpoint.
    */
   async submitTransaction(
     transaction: S["Transaction"],
     options?: SovereignClient.RequestOptions,
-    endpoint?: string,
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializer = await this.serializer();
     const serializedTx = serializer.serializeTx(transaction);
-
-    const txSubmissionEndpoint = endpoint || this._config.txSubmissionEndpoint;
-
     // Stainless RequestOptions is generic internally, causing issues for `body` and `query`.
     // That's fine since we supply the `body` and transaction submission doesn't take query parameters.
     // So we hack around this by destructuring them out.
-    const { body: _, query: __, ...requestOptions } = options || {};
+    const { body: _, query: __, path, ...requestOptions } = options || {};
+    const txSubmissionEndpoint = path || this._config.txSubmissionEndpoint;
+
     return this.http
       .post<SovereignClient.Sequencer.TxCreateResponse>(txSubmissionEndpoint, {
         body: { body: Base64.fromUint8Array(serializedTx) },
@@ -212,23 +207,9 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
     unsignedTx: S["UnsignedTransaction"],
     { signer }: SignerParams,
     options?: SovereignClient.RequestOptions,
-    endpoint?: string,
   ): Promise<TransactionResult<S["Transaction"]>> {
-    const serializer = await this.serializer();
-    const serializedUnsignedTx = serializer.serializeUnsignedTx(unsignedTx);
-    const chainHash = await this.chainHash();
-    const signature = await signer.sign(
-      new Uint8Array([...serializedUnsignedTx, ...chainHash]),
-    );
-    const publicKey = await signer.publicKey();
-    const context = {
-      unsignedTx,
-      sender: publicKey,
-      signature,
-      rollup: this,
-    };
-    const tx = await this._typeBuilder.transaction(context);
-    const result = await this.submitTransaction(tx, options, endpoint);
+    const tx = await this.signTransaction(unsignedTx, signer);
+    const result = await this.submitTransaction(tx, options);
 
     return { transaction: tx, response: result };
   }
@@ -243,7 +224,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    */
   async call(
     runtimeCall: S["RuntimeCall"],
-    { signer, overrides, endpoint }: CallParams<S>,
+    { signer, overrides }: CallParams<S>,
     options?: SovereignClient.RequestOptions,
   ): Promise<TransactionResult<S["Transaction"]>> {
     const context = {
@@ -259,8 +240,60 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
         signer,
       },
       options,
-      endpoint,
     );
+  }
+
+  /**
+   * Prepares a runtime call by creating and signing a transaction without submitting it.
+   * This is useful for scenarios where you need the signed transaction for later submission
+   * or for analysis purposes.
+   *
+   * @param runtimeCall - The runtime message to prepare.
+   * @param params - The parameters for preparing the call.
+   * @param params.signer - The signer to use for signing the transaction.
+   * @param params.overrides - Optional overrides for the unsigned transaction.
+   * @returns A promise that resolves to the signed transaction.
+   */
+  async prepareCall(
+    runtimeCall: S["RuntimeCall"],
+    { signer, overrides }: CallParams<S>,
+  ): Promise<S["Transaction"]> {
+    const context = {
+      runtimeCall,
+      rollup: this,
+      overrides: overrides ?? ({} as DeepPartial<S["UnsignedTransaction"]>),
+    };
+    const unsignedTx = await this._typeBuilder.unsignedTransaction(context);
+    return this.signTransaction(unsignedTx, signer);
+  }
+
+  /**
+   * Signs an unsigned transaction using the provided signer.
+   * Creates a signature by combining the serialized unsigned transaction with the chain hash,
+   * then constructs a fully signed transaction.
+   *
+   * @param unsignedTx - The unsigned transaction to sign.
+   * @param signer - The signer to use for signing the transaction.
+   * @returns A promise that resolves to the signed transaction.
+   */
+  async signTransaction(
+    unsignedTx: S["UnsignedTransaction"],
+    signer: Signer,
+  ): Promise<S["Transaction"]> {
+    const serializer = await this.serializer();
+    const serializedUnsignedTx = serializer.serializeUnsignedTx(unsignedTx);
+    const chainHash = await this.chainHash();
+    const signature = await signer.sign(
+      new Uint8Array([...serializedUnsignedTx, ...chainHash]),
+    );
+    const publicKey = await signer.publicKey();
+    const context = {
+      unsignedTx,
+      sender: publicKey,
+      signature,
+      rollup: this,
+    };
+    return this._typeBuilder.transaction(context);
   }
 
   /**

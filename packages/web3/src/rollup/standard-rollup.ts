@@ -1,5 +1,4 @@
 import SovereignClient from "@sovereign-sdk/client";
-import type { RollupSimulateParams } from "@sovereign-sdk/client/resources/rollup";
 import { JsSerializer } from "@sovereign-sdk/serializers";
 import { type HexString, bytesToHex } from "@sovereign-sdk/utils";
 import type { DeepPartial } from "../utils";
