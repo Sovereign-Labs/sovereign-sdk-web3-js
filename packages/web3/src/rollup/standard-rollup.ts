@@ -1,6 +1,11 @@
 import SovereignClient from "@sovereign-sdk/client";
 import { JsSerializer } from "@sovereign-sdk/serializers";
-import { type HexString, bytesToHex } from "@sovereign-sdk/utils";
+import type {
+  Transaction,
+  TxDetails,
+  UnsignedTransaction,
+} from "@sovereign-sdk/types";
+import { bytesToHex } from "@sovereign-sdk/utils";
 import type { DeepPartial } from "../utils";
 import {
   Rollup,
@@ -10,32 +15,6 @@ import {
   type TypeBuilder,
   type UnsignedTransactionContext,
 } from "./rollup";
-
-export type TxDetails = {
-  max_priority_fee_bips: number;
-  max_fee: string;
-  gas_limit: number[] | null;
-  chain_id: number;
-};
-
-export type Generation = { generation: number };
-export type Nonce = { nonce: number };
-export type Uniqueness = Nonce | Generation;
-
-export type UnsignedTransaction<RuntimeCall> = {
-  runtime_call: RuntimeCall;
-  uniqueness: Uniqueness;
-  details: TxDetails;
-};
-
-export type TransactionV0<RuntimeCall> = {
-  pub_key: HexString;
-  signature: HexString;
-} & UnsignedTransaction<RuntimeCall>;
-
-export type Transaction<RuntimeCall> = {
-  V0: TransactionV0<RuntimeCall>;
-};
 
 export type Dedup = {
   nonce: number;

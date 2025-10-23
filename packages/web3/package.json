@@ -22,6 +22,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "devDependencies": {
+    "@sovereign-sdk/types": "workspace:^",
     "tsup": "^8.3.0",
     "vitest": "^3.0.5"
   },
@@ -30,8 +31,8 @@
   },
   "dependencies": {
     "@sovereign-sdk/client": "0.1.0-alpha.39",
-    "@sovereign-sdk/signers": "workspace:^",
     "@sovereign-sdk/serializers": "workspace:^",
+    "@sovereign-sdk/signers": "workspace:^",
     "@sovereign-sdk/universal-wallet-wasm": "workspace:^",
     "@sovereign-sdk/utils": "workspace:^",
     "bech32": "^2.0.0",
