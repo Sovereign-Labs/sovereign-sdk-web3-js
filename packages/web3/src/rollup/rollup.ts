@@ -110,11 +110,6 @@ export type SignerParams = {
  */
 export type CallParams<S extends BaseTypeSpec> = {
   overrides?: DeepPartial<S["UnsignedTransaction"]>;
-  /**
-   * Optional endpoint override for submitting this transaction.
-   * If not specified, uses the rollup's configured txSubmissionEndpoint.
-   */
-  endpoint?: string;
 } & SignerParams;
 
 /**
@@ -212,10 +207,9 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
     unsignedTx: S["UnsignedTransaction"],
     { signer }: SignerParams,
     options?: SovereignClient.RequestOptions,
-    endpoint?: string,
   ): Promise<TransactionResult<S["Transaction"]>> {
     const tx = await this.signTransaction(unsignedTx, signer);
-    const result = await this.submitTransaction(tx, options, endpoint);
+    const result = await this.submitTransaction(tx, options);
 
     return { transaction: tx, response: result };
   }
@@ -230,7 +224,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    */
   async call(
     runtimeCall: S["RuntimeCall"],
-    { signer, overrides, endpoint }: CallParams<S>,
+    { signer, overrides }: CallParams<S>,
     options?: SovereignClient.RequestOptions,
   ): Promise<TransactionResult<S["Transaction"]>> {
     const context = {
@@ -246,7 +240,6 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
         signer,
       },
       options,
-      endpoint,
     );
   }
 
@@ -263,7 +256,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    */
   async prepareCall(
     runtimeCall: S["RuntimeCall"],
-    { signer, overrides }: Omit<CallParams<S>, "endpoint">,
+    { signer, overrides }: CallParams<S>,
   ): Promise<S["Transaction"]> {
     const context = {
       runtimeCall,
