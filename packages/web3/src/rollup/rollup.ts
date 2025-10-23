@@ -157,24 +157,24 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
   /**
    * Submits a transaction to the rollup.
    *
+   * The endpoint used for submission can be overridden via the options.path parameter.
+   * If not specified, the rollup's configured txSubmissionEndpoint will be used.
+   *
    * @param transaction - The transaction to submit.
    * @param {SovereignClient.RequestOptions} options - The options for the request.
-   * @param endpoint - Optional endpoint override. If not specified, uses the rollup's configured txSubmissionEndpoint.
    */
   async submitTransaction(
     transaction: S["Transaction"],
     options?: SovereignClient.RequestOptions,
-    endpoint?: string,
   ): Promise<SovereignClient.Sequencer.TxCreateResponse> {
     const serializer = await this.serializer();
     const serializedTx = serializer.serializeTx(transaction);
-
-    const txSubmissionEndpoint = endpoint || this._config.txSubmissionEndpoint;
-
     // Stainless RequestOptions is generic internally, causing issues for `body` and `query`.
     // That's fine since we supply the `body` and transaction submission doesn't take query parameters.
     // So we hack around this by destructuring them out.
-    const { body: _, query: __, ...requestOptions } = options || {};
+    const { body: _, query: __, path, ...requestOptions } = options || {};
+    const txSubmissionEndpoint = path || this._config.txSubmissionEndpoint;
+
     return this.http
       .post<SovereignClient.Sequencer.TxCreateResponse>(txSubmissionEndpoint, {
         body: { body: Base64.fromUint8Array(serializedTx) },

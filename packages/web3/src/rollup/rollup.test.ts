@@ -155,7 +155,7 @@ describe("Rollup", () => {
       client.post = vi.fn().mockResolvedValue({});
       const transaction = { foo: "bar" };
 
-      await rollup.submitTransaction(transaction, undefined, overrideEndpoint);
+      await rollup.submitTransaction(transaction, { path: overrideEndpoint });
 
       expect(rollup.http.post).toHaveBeenCalledWith("/sequencer/eip712_tx", {
         body: {
