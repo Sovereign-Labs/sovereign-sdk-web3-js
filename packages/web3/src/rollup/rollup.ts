@@ -176,18 +176,14 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
     // So we hack around this by destructuring them out.
     const { body: _, query: __, ...requestOptions } = options || {};
     return this.http
-      .post<{ body: string }, SovereignClient.Sequencer.TxCreateResponse>(
-        txSubmissionEndpoint,
-        {
-          body: { body: Base64.fromUint8Array(serializedTx) },
-          ...requestOptions,
-        },
-      )
+      .post<SovereignClient.Sequencer.TxCreateResponse>(txSubmissionEndpoint, {
+        body: { body: Base64.fromUint8Array(serializedTx) },
+        ...requestOptions,
+      })
       .catch(async (e) => {
         if (isVersionMismatchError(e as APIError)) {
           const oldVersion = bytesToHex(await this.chainHash());
-          const { schema, chain_hash: newVersion } =
-            await this.rollup.schema.retrieve();
+          const { schema, chain_hash: newVersion } = await this.rollup.schema();
           this._chainHash = hexToBytes(newVersion);
           this._serializer = this._config.getSerializer(schema);
 
@@ -328,7 +324,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
    */
   async serializer(): Promise<Serializer> {
     if (this._serializer) return this._serializer;
-    const { schema } = await this.rollup.schema.retrieve();
+    const { schema } = await this.rollup.schema();
     this._serializer = this._config.getSerializer(schema);
     return this._serializer;
   }
@@ -342,7 +338,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
 
   async chainHash(): Promise<Uint8Array> {
     if (this._chainHash) return this._chainHash;
-    const { chain_hash } = await this.rollup.schema.retrieve();
+    const { chain_hash } = await this.rollup.schema();
     this._chainHash = hexToBytes(chain_hash);
     return this._chainHash;
   }
