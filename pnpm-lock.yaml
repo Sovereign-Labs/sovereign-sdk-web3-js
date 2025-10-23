@@ -139,6 +139,28 @@ importers:
         specifier: ^3.0.5
         version: 3.0.5(@types/debug@4.1.12)(@types/node@22.7.5)(tsx@4.20.3)(yaml@2.7.1)
 
+  packages/multisig:
+    dependencies:
+      '@sovereign-sdk/serializers':
+        specifier: workspace:^
+        version: link:../serializers
+      '@sovereign-sdk/signers':
+        specifier: workspace:^
+        version: link:../signers
+      '@sovereign-sdk/utils':
+        specifier: workspace:^
+        version: link:../utils
+    devDependencies:
+      tsup:
+        specifier: ^8.3.0
+        version: 8.3.0(@swc/core@1.7.42)(postcss@8.5.3)(tsx@4.20.3)(typescript@5.6.3)(yaml@2.7.1)
+      typescript:
+        specifier: ^5.6.3
+        version: 5.6.3
+      vitest:
+        specifier: ^3.0.5
+        version: 3.0.5(@types/debug@4.1.12)(@types/node@22.7.5)(tsx@4.20.3)(yaml@2.7.1)
+
   packages/serializers:
     dependencies:
       '@sovereign-sdk/universal-wallet-wasm':
