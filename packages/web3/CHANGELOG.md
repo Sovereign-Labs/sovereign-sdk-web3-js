@@ -1,5 +1,11 @@
 # @sovereign-sdk/web3
 
+## 0.11.1
+
+### Patch Changes
+
+- 70b251d: adds `types` package to define standard sovereign sdk types to be reused in other packages
+
 ## 0.11.0
 
 ### Minor Changes
