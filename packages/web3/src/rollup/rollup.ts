@@ -214,20 +214,7 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
     options?: SovereignClient.RequestOptions,
     endpoint?: string,
   ): Promise<TransactionResult<S["Transaction"]>> {
-    const serializer = await this.serializer();
-    const serializedUnsignedTx = serializer.serializeUnsignedTx(unsignedTx);
-    const chainHash = await this.chainHash();
-    const signature = await signer.sign(
-      new Uint8Array([...serializedUnsignedTx, ...chainHash]),
-    );
-    const publicKey = await signer.publicKey();
-    const context = {
-      unsignedTx,
-      sender: publicKey,
-      signature,
-      rollup: this,
-    };
-    const tx = await this._typeBuilder.transaction(context);
+    const tx = await this.signTransaction(unsignedTx, signer);
     const result = await this.submitTransaction(tx, options, endpoint);
 
     return { transaction: tx, response: result };
@@ -261,6 +248,61 @@ export class Rollup<S extends BaseTypeSpec, C extends RollupContext> {
       options,
       endpoint,
     );
+  }
+
+  /**
+   * Prepares a runtime call by creating, signing, and serializing a transaction without submitting it.
+   * This is useful for scenarios where you need the serialized transaction bytes for later submission
+   * or for analysis purposes.
+   *
+   * @param runtimeCall - The runtime message to prepare.
+   * @param params - The parameters for preparing the call.
+   * @param params.signer - The signer to use for signing the transaction.
+   * @param params.overrides - Optional overrides for the unsigned transaction.
+   * @returns A promise that resolves to the serialized transaction bytes.
+   */
+  async prepareCall(
+    runtimeCall: S["RuntimeCall"],
+    { signer, overrides }: Omit<CallParams<S>, "endpoint">,
+  ): Promise<Uint8Array> {
+    const context = {
+      runtimeCall,
+      rollup: this,
+      overrides: overrides ?? ({} as DeepPartial<S["UnsignedTransaction"]>),
+    };
+    const unsignedTx = await this._typeBuilder.unsignedTransaction(context);
+    const tx = await this.signTransaction(unsignedTx, signer);
+    const serializer = await this.serializer();
+    return serializer.serializeTx(tx);
+  }
+
+  /**
+   * Signs an unsigned transaction using the provided signer.
+   * Creates a signature by combining the serialized unsigned transaction with the chain hash,
+   * then constructs a fully signed transaction.
+   *
+   * @param unsignedTx - The unsigned transaction to sign.
+   * @param signer - The signer to use for signing the transaction.
+   * @returns A promise that resolves to the signed transaction.
+   */
+  async signTransaction(
+    unsignedTx: S["UnsignedTransaction"],
+    signer: Signer,
+  ): Promise<S["Transaction"]> {
+    const serializer = await this.serializer();
+    const serializedUnsignedTx = serializer.serializeUnsignedTx(unsignedTx);
+    const chainHash = await this.chainHash();
+    const signature = await signer.sign(
+      new Uint8Array([...serializedUnsignedTx, ...chainHash]),
+    );
+    const publicKey = await signer.publicKey();
+    const context = {
+      unsignedTx,
+      sender: publicKey,
+      signature,
+      rollup: this,
+    };
+    return this._typeBuilder.transaction(context);
   }
 
   /**
