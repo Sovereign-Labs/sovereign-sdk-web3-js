@@ -15,13 +15,13 @@ export type UnsignedTransaction<RuntimeCall> = {
   runtime_call: RuntimeCall;
   uniqueness: Uniqueness;
   details: TxDetails;
+  address_override: HexString | null;
 };
 
 export type TransactionV0<RuntimeCall> = {
   V0: {
     pub_key: HexString;
     signature: HexString;
-    address_override: HexString | null;
   } & UnsignedTransaction<RuntimeCall>;
 };
 
@@ -31,7 +31,6 @@ export type TransactionV1<RuntimeCall> = {
     unused_pub_keys: HexString[];
     signatures: HexString[];
     min_signers: number;
-    address_override: HexString | null;
   } & UnsignedTransaction<RuntimeCall>;
 };
 
