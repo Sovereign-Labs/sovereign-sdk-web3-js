@@ -76,7 +76,7 @@ export function standardTypeBuilder<
           signature: bytesToHex(signature),
           ...unsignedTx,
         },
-      };
+      } as S["Transaction"];
     },
   };
 }
