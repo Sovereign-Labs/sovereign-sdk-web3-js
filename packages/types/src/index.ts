@@ -33,4 +33,6 @@ export type TransactionV1<RuntimeCall> = {
   } & UnsignedTransaction<RuntimeCall>;
 };
 
-export type Transaction<RuntimeCall> = TransactionV0<RuntimeCall>;
+export type Transaction<RuntimeCall> =
+  | TransactionV0<RuntimeCall>
+  | TransactionV1<RuntimeCall>;
