@@ -23,6 +23,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "devDependencies": {
+    "@sovereign-sdk/types": "workspace:^",
     "tsup": "^8.3.0",
     "typescript": "^5.6.3",
     "vitest": "^3.0.5"
@@ -35,8 +36,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@sovereign-sdk/signers": "workspace:^",
     "@sovereign-sdk/serializers": "workspace:^",
+    "@sovereign-sdk/signers": "workspace:^",
     "@sovereign-sdk/utils": "workspace:^"
   }
 }
