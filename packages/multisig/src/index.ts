@@ -88,6 +88,19 @@ export class MultisigTransaction {
     this.minSigners = minSigners;
   }
 
+  static empty(
+    unsignedTx: UnsignedTransaction<unknown>,
+    minSigners: number,
+    allPubKeys: HexString[]
+  ): MultisigTransaction {
+    return new MultisigTransaction({
+      unsignedTx,
+      signatures: [],
+      unusedPubKeys: allPubKeys,
+      minSigners,
+    });
+  }
+
   /**
    * Creates a MultisigTransaction from an array of already-signed transactions.
    * Extracts signatures and validates that all transactions are identical except for signatures.
@@ -100,11 +113,11 @@ export class MultisigTransaction {
   static fromTransactions({
     txns,
     minSigners,
-    ...params
+    allPubKeys,
   }: FromTransactionsParams): MultisigTransaction {
     const signatures: SignatureAndPubKey[] = [];
     const unsignedTx = asUnsignedTransaction(txns[0]);
-    const unusedPubKeys = new Set<HexString>(params.allPubKeys);
+    const unusedPubKeys = new Set<HexString>(allPubKeys);
 
     assertIsNonceBasedTx(unsignedTx);
 
@@ -129,6 +142,15 @@ export class MultisigTransaction {
       unusedPubKeys: Array.from(unusedPubKeys),
       minSigners,
     });
+  }
+
+  addSignedTransaction(tx: Transaction<unknown>): void {
+    assertTxVariant(tx);
+    assertTxMatchesUnsignedTx(tx, this.unsignedTx);
+
+    const { pub_key, signature } = tx.V0;
+
+    this.addSignature(signature, pub_key);
   }
 
   /**
