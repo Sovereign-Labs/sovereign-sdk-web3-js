@@ -64,7 +64,7 @@ describe("MultisigTransaction", () => {
       const txV1: Transaction<string> = {
         V1: {
           unused_pub_keys: ["pubkey2"],
-          signatures: ["sig1"],
+          signatures: [{ pub_key: "pubkey1", signature: "sig1" }],
           min_signers: 1,
           ...unsignedTx,
         },
@@ -106,8 +106,11 @@ describe("MultisigTransaction", () => {
       });
 
       const result = multisig.asTransaction() as TransactionV1<string>;
-      expect(result.V1.signatures).toHaveLength(1);
-      expect(result.V1.signatures).toContain("sig1");
+      expect(result.V1.signatures).toHaveLength(2);
+      expect(result.V1.signatures).toEqual([
+        { pub_key: "pubkey1", signature: "sig1" },
+        { pub_key: "pubkey2", signature: "sig1" }
+      ]);
     });
 
     it("should throw if an input transaction uses a pubkey not in the unused list", () => {
@@ -142,7 +145,11 @@ describe("MultisigTransaction", () => {
     it("should return true if number of unique signatures is equal to or greater than minSigners", () => {
       const multisig = new MultisigTransaction({
         unsignedTx: createUnsignedTx(),
-        signatures: ["sig1", "sig2", "sig3"],
+        signatures: [
+          { pub_key: "pubkey1", signature: "sig1" },
+          { pub_key: "pubkey2", signature: "sig2" },
+          { pub_key: "pubkey3", signature: "sig3" }
+        ],
         unusedPubKeys: [],
         minSigners: 2,
       });
@@ -151,7 +158,10 @@ describe("MultisigTransaction", () => {
 
       const multisigExact = new MultisigTransaction({
         unsignedTx: createUnsignedTx(),
-        signatures: ["sig1", "sig2"],
+        signatures: [
+          { pub_key: "pubkey1", signature: "sig1" },
+          { pub_key: "pubkey2", signature: "sig2" }
+        ],
         unusedPubKeys: [],
         minSigners: 2,
       });
@@ -162,7 +172,7 @@ describe("MultisigTransaction", () => {
     it("should return false if number of unique signatures is less than minSigners", () => {
       const multisig = new MultisigTransaction({
         unsignedTx: createUnsignedTx(),
-        signatures: ["sig1"],
+        signatures: [{ pub_key: "pubkey1", signature: "sig1" }],
         unusedPubKeys: ["pubkey2", "pubkey3"],
         minSigners: 2,
       });
@@ -196,7 +206,7 @@ describe("MultisigTransaction", () => {
       multisig.addSignature("sig1", "pubkey1");
 
       const result = multisig.asTransaction() as TransactionV1<string>;
-      expect(result.V1.signatures).toContain("sig1");
+      expect(result.V1.signatures).toEqual([{ pub_key: "pubkey1", signature: "sig1" }]);
       expect(result.V1.signatures).toHaveLength(1);
     });
 

@@ -24,11 +24,16 @@ export type TransactionV0<RuntimeCall> = {
   } & UnsignedTransaction<RuntimeCall>;
 };
 
+export type SignatureAndPubKey = {
+  signature: HexString;
+  pub_key: HexString;
+};
+
 // multie sig
 export type TransactionV1<RuntimeCall> = {
   V1: {
     unused_pub_keys: HexString[];
-    signatures: HexString[];
+    signatures: SignatureAndPubKey[];
     min_signers: number;
   } & UnsignedTransaction<RuntimeCall>;
 };

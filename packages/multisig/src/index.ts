@@ -2,6 +2,7 @@ import type {
   Transaction,
   TransactionV0,
   UnsignedTransaction,
+  SignatureAndPubKey,
 } from "@sovereign-sdk/types";
 import type { HexString } from "@sovereign-sdk/utils";
 
@@ -41,8 +42,8 @@ export class InvalidMultisigParameterError extends MultisigError {
 export type MultisigParams = {
   /** The unsigned transaction to be signed by multiple parties */
   unsignedTx: UnsignedTransaction<unknown>;
-  /** Array of signatures already collected */
-  signatures: HexString[];
+  /** Array of signatures with pubkeys already collected */
+  signatures: SignatureAndPubKey[];
   /** Array of public keys that haven't signed yet */
   unusedPubKeys: HexString[];
   /** Minimum number of signatures required */
@@ -67,7 +68,7 @@ export type FromTransactionsParams = {
  */
 export class MultisigTransaction {
   private unsignedTx: UnsignedTransaction<unknown>;
-  private signatures = new Set<HexString>();
+  private signatures: SignatureAndPubKey[] = [];
   private minSigners: number;
   private unusedPubKeys = new Set<HexString>();
 
@@ -82,7 +83,7 @@ export class MultisigTransaction {
     minSigners,
   }: MultisigParams) {
     this.unsignedTx = unsignedTx;
-    this.signatures = new Set(signatures);
+    this.signatures = signatures;
     this.unusedPubKeys = new Set(unusedPubKeys);
     this.minSigners = minSigners;
   }
@@ -101,7 +102,7 @@ export class MultisigTransaction {
     minSigners,
     ...params
   }: FromTransactionsParams): MultisigTransaction {
-    const signatures = new Set<HexString>();
+    const signatures: SignatureAndPubKey[] = [];
     const unsignedTx = asUnsignedTransaction(txns[0]);
     const unusedPubKeys = new Set<HexString>(params.allPubKeys);
 
@@ -111,18 +112,20 @@ export class MultisigTransaction {
       assertTxVariant(tx);
       assertTxMatchesUnsignedTx(tx, unsignedTx);
 
-      if (!unusedPubKeys.delete(tx.V0.pub_key)) {
+      const { pub_key, signature } = tx.V0;
+
+      if (!unusedPubKeys.delete(pub_key)) {
         throw new InvalidMultisigParameterError(
-          `Public key is not a member of the multisig or has already signed: ${tx.V0.pub_key}`
+          `Public key is not a member of the multisig or has already signed: ${pub_key}`
         );
       }
 
-      signatures.add(tx.V0.signature);
+      signatures.push({ pub_key, signature });
     }
 
     return new MultisigTransaction({
       unsignedTx,
-      signatures: Array.from(signatures),
+      signatures,
       unusedPubKeys: Array.from(unusedPubKeys),
       minSigners,
     });
@@ -141,7 +144,7 @@ export class MultisigTransaction {
       );
     }
 
-    this.signatures.add(signature);
+    this.signatures.push({ pub_key: pubKey, signature });
   }
 
   /**
@@ -149,7 +152,7 @@ export class MultisigTransaction {
    * @returns True if the number of signatures meets or exceeds the minimum required
    */
   get isComplete(): boolean {
-    return this.signatures.size >= this.minSigners;
+    return this.signatures.length >= this.minSigners;
   }
 
   /**
@@ -171,7 +174,7 @@ export class MultisigTransaction {
         uniqueness: this.unsignedTx.uniqueness,
         details: this.unsignedTx.details,
         unused_pub_keys: Array.from(this.unusedPubKeys),
-        signatures: Array.from(this.signatures),
+        signatures: this.signatures,
         min_signers: this.minSigners,
       },
     };
