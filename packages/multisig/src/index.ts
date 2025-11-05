@@ -88,6 +88,13 @@ export class MultisigTransaction {
     this.minSigners = minSigners;
   }
 
+  /**
+   * Creates an empty MultisigTransaction with no signatures collected yet.
+   * @param unsignedTx - The unsigned transaction to be signed by multiple parties
+   * @param minSigners - Minimum number of signatures required for completion
+   * @param allPubKeys - All public keys that are members of the multisig
+   * @returns A new empty MultisigTransaction instance
+   */
   static empty(
     unsignedTx: UnsignedTransaction<unknown>,
     minSigners: number,
