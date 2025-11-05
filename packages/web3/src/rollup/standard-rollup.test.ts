@@ -118,7 +118,6 @@ describe("standardTypeBuilder", () => {
             chain_id: 1,
             gas_limit: null,
           },
-          address_override: null,
         },
         sender: new Uint8Array([4, 5, 6]),
         signature: new Uint8Array([7, 8, 9]),
@@ -127,7 +126,6 @@ describe("standardTypeBuilder", () => {
 
       expect(result).toEqual({
         V0: {
-          address_override: null,
           pub_key: "040506",
           signature: "070809",
           runtime_call: {
