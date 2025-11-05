@@ -9,7 +9,7 @@
     "ci": "biome ci",
     "fix": "biome check --write",
     "lint": "biome lint",
-    "test:integration": "vitest"
+    "test:integration": "vitest run"
   },
   "repository": "github:Sovereign-Labs/sovereign-sdk-web3-js",
   "bin": {

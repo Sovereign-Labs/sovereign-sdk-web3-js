@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Package containing integration tests for web3 sdk functionality",
   "scripts": {
-    "test:integration": "vitest"
+    "test:integration": "vitest run"
   },
   "keywords": [],
   "author": "",

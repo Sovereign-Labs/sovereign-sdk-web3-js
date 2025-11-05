@@ -7,7 +7,7 @@
     "fix": "biome check --write",
     "lint": "biome lint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "repository": "github:Sovereign-Labs/sovereign-sdk-web3-js",
   "files": ["dist", "package.json"],
