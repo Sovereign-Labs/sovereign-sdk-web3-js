@@ -15,7 +15,8 @@ export default defineConfig({
         "signers",
         "utils",
         "modules",
-        "serializers"
+        "serializers",
+        "multisig"
       ),
     },
   },

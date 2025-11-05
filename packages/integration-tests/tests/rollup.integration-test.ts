@@ -1,10 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { Ed25519Signer } from "@sovereign-sdk/signers";
 import {
-  createStandardRollup,
   type StandardRollup,
   VersionMismatchError,
+  createStandardRollup,
 } from "@sovereign-sdk/web3";
-import { Ed25519Signer } from "@sovereign-sdk/signers";
+import { describe, expect, it } from "vitest";
 
 const privateKey = new Uint8Array([
   117, 251, 248, 217, 135, 70, 194, 105, 46, 80, 41, 66, 185, 56, 200, 35, 121,
@@ -38,7 +38,7 @@ describe("rollup", async () => {
         },
       };
       await expect(rollup.call(runtimeCall, { signer })).rejects.toThrow(
-        VersionMismatchError,
+        VersionMismatchError
       );
 
       rollup.chainHash = chainHashFn;
