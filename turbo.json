@@ -56,7 +56,6 @@
     "pnpm-workspace.yaml",
     "turbo.json",
     "biome.json",
-    "vitest.config.ts",
-    "vitest.workspace.ts"
+    "vitest.config.ts"
   ]
 }

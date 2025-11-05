@@ -5,7 +5,7 @@
     "build": "pnpm run compile:node && pnpm run compile:esm && ./scripts/ensure_module_types.sh",
     "compile:esm": "wasm-pack build --target bundler --release --out-dir dist/esm",
     "compile:node": "wasm-pack build --target nodejs --release --out-dir dist/node",
-    "test": "pnpm compile:node && vitest run"
+    "test": "vitest run --project unit"
   },
   "repository": "github:Sovereign-Labs/sovereign-sdk-web3-js",
   "files": [
