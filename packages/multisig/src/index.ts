@@ -1,8 +1,8 @@
 import type {
+  SignatureAndPubKey,
   Transaction,
   TransactionV0,
   UnsignedTransaction,
-  SignatureAndPubKey,
 } from "@sovereign-sdk/types";
 import type { HexString } from "@sovereign-sdk/utils";
 
@@ -22,7 +22,7 @@ export class InvalidTransactionVersionError extends MultisigError {}
 export class TransactionMismatchError extends Error {
   constructor() {
     super(
-      "Provided transaction does not match the expected unsigned transaction"
+      "Provided transaction does not match the expected unsigned transaction",
     );
   }
 }
@@ -98,7 +98,7 @@ export class MultisigTransaction {
   static empty(
     unsignedTx: UnsignedTransaction<unknown>,
     minSigners: number,
-    allPubKeys: HexString[]
+    allPubKeys: HexString[],
   ): MultisigTransaction {
     return new MultisigTransaction({
       unsignedTx,
@@ -136,7 +136,7 @@ export class MultisigTransaction {
 
       if (!unusedPubKeys.delete(pub_key)) {
         throw new InvalidMultisigParameterError(
-          `Public key is not a member of the multisig or has already signed: ${pub_key}`
+          `Public key is not a member of the multisig or has already signed: ${pub_key}`,
         );
       }
 
@@ -176,7 +176,7 @@ export class MultisigTransaction {
   addSignature(signature: HexString, pubKey: HexString): void {
     if (!this.unusedPubKeys.delete(pubKey)) {
       throw new InvalidMultisigParameterError(
-        `Public key is not a member of the multisig or has already signed: ${pubKey}`
+        `Public key is not a member of the multisig or has already signed: ${pubKey}`,
       );
     }
 
@@ -218,17 +218,17 @@ export class MultisigTransaction {
 }
 
 function assertTxVariant(
-  tx: Transaction<unknown>
+  tx: Transaction<unknown>,
 ): asserts tx is TransactionV0<unknown> {
   if ("V1" in tx) {
     throw new InvalidTransactionVersionError(
-      "Input transaction was an unsupported variant (V1)"
+      "Input transaction was an unsupported variant (V1)",
     );
   }
 }
 
 function asUnsignedTransaction(
-  tx: Transaction<unknown>
+  tx: Transaction<unknown>,
 ): UnsignedTransaction<unknown> {
   if ("V0" in tx) {
     return {
@@ -247,13 +247,13 @@ function asUnsignedTransaction(
   }
 
   throw new InvalidTransactionVersionError(
-    "Transaction variant is neither V0 nor V1"
+    "Transaction variant is neither V0 nor V1",
   );
 }
 
 function assertTxMatchesUnsignedTx(
   tx: Transaction<unknown>,
-  unsignedTx: UnsignedTransaction<unknown>
+  unsignedTx: UnsignedTransaction<unknown>,
 ): void {
   const txAsUnsigned = asUnsignedTransaction(tx);
 
@@ -265,7 +265,7 @@ function assertTxMatchesUnsignedTx(
 function assertIsNonceBasedTx(unsignedTx: UnsignedTransaction<unknown>): void {
   if (!("nonce" in unsignedTx.uniqueness)) {
     throw new InvalidMultisigParameterError(
-      "Only nonce-based transactions are supported for multisig"
+      "Only nonce-based transactions are supported for multisig",
     );
   }
 }

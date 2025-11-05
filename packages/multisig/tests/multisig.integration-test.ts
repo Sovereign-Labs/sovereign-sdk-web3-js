@@ -1,13 +1,13 @@
-import { describe, it, expect, beforeAll } from "vitest";
-import { MultisigTransaction } from "../src";
 import { Ed25519Signer, type Signer } from "@sovereign-sdk/signers";
-import {
-  createStandardRollup,
-  type StandardRollup,
-  DEFAULT_TX_DETAILS,
-} from "@sovereign-sdk/web3";
 import type { UnsignedTransaction } from "@sovereign-sdk/types";
 import { bytesToHex } from "@sovereign-sdk/utils";
+import {
+  DEFAULT_TX_DETAILS,
+  type StandardRollup,
+  createStandardRollup,
+} from "@sovereign-sdk/web3";
+import { beforeAll, describe, expect, it } from "vitest";
+import { MultisigTransaction } from "../src";
 
 const testAddress = {
   Standard: "sov1lzkjgdaz08su3yevqu6ceywufl35se9f33kztu5cu2spja5hyyf",
@@ -64,11 +64,11 @@ describe("multisig", async () => {
     const requiredSigners = 3;
     const multiSigSigners = generateSigners(requiredSigners);
     const allPublicKeyBytes = await Promise.all(
-      multiSigSigners.map((s) => s.publicKey())
+      multiSigSigners.map((s) => s.publicKey()),
     );
     const allPubKeys = allPublicKeyBytes.map(bytesToHex);
     const signedTransactions = await Promise.all(
-      multiSigSigners.map((s) => rollup.signTransaction(unsignedTx, s))
+      multiSigSigners.map((s) => rollup.signTransaction(unsignedTx, s)),
     );
     const multisig = MultisigTransaction.fromTransactions({
       txns: signedTransactions,

@@ -109,7 +109,7 @@ describe("MultisigTransaction", () => {
       expect(result.V1.signatures).toHaveLength(2);
       expect(result.V1.signatures).toEqual([
         { pub_key: "pubkey1", signature: "sig1" },
-        { pub_key: "pubkey2", signature: "sig1" }
+        { pub_key: "pubkey2", signature: "sig1" },
       ]);
     });
 
@@ -148,7 +148,7 @@ describe("MultisigTransaction", () => {
         signatures: [
           { pub_key: "pubkey1", signature: "sig1" },
           { pub_key: "pubkey2", signature: "sig2" },
-          { pub_key: "pubkey3", signature: "sig3" }
+          { pub_key: "pubkey3", signature: "sig3" },
         ],
         unusedPubKeys: [],
         minSigners: 2,
@@ -160,7 +160,7 @@ describe("MultisigTransaction", () => {
         unsignedTx: createUnsignedTx(),
         signatures: [
           { pub_key: "pubkey1", signature: "sig1" },
-          { pub_key: "pubkey2", signature: "sig2" }
+          { pub_key: "pubkey2", signature: "sig2" },
         ],
         unusedPubKeys: [],
         minSigners: 2,
@@ -206,7 +206,9 @@ describe("MultisigTransaction", () => {
       multisig.addSignature("sig1", "pubkey1");
 
       const result = multisig.asTransaction() as TransactionV1<string>;
-      expect(result.V1.signatures).toEqual([{ pub_key: "pubkey1", signature: "sig1" }]);
+      expect(result.V1.signatures).toEqual([
+        { pub_key: "pubkey1", signature: "sig1" },
+      ]);
       expect(result.V1.signatures).toHaveLength(1);
     });
 
