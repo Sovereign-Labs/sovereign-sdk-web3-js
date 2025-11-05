@@ -8,6 +8,22 @@ function includePackages(...packages: string[]) {
 export default defineConfig({
   plugins: [wasm()],
   test: {
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: "unit",
+          include: ["**/*.test.ts"],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: "integration",
+          include: ["**/*.integration-test.ts"],
+        },
+      },
+    ],
     coverage: {
       provider: "v8",
       include: includePackages(
