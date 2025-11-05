@@ -7,11 +7,16 @@
     "ci": "biome ci",
     "fix": "biome check --write",
     "lint": "biome lint",
-    "test": "vitest",
+    "test": "vitest **/*.test.ts",
+    "test:integration": "vitest **/*.integration-test.ts",
     "typecheck": "tsc --noEmit"
   },
   "repository": "github:Sovereign-Labs/sovereign-sdk-web3-js",
-  "files": ["dist", "README.md", "package.json"],
+  "files": [
+    "dist",
+    "README.md",
+    "package.json"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -24,6 +29,7 @@
   "types": "./dist/index.d.ts",
   "devDependencies": {
     "@sovereign-sdk/types": "workspace:^",
+    "@sovereign-sdk/web3": "workspace:^",
     "tsup": "^8.3.0",
     "typescript": "^5.6.3",
     "vitest": "^3.0.5"
@@ -36,7 +42,6 @@
     "access": "public"
   },
   "dependencies": {
-    "@sovereign-sdk/serializers": "workspace:^",
     "@sovereign-sdk/signers": "workspace:^",
     "@sovereign-sdk/utils": "workspace:^"
   }
