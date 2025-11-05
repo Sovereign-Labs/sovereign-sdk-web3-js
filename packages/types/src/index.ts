@@ -15,6 +15,7 @@ export type UnsignedTransaction<RuntimeCall> = {
   runtime_call: RuntimeCall;
   uniqueness: Uniqueness;
   details: TxDetails;
+  address_override: HexString | null;
 };
 
 export type TransactionV0<RuntimeCall> = {
