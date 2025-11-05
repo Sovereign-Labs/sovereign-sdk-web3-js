@@ -31,7 +31,7 @@
   "types": "dist/node/wallet_wasm.d.ts",
   "devDependencies": {
     "@types/node": "^22.7.4",
-    "vitest": "^3.0.5",
+    "vitest": "4.0.7",
     "wasm-pack": "^0.13.0"
   },
   "peerDependencies": {

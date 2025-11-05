@@ -24,7 +24,7 @@
   "devDependencies": {
     "@sovereign-sdk/types": "workspace:^",
     "tsup": "^8.3.0",
-    "vitest": "^3.0.5"
+    "vitest": "4.0.7"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
