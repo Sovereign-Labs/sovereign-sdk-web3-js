@@ -144,6 +144,13 @@ export class MultisigTransaction {
     });
   }
 
+  /**
+   * Adds a signature & public key from a signed transaction to the multisig transaction.
+   * @param tx - The signed transaction to extract signature from
+   * @throws {InvalidTransactionVersionError} If the transaction is not V0 variant
+   * @throws {TransactionMismatchError} If the transaction doesn't match the unsigned transaction
+   * @throws {InvalidMultisigParameterError} If the public key is not a member or has already signed
+   */
   addSignedTransaction(tx: Transaction<unknown>): void {
     assertTxVariant(tx);
     assertTxMatchesUnsignedTx(tx, this.unsignedTx);
