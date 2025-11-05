@@ -15,7 +15,7 @@
     "build": "turbo build",
     "pkg-version": "changeset version && pnpm install --lockfile-only && turbo fix",
     "release": "turbo build && changeset publish",
-    "docs": "turbo docs"
+    "docs": "pnpm typedoc"
   },
   "keywords": [],
   "author": "",
