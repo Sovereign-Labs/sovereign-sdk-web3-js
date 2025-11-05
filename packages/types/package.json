@@ -1,6 +1,6 @@
 {
   "name": "@sovereign-sdk/types",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Core type definitions for Sovereign SDK blockchain interactions",
   "scripts": {
     "build": "tsup",
