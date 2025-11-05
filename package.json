@@ -3,18 +3,19 @@
   "private": true,
   "version": "0.0.0",
   "description": "Sovereign SDK JS monorepo",
+  "packageManager": "pnpm@9.0.0",
   "scripts": {
-    "ci": "pnpm run -r ci",
-    "fix": "pnpm -r fix",
-    "lint": "pnpm -r lint",
-    "typecheck": "pnpm -r typecheck",
-    "test": "vitest run --project unit",
-    "test:integration": "vitest run --project integration",
-    "coverage": "vitest run --coverage --project unit",
-    "build": "pnpm -r build",
-    "pkg-version": "changeset version && pnpm install --lockfile-only && pnpm run fix",
-    "release": "pnpm run build && changeset publish",
-    "docs": "pnpm typedoc"
+    "ci": "turbo ci",
+    "fix": "turbo fix",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "test:integration": "turbo test:integration",
+    "coverage": "vitest --coverage --project unit",
+    "build": "turbo build",
+    "pkg-version": "changeset version && pnpm install --lockfile-only && turbo fix",
+    "release": "turbo build && changeset publish",
+    "docs": "turbo docs"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.2",
     "@vitest/coverage-v8": "4.0.7",
+    "turbo": "^2.6.0",
     "typedoc": "^0.28.4",
     "vite-plugin-wasm": "^3.4.1",
     "vitest": "4.0.7"
