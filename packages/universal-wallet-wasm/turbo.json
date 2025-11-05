@@ -7,7 +7,7 @@
       "inputs": ["src/**", "package.json", "Cargo.toml"]
     },
     "test": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "build"],
       "outputs": [],
       "inputs": ["src/**", "tests/**", "package.json", "Cargo.toml"]
     }
