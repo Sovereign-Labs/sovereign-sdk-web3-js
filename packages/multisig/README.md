@@ -13,11 +13,11 @@ npm install @sovereign-sdk/multisig
 
 ## Features
 
-- = **Multisig Transaction Management**: Create and manage transactions requiring multiple signatures
-- <? **Threshold Signatures**: Configurable minimum signature requirements (M-of-N)
--  **Signature Collection**: Collect signatures from multiple parties before submission
-- = **Transaction Conversion**: Convert between V0 (single-sig) and V1 (multisig) transaction formats
-- =? **Safety Checks**: Validates transaction consistency and prevents replay attacks
+- **Multisig Transaction Management**: Create and manage transactions requiring multiple signatures
+- **Threshold Signatures**: Configurable minimum signature requirements (M-of-N)
+- **Signature Collection**: Collect signatures from multiple parties before submission
+- **Transaction Conversion**: Convert between V0 (single-sig) and V1 (multisig) transaction formats
+- **Safety Checks**: Validates transaction consistency and prevents replay attacks
 
 ## Usage
 
