@@ -41,11 +41,6 @@
       "dependsOn": ["typecheck", "lint", "test"],
       "outputs": []
     },
-    "docs": {
-      "dependsOn": ["^build"],
-      "outputs": ["docs/**"],
-      "inputs": ["src/**", "package.json", "typedoc.json"]
-    },
     "dev": {
       "cache": false,
       "persistent": true
