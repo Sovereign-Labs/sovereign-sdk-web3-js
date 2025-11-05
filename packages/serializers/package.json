@@ -4,7 +4,7 @@
   "description": "A package providing serialization for types used by Sovereign SDK apps",
   "scripts": {
     "build": "tsup",
-    "test": "vitest",
+    "test": "vitest run",
     "test:universal-wallet": "vitest run --config ./vitest.universal-wallet.config.ts",
     "test:debug": "vitest --inspect-brk --browser --no-file-parallelism",
     "ci": "biome ci",
@@ -38,7 +38,7 @@
   "devDependencies": {
     "tsup": "^8.3.0",
     "typescript": "^5.6.3",
-    "vitest": "^3.0.5"
+    "vitest": "4.0.7"
   },
   "publishConfig": {
     "access": "public"
