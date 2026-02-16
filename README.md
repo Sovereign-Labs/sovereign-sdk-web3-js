@@ -5,6 +5,11 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![pnpm](https://img.shields.io/badge/maintained%20with-pnpm-cc00ff.svg)](https://pnpm.io/)
 
+> **⚠️ DEPRECATED**
+>
+> This repository is no longer maintained. The code is now maintained at:
+> https://github.com/Sovereign-Labs/sovereign-sdk/tree/dev/typescript
+
 JavaScript/TypeScript SDK for interacting with Sovereign SDK rollups. This monorepo contains packages that provide type-safe transaction submission, signing capabilities, and rollup type serialization/deserialization.
 
 | Package                                                                | Version                                                                                                                                                     | Description                                                                                    |
